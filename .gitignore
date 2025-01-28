@@ -1,0 +1,20 @@
+# CMake generated files
+/CMakeLists.txt.user
+/CMakeCache.txt
+/build/
+*.exe
+*.o
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+
+# IDE files (for VS Code or other editors)
+.vscode/
+
+# MacOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
