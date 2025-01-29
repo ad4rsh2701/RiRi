@@ -18,3 +18,7 @@
 
 # Windows system files
 Thumbs.db
+
+# Ignore generated files
+data/*.ridb
+data/*.riri
