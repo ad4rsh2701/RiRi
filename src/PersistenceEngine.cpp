@@ -1,34 +1,30 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include <DataStore.h>
+#include "../include/DataStore.h"
+#include "../include/PersistenceEngine.h" // Include the header file
 
-class PersistenceEngine {
-    private:
-        DataStore* dataStore;
-    public:
-        PersistenceEngine(DataStore* dataStore) {
-            this->dataStore = dataStore;
-        }
-    
-        void saveData() {
-            std::ofstream outputFile("data/store.ridb");
+PersistenceEngine::PersistenceEngine(DataStore* dataStore) {
+    this->dataStore = dataStore;
+}
 
-            for (const auto& entry : dataStore->returnData()) {
-                outputFile << entry.first << " " << entry.second << std::endl;
-            }
-            outputFile.close();
-        }
+void PersistenceEngine::saveData() {
+    std::ofstream outputFile("data/store.ridb");
 
-        void loadData() {
-            std::ifstream inputFile("data/store.ridb");
-            std::string line;
-            while (std::getline(inputFile, line)) {
-                std::string key, value;
-                std::istringstream iss(line);
-                iss >> key >> value;
-                dataStore->setValue(key, value);
-            }
-            inputFile.close();
-        }
-};
+    for (const auto& entry : dataStore->returnData()) {
+        outputFile << entry.first << " " << entry.second << std::endl;
+    }
+    outputFile.close();
+}
+
+void PersistenceEngine::loadData() {
+    std::ifstream inputFile("data/store.ridb");
+    std::string line;
+    while (std::getline(inputFile, line)) {
+        std::string key, value;
+        std::istringstream iss(line);
+        iss >> key >> value;
+        dataStore->setValue(key, value);
+    }
+    inputFile.close();
+}
