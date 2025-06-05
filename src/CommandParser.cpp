@@ -1,21 +1,49 @@
+// TODO: Better implementation, more commands and documentation.
+
+// NOTE: The commented code are with due respect to the previous
+// implementation, as discussed in the CommandParser.h header file.
+// More details given later below.
+
 #include "../include/CommandParser.h"
-#include <sstream>
 
-CommandParser::CommandParser(DataStore* dataStore) {
-    this->dataStore = dataStore;
+DataStore* g_dataStore = nullptr;  // initializing
 
-    riricommands.emplace("SET", [dataStore](const std::vector<std::string>& args) { 
-        if (args.size() != 2) return "ERROR: SET needs key and value";
-        dataStore->setValue(args[0], args[1]);
-        return "OK";
-    });
-    
-    riricommands.emplace("GET", [dataStore](const std::vector<std::string>& args) { 
-        if (args.size() != 1) return std::string("ERROR: GET needs key");
-        return dataStore->getValue(args[0]);
-    });
+// Typical functions, instead of lambda functions.
+std::string setCommand(const std::vector<std::string>& args) {
+    if (args.size() != 2) return "ERROR: SET needs key and value";
+    g_dataStore->setValue(args[0], args[1]);  // Direct global access is BETTER
+    return "OK";
+}
+std::string getCommand(const std::vector<std::string>& args){
+    if (args.size()!=1) return "ERROR: GET needs key";
+    return g_dataStore->getValue(args[0]);  // just better
 }
 
+CommandParser::CommandParser(DataStore* dataStore) {
+    g_dataStore = dataStore;
+    
+    // riricommands.emplace("SET", [&dataStore](const std::vector<std::string>& args) { 
+    //     if (args.size() != 2) return "ERROR: SET needs key and value";
+    //     g_dataStore->setValue(args[0], args[1]);
+    //     return "OK";
+    // });
+    
+    // riricommands.emplace("GET", [&dataStore](const std::vector<std::string>& args) { 
+    //     if (args.size() != 1) return std::string("ERROR: GET needs key");
+    //     return g_dataStore->getValue(args[0]);
+    // });
+
+    // In the above code, we was emplacing the command string and mapping it with lambda
+    // functions. In this case, the dataStore was captured by references. I used lambda
+    // functions as they were awfully convienent to play with and pass as std::functions
+    // to other functions. I didn't consider the overhead of this appraoch at that time.
+
+    riricommands.emplace("SET", setCommand);
+    riricommands.emplace("GET", getCommand);
+}
+
+
+// Parsing the command by tokenizing it.
 std::vector<std::string> CommandParser::parseCommand(const std::string& command) {
     std::vector<std::string> tokens;
     size_t pos = 0;
@@ -32,8 +60,21 @@ std::vector<std::string> CommandParser::parseCommand(const std::string& command)
 
     return tokens;
 }
+// I am aware that using a struct like:
+//  struct ParseResult {
+//      const char* command;
+//      const char* arg1;
+//      const char* arg2;
+//      size_t arg1_len;
+//      size_t arg2_len;
+//  };
+// would have been the fastest method, but this method is extremely error prone
+// and I would like to avoid that, additionally I cannot think of a simple
+// way to parse commands like "SET key1 value1 key2 value2" using this.
+// Bonus: Tokenization doesn't modify the original string.
 
 
+// Executing the command based on the first token.
 std::string CommandParser::executeCommand(const std::string& command) {
     std::vector<std::string> tokens = parseCommand(command);
     if (tokens.empty()) return "ERROR: No command entered";

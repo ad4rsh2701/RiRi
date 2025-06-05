@@ -4,10 +4,12 @@
 
 #include <unordered_map>
 #include <string>
+#include "ankerl/unordered_dense.h"
 
 class DataStore {
 private:
-    std::unordered_map<std::string, std::string> data; // Key-value store
+    //std::unordered_map<std::string, std::string> data; // Key-value store
+    ankerl::unordered_dense::map<std::string, std::string> data;
 public:
     void setValue(const std::string& key, const std::string& value);    // Set key-value pair
     
@@ -15,7 +17,10 @@ public:
     
     bool deleteValue(const std::string& key);                           // Delete a key
     bool updateValue(const std::string& key, const std::string& value); // Update value by key
-    std::unordered_map<std::string, std::string> returnData();          // Return all data
+
+    // std::unordered_map<std::string, std::string> returnData();          // Return all data
+    ankerl::unordered_dense::map<std::string, std::string> returnData();
+    
     void clearData();                                                   // Clear all data
 };
 

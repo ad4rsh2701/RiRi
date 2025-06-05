@@ -1,4 +1,5 @@
-#include <unordered_map>
+// #include <unordered_map>
+#include "../include/ankerl/unordered_dense.h"
 #include <string>
 #include <stdexcept>
 #include "../include/DataStore.h" // Include the header file
@@ -29,7 +30,7 @@ bool DataStore::deleteValue(const std::string& key){
     return data.erase(key) > 0;
 } // DELETE
 
-std::unordered_map<std::string, std::string> DataStore::returnData() {
+ankerl::unordered_dense::map<std::string, std::string> DataStore::returnData() {
     return data;
 }
 
