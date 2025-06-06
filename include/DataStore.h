@@ -21,6 +21,8 @@ public:
     // std::unordered_map<std::string, std::string> returnData();          // Return all data
     ankerl::unordered_dense::map<std::string, std::string> returnData();
     
+    std::string getKey(const std::string& value) const;
+    
     void clearData();                                                   // Clear all data
 };
 

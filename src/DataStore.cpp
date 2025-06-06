@@ -1,7 +1,6 @@
 // #include <unordered_map>
 #include "../include/ankerl/unordered_dense.h"
 #include <string>
-#include <stdexcept>
 #include "../include/DataStore.h" // Include the header file
 
 // CRUD operations
@@ -12,7 +11,7 @@ void DataStore::setValue(const std::string& key, const std::string& value){
 std::string DataStore::getValue(const std::string& key) const {
     auto it = data.find(key);
     if (it == data.end()) {
-        throw std::out_of_range("Key not found");
+        return std::string(key) + ": (not found)\n";
     }
     return it->second;
 } // READ
@@ -37,3 +36,12 @@ ankerl::unordered_dense::map<std::string, std::string> DataStore::returnData() {
 void DataStore::clearData() {
     data.clear();
 } // CLEAR
+
+std::string DataStore::getKey(const std::string& value) const {
+    for (const auto& [key, val] : data) {
+        if (val == value) {
+            return key;  // Return first match
+        }
+    }
+    return std::string(value) + ": (not found)\n";
+} // SLOW_READ

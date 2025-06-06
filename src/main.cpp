@@ -1,18 +1,35 @@
-#include "../include/PersistenceEngine.h"
+// TODO: EVERYTHING
+
 #include <iostream>
+#include <string>
+#include "CommandParser.h"
+#include "DataStore.h"
+#include "PersistenceEngine.h"
 
-int main(){
-    printf("RiRi Server\n");
 
-    DataStore *dataStore = new DataStore();
+int main() {
+    DataStore store;
+    PersistenceEngine engine(&store);
+    CommandParser parser(&store);
+    g_dataStore = &store; // Just for pointer access in command funcs
 
-    PersistenceEngine engine = PersistenceEngine(dataStore);
-    
     engine.loadData();
-    
-    auto data = dataStore->returnData();
-    for (const auto& entry : data) {
-        std::cout << entry.first << ": " << entry.second << std::endl;
+
+    std::string input;
+
+    std::cout << "🟢 RiRi CLI is now active. Type commands (type 'exit' to quit)\n";
+
+    while (true) {
+        std::cout << "RiRi> ";
+        if (!std::getline(std::cin, input)) break;
+
+        if (input == "exit" || input == "quit" || input == "bye") {
+            std::cout << "👋 Shutting down RiRi\n";
+            break;
+        }
+
+        std::string output = parser.executeCommand(input);
+        std::cout << output << "\n";
     }
     engine.saveData();
 

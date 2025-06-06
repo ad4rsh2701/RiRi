@@ -31,9 +31,15 @@ public:
     std::string executeCommand(std::string_view command) const; // Execute commands on the DataStore
 };
 
+// RiRi Commands
 std::string setCommand(const std::vector<std::string_view>& args);
 std::string getCommand(const std::vector<std::string_view>& args);
-
+std::string updateCommand(const std::vector<std::string_view>& args);
+std::string deleteCommand(const std::vector<std::string_view>& args);
+std::string getAllCommand(const std::vector<std::string_view>& args);
+std::string clearCommand(const std::vector<std::string_view>& args);
+std::string autoSetCommand(const std::vector<std::string_view>& args);
+std::string searchCommand(const std::vector<std::string_view>& args);
 
 // So, why not std::function?
 
