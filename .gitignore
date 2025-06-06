@@ -22,3 +22,6 @@ Thumbs.db
 # Ignore generated files
 data/*.ridb
 data/*.riri
+
+# Custom Dev Folder
+.dev/
