@@ -1,20 +1,17 @@
 // TODO:
-// Replace std::string with std::string_view and perform the respective changes.
-// Since the command itself (e.g. "SET key value") is static or short-lived, copying
-// it using std::string is an unnecessary overhead.
-
+// Add more commands
 
 #pragma once
 #include <string>
 #include <vector>
 #include "DataStore.h"
-#include "unordered_dense.h"
+#include "ankerl/unordered_dense.h"
 
 // Global Pointer to the DataStore instance
 extern DataStore* g_dataStore;
 
 // Function pointer type for commands
-using RiRiCommandFn = std::string(*)(const std::vector<std::string>&);
+using RiRiCommandFn = std::string(*)(const std::vector<std::string_view>&);
 
 class CommandParser {
 private:
@@ -26,16 +23,16 @@ private:
     // > riricommands;
 
     // Current Mapping using simple plain function pointers
-    ankerl::unordered_dense::map<std::string, RiRiCommandFn> riricommands;
+    ankerl::unordered_dense::map<std::string_view, RiRiCommandFn> riricommands;
+    std::vector<std::string_view> parseCommand(std::string_view command) const; // Parse and validate commands
 
 public:
-    CommandParser(DataStore* ds); // Constructor
-    std::vector<std::string> parseCommand(const std::string& command); // Parse and validate commands
-    std::string executeCommand(const std::string& command); // Execute commands on the DataStore
+    explicit CommandParser(DataStore* ds); // Constructor
+    std::string executeCommand(std::string_view command) const; // Execute commands on the DataStore
 };
 
-std::string setCommand(const std::vector<std::string>& args);
-std::string getCommand(const std::vector<std::string>& args);
+std::string setCommand(const std::vector<std::string_view>& args);
+std::string getCommand(const std::vector<std::string_view>& args);
 
 
 // So, why not std::function?

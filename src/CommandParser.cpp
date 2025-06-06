@@ -9,14 +9,14 @@
 DataStore* g_dataStore = nullptr;  // initializing
 
 // Typical functions, instead of lambda functions.
-std::string setCommand(const std::vector<std::string>& args) {
+std::string setCommand(const std::vector<std::string_view>& args) {
     if (args.size() != 2) return "ERROR: SET needs key and value";
-    g_dataStore->setValue(args[0], args[1]);  // Direct global access is BETTER
+    g_dataStore->setValue(std::string(args[0]), std::string(args[1]));  // Direct global access is BETTER
     return "OK";
 }
-std::string getCommand(const std::vector<std::string>& args){
+std::string getCommand(const std::vector<std::string_view>& args){
     if (args.size()!=1) return "ERROR: GET needs key";
-    return g_dataStore->getValue(args[0]);  // just better
+    return g_dataStore->getValue(std::string(args[0]));  // just better
 }
 
 CommandParser::CommandParser(DataStore* dataStore) {
@@ -33,7 +33,7 @@ CommandParser::CommandParser(DataStore* dataStore) {
     //     return g_dataStore->getValue(args[0]);
     // });
 
-    // In the above code, we was emplacing the command string and mapping it with lambda
+    // In the above code, I was emplacing the command string and mapping it with lambda
     // functions. In this case, the dataStore was captured by references. I used lambda
     // functions as they were awfully convienent to play with and pass as std::functions
     // to other functions. I didn't consider the overhead of this appraoch at that time.
@@ -44,8 +44,8 @@ CommandParser::CommandParser(DataStore* dataStore) {
 
 
 // Parsing the command by tokenizing it.
-std::vector<std::string> CommandParser::parseCommand(const std::string& command) {
-    std::vector<std::string> tokens;
+std::vector<std::string_view> CommandParser::parseCommand(std::string_view command) const {
+    std::vector<std::string_view> tokens;
     size_t pos = 0;
 
     while (pos < command.size()) {
@@ -54,7 +54,7 @@ std::vector<std::string> CommandParser::parseCommand(const std::string& command)
             spacePos = command.size();
         }
 
-        tokens.push_back(command.substr(pos, spacePos - pos));
+        tokens.emplace_back(command.substr(pos, spacePos - pos));
         pos = spacePos + 1;
     }
 
@@ -75,15 +75,15 @@ std::vector<std::string> CommandParser::parseCommand(const std::string& command)
 
 
 // Executing the command based on the first token.
-std::string CommandParser::executeCommand(const std::string& command) {
-    std::vector<std::string> tokens = parseCommand(command);
+std::string CommandParser::executeCommand(std::string_view command) const {
+    std::vector<std::string_view> tokens = parseCommand(command);
     if (tokens.empty()) return "ERROR: No command entered";
 
-    std::string commandName = tokens[0];
+    std::string_view commandName = tokens[0];
     tokens.erase(tokens.begin());  // Remove command name from args
 
     auto it = riricommands.find(commandName);
     if (it == riricommands.end()) return "ERROR: Unknown command";
-
+    
     return it->second(tokens);  // Call the function stored in the map
 }
