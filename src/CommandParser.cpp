@@ -1,19 +1,17 @@
+// RiRi Rapid Dev License (RRDL) v1.0
+// © 2025 Adarsh Aryan (Shadow’s Lure)
+// Licensed for open use and modification with credit required.
+// Full license: /LICENSE or https://github.com/ad4rsh2701/RiRi
+
 // TODO:
-// - Finalize documentation for each command
 // - Implement AUTOSET once hashing scheme is chosen
 // - Possibly integrate performance metrics per command
 
-
-// NOTE: The commented code are with due respect to the previous
-// implementation of string-to-function map, as discussed in the
-// CommandParser.h header file. More details given later below.
 
 #include "CommandParser.h"
 
 // Global pointer to the DataStore instance used by all command functions.
 DataStore* g_dataStore = nullptr;
-
-// We will use typical functions, instead of lambda functions.
 
 
 std::string setCommand(const std::vector<std::string_view>& args) {
@@ -97,7 +95,7 @@ std::string getAllCommand(const std::vector<std::string_view>& args) {
 }
 
 
-// CLEAR fn()
+
 std::string clearCommand(const std::vector<std::string_view>& args) {
     if (!args.empty()) return "ERROR: CLEAR does not accept arguments";
 
@@ -105,13 +103,13 @@ std::string clearCommand(const std::vector<std::string_view>& args) {
     return "OK (cleared)";
 }
 
-// AUTOSET fn() : TODO
+
 std::string autoSetCommand(const std::vector<std::string_view>& args) {
     return "ERROR: AUTOSET not yet implemented.";
 }
 
 
-// SEARCH fn()
+
 std::string searchCommand(const std::vector<std::string_view>& args) {
     if (args.size() == 1){ return g_dataStore -> getKey(std::string(args[0])); }
     else if (args.size() > 1){
@@ -128,22 +126,6 @@ std::string searchCommand(const std::vector<std::string_view>& args) {
 
 CommandParser::CommandParser(DataStore* dataStore) {
     g_dataStore = dataStore;
-    
-    // ririCommandMap.emplace("SET", [&dataStore](const std::vector<std::string>& args) { 
-    //     if (args.size() != 2) return "ERROR: SET needs key and value";
-    //     g_dataStore->setValue(args[0], args[1]);
-    //     return "OK";
-    // });
-    
-    // ririCommandMap.emplace("GET", [&dataStore](const std::vector<std::string>& args) { 
-    //     if (args.size() != 1) return std::string("ERROR: GET needs key");
-    //     return g_dataStore->getValue(args[0]);
-    // });
-
-    // In the above code, I was emplacing the command string and mapping it with lambda
-    // functions. In this case, the dataStore was captured by references. I used lambda
-    // functions as they were awfully convienent to play with and pass as std::functions
-    // to other functions. I didn't consider the overhead of this appraoch at that time.
 
     // Commands
     ririCommandMap.emplace("SET", setCommand);
@@ -166,7 +148,6 @@ CommandParser::CommandParser(DataStore* dataStore) {
 }
 
 
-// Parsing the command by tokenizing it.
 std::vector<std::string_view> CommandParser::parseCommand(std::string_view command) const {
     std::vector<std::string_view> tokens;
     size_t pos = 0;
@@ -180,24 +161,23 @@ std::vector<std::string_view> CommandParser::parseCommand(std::string_view comma
         tokens.emplace_back(command.substr(pos, spacePos - pos));
         pos = spacePos + 1;
     }
-
+    // DEV Note:
+    // I am aware that using a struct like:
+    //  struct ParseResult {
+    //      const char* command;
+    //      const char* arg1;
+    //      const char* arg2;
+    //      size_t arg1_len;
+    //      size_t arg2_len;
+    //  };
+    // would have been the fastest method, but this method is extremely error prone
+    // and I would like to avoid that, additionally I cannot think of a simple
+    // way to parse commands like "SET key1 value1 key2 value2" using this.
+    // Bonus: Tokenization doesn't modify the original string.
     return tokens;
 }
-// I am aware that using a struct like:
-//  struct ParseResult {
-//      const char* command;
-//      const char* arg1;
-//      const char* arg2;
-//      size_t arg1_len;
-//      size_t arg2_len;
-//  };
-// would have been the fastest method, but this method is extremely error prone
-// and I would like to avoid that, additionally I cannot think of a simple
-// way to parse commands like "SET key1 value1 key2 value2" using this.
-// Bonus: Tokenization doesn't modify the original string.
 
 
-// Executing the command based on the first token.
 std::string CommandParser::executeCommand(std::string_view command) const {
     std::vector<std::string_view> tokens = parseCommand(command);
     if (tokens.empty()) return "ERROR: No command entered";

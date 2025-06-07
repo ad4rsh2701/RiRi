@@ -1,11 +1,7 @@
-/**
- * @file CommandParser.h
- * @author Adarsh Aryan (adarsharyan2701@gmail.com)
- * @brief 
- * 
- * @copyright Copyright (c) 2025
- * 
- */
+// RiRi Rapid Dev License (RRDL) v1.0
+// © 2025 Adarsh Aryan (Shadow’s Lure)
+// Licensed for open use and modification with credit required.
+// Full license: /LICENSE or https://github.com/ad4rsh2701/RiRi
 
 #pragma once
 #include <string>

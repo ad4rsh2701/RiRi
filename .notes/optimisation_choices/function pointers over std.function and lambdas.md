@@ -4,12 +4,12 @@
 ## Context
 Currently, [`CommandParser.h`](../../include/CommandParser.h) defines a function pointer type as follows:
 ```cpp
-// CommandParser.h at line: 23
+// CommandParser.h at line: 19
 using RiRiCommandFn = std::string(*)(const std::vector<std::string_view>&);
 ```
-Which defines the function pointer type and is used as the parameter type for our `ankerl::unordered_dense:map<...> ririCommandMap`'s value type (see [`CommandParser.h`](../../include/CommandParser.h): line 46).
+Which defines the function pointer type and is used as the parameter type for our `ankerl::unordered_dense:map<...> ririCommandMap`'s value type (see [`CommandParser.h`](../../include/CommandParser.h): line 36).
 
-Functions are defined based on the parameters and return type of the function pointer and then emplaced in `ririCommandMap` with corresponding `COMMAND` strings (see [`CommandParser.cpp`](../../src/CommandParser.cpp): line 149).
+Functions are defined based on the parameters and return type of the function pointer and then emplaced in `ririCommandMap` with corresponding `COMMAND` strings (see [`CommandParser.cpp`](../../src/CommandParser.cpp): line 131).
 
 Initially however, something much cooler was used.
 ```cpp
