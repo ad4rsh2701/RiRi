@@ -10,6 +10,9 @@
 #include "ankerl/unordered_dense.h"
 
 
+// Global pointer to the DataStore instance used by all command functions.
+extern DataStore* g_dataStore;
+
 /**
  * @brief Function pointer type used for RiRi command functions.
  * 

@@ -10,7 +10,6 @@
 
 #include "CommandParser.h"
 
-// Global pointer to the DataStore instance used by all command functions.
 DataStore* g_dataStore = nullptr;
 
 
