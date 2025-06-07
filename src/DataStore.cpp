@@ -1,9 +1,9 @@
 // #include <unordered_map>
-#include "../include/ankerl/unordered_dense.h"
+#include "ankerl/unordered_dense.h"
 #include <string>
-#include "../include/DataStore.h" // Include the header file
+#include "DataStore.h" // Include the header file
 
-// CRUD operations
+
 void DataStore::setValue(const std::string& key, const std::string& value){
     data[key] = value;
 } // CREATE
