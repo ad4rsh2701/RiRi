@@ -8,17 +8,15 @@
 // implementation of string-to-function map, as discussed in the
 // CommandParser.h header file. More details given later below.
 
-#include "../include/CommandParser.h"
+#include "CommandParser.h"
 
-DataStore* g_dataStore = nullptr;  // initializing
+// Global pointer to the DataStore instance used by all command functions.
+DataStore* g_dataStore = nullptr;
 
 // We will use typical functions, instead of lambda functions.
 
-// SET fn()
+
 std::string setCommand(const std::vector<std::string_view>& args) {
-    // if (args.size() != 2) return "ERROR: SET needs key and value";
-    // g_dataStore->setValue(std::string(args[0]), std::string(args[1]));  // Direct global access is BETTER
-    // return "OK";
     if (args.size() == 2) {
         g_dataStore->setValue(std::string(args[0]), std::string(args[1]));
         return "OK";
@@ -34,10 +32,8 @@ std::string setCommand(const std::vector<std::string_view>& args) {
     }
 }
 
-// GET fn()
+
 std::string getCommand(const std::vector<std::string_view>& args){
-    // if (args.size()!=1) return "ERROR: GET needs key";
-    // return g_dataStore->getValue(std::string(args[0]));  // just better
     if (args.size() == 1){ return g_dataStore -> getValue(std::string(args[0])); }
     else if (args.size() > 1){
         std::string result;
@@ -50,11 +46,10 @@ std::string getCommand(const std::vector<std::string_view>& args){
     }
 }
 
-// UPDATE fn()
+
 std::string updateCommand(const std::vector<std::string_view>& args){
     if (args.size() == 2) {
-        // I am so sorry
-        return g_dataStore->updateValue(std::string(args[0]), std::string(args[1])) ? "OK" : "ERROR: Key not found";
+        return g_dataStore->updateValue(std::string(args[0]), std::string(args[1])) ? "OK" : "ERROR: Key not found";    // I am so sorry
     } else if (args.size() > 2 && args.size() % 2 == 0) {
         int updated = 0;
         for (size_t i = 0; i < args.size(); i += 2) {
@@ -70,10 +65,9 @@ std::string updateCommand(const std::vector<std::string_view>& args){
     }
 }
 
-// DELETE fn()
+
 std::string deleteCommand(const std::vector<std::string_view>& args) {
     if (args.size()==1) {
-        // sorry, again
         return g_dataStore->deleteValue(std::string(args[0])) ? "OK (1 deleted)" : "ERROR: Key not found";
     } else if (args.size() > 1){
         int deleted = 0;
@@ -88,7 +82,7 @@ std::string deleteCommand(const std::vector<std::string_view>& args) {
 }
 
 
-// GET_ALL fn()
+
 std::string getAllCommand(const std::vector<std::string_view>& args) {
     if (!args.empty()) return "ERROR: GET_ALL does not accept arguments";
 
@@ -135,13 +129,13 @@ std::string searchCommand(const std::vector<std::string_view>& args) {
 CommandParser::CommandParser(DataStore* dataStore) {
     g_dataStore = dataStore;
     
-    // riricommands.emplace("SET", [&dataStore](const std::vector<std::string>& args) { 
+    // ririCommandMap.emplace("SET", [&dataStore](const std::vector<std::string>& args) { 
     //     if (args.size() != 2) return "ERROR: SET needs key and value";
     //     g_dataStore->setValue(args[0], args[1]);
     //     return "OK";
     // });
     
-    // riricommands.emplace("GET", [&dataStore](const std::vector<std::string>& args) { 
+    // ririCommandMap.emplace("GET", [&dataStore](const std::vector<std::string>& args) { 
     //     if (args.size() != 1) return std::string("ERROR: GET needs key");
     //     return g_dataStore->getValue(args[0]);
     // });
@@ -152,22 +146,22 @@ CommandParser::CommandParser(DataStore* dataStore) {
     // to other functions. I didn't consider the overhead of this appraoch at that time.
 
     // Commands
-    riricommands.emplace("SET", setCommand);
-    riricommands.emplace("GET", getCommand);
-    riricommands.emplace("UPDATE", updateCommand);
-    riricommands.emplace("DELETE", deleteCommand);
-    riricommands.emplace("GET_ALL", getAllCommand);
-    riricommands.emplace("CLEAR", clearCommand);
-    riricommands.emplace("AUTOSET", autoSetCommand);
-    riricommands.emplace("SEARCH", searchCommand);
+    ririCommandMap.emplace("SET", setCommand);
+    ririCommandMap.emplace("GET", getCommand);
+    ririCommandMap.emplace("UPDATE", updateCommand);
+    ririCommandMap.emplace("DELETE", deleteCommand);
+    ririCommandMap.emplace("GET_ALL", getAllCommand);
+    ririCommandMap.emplace("CLEAR", clearCommand);
+    ririCommandMap.emplace("AUTOSET", autoSetCommand);
+    ririCommandMap.emplace("SEARCH", searchCommand);
     
     // Command Aliases
-    riricommands.emplace("DEL", riricommands.at("DELETE"));
-    riricommands.emplace("DUMP", riricommands.at("GET_ALL"));
-    riricommands.emplace("CLR", riricommands.at("CLEAR"));
-    riricommands.emplace("YEET", riricommands.at("CLEAR"));
-    riricommands.emplace("HASH_SET", riricommands.at("AUTOSET"));
-    riricommands.emplace("FIND_BY_VALUE", riricommands.at("SEARCH"));
+    ririCommandMap.emplace("DEL", ririCommandMap.at("DELETE"));
+    ririCommandMap.emplace("DUMP", ririCommandMap.at("GET_ALL"));
+    ririCommandMap.emplace("CLR", ririCommandMap.at("CLEAR"));
+    ririCommandMap.emplace("YEET", ririCommandMap.at("CLEAR"));
+    ririCommandMap.emplace("HASH_SET", ririCommandMap.at("AUTOSET"));
+    ririCommandMap.emplace("FIND_BY_VALUE", ririCommandMap.at("SEARCH"));
 
 }
 
@@ -211,8 +205,8 @@ std::string CommandParser::executeCommand(std::string_view command) const {
     std::string_view commandName = tokens[0];
     tokens.erase(tokens.begin());  // Remove command name from args
 
-    auto it = riricommands.find(commandName);
-    if (it == riricommands.end()) return "ERROR: Unknown command";
+    auto it = ririCommandMap.find(commandName);
+    if (it == ririCommandMap.end()) return "ERROR: Unknown command";
 
     return it->second(tokens);  // Call the function stored in the map
 }
