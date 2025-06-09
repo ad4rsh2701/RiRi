@@ -30,7 +30,7 @@ riricommands.emplace("GET", [dataStore](const std::vector<std::string>& args) {
     return dataStore->getValue(args[0]);
 });
 ```
-Yes, __Lambda Functions__ (more like nameless functions) were used, which allowed me to define and emplace both at the same time, it also made the implemntation look a lot cleaner and was more secure (encapsualtion, ~~though I am not so sure about the secure part~~).
+Yes, __Lambda Functions__ (more like nameless functions) were used, which allowed me to define and emplace both at the same time, it also made the implementation look a lot cleaner and was more secure (encapsulation, ~~though I am not so sure about the secure part~~).
 
 This avoided defining and emplacing the functions separately (using function pointers), which requires more boilerplate when compared to inline lambdas using `std::function`.
 
@@ -58,8 +58,9 @@ But the difference is clear. Plus, since we are not capturing lambdas memory usa
 ### *"Expected? Where are the metrics?"* you might ask
 
 `TODO:`
-Well, I wasn't able to benchmark the memory usage due to the limited number of commands and lack of its code/logic cleanup during the inital testing. So, as soon as the command parser is ready (which it almost is), I will add the metrics for memory usage as well.
+Well, I wasn't able to benchmark the memory usage due to the limited number of commands and lack of its code/logic cleanup during the initial testing. So, as soon as the command parser is ready (which it almost is), I will add the metrics for memory usage as well.
 
-**NOTE:** The profiling was done with all optimisation enabled (`-O3`, `-flto`, `-march=native` and `-fuse-ld=lld`) to simulate real world usage. Additionally, these metrics are without the use of `std::string_view` as I didn't use it originally with the initial implementation.
+> ### NOTE
+> The profiling was done with all optimization enabled (`-O3`, `-flto`, `-march=native` and `-fuse-ld=lld`) to simulate real world usage. Additionally, these metrics are without the use of `std::string_view` as I didn't use it originally with the initial implementation.
 
 *Loosely inspired by how Redis dispatches commands via raw function pointers in C.*

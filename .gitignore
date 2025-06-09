@@ -25,3 +25,6 @@ data/*.riri
 
 # Custom Dev Folder
 .dev/
+
+# Custom testing Folder
+.test/
