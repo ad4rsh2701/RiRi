@@ -59,7 +59,7 @@ void simpleFunction(std::string& arg) const {
 }
 ```
 > ### Note (again)
-> Note that again, you must still pass a `std::string` object and not a string literal, because if you did, the compiler wouldn't have a std::string object to pass by reference, so it will just create one, like previously noted:
+> Note that again, you must still pass a `std::string` object and not a string literal, because if you did, the compiler wouldn't have a `std::string` object to pass by reference, so it will just create one, like previously noted:
 > ```cpp
 > std::string temp = std::string("very short string");  // Compiler Allocates
 > simpleFunction(temp);  // passed by reference
@@ -100,12 +100,12 @@ struct string_view {
 //     // member functions: .substr(), .data(), .size(), etc.
 // };
 ```
-so if you define a variable `view` as such:
+So, if you define a variable `view` as such:
 ```cpp
 std::string str = "some string";
 std::string_view view = str;
 ```
-the `ptr` points to the start of the `str`'s location, and `length` stores the length of `str`. That's it! The entire string `str` is NEVER copied.
+The `ptr` points to the start of the `str`'s location, and `length` stores the length of `str`. That's it! The entire string `str` is NEVER copied.
 
 > ### Note (final one?)
 > Oh and if you ask, like I did, whether a direct allocation is possible like so:
@@ -118,7 +118,7 @@ the `ptr` points to the start of the `str`'s location, and `length` stores the l
 >
 > In the above case:
 > - `"some string again"` is a string literal and it's of type `const char[12]`.
-> - It's already getting stored (in the **static memory** not the heap memory like `std::string` does it) and `std::string_view` binds directly to that literal's memory location without a need for a `std::string` allocation.
+> - It's already getting stored (in the **static memory** not the heap memory, unlike how `std::string` does it) and `std::string_view` binds directly to that literal's memory location without a need for a `std::string` allocation.
 >
 > If all that is making little sense, then just know that when you directly assign a `std::string_view` object (to a string literal), the compiler is first **sneakily storing** `"some string again"` somewhere for you in the **static memory**, called `.rodata` (which is is much faster to store on than on *Dynamic Memory* or heap). Then the `std::string_view` object points towards the start of that string literal.
 
@@ -143,8 +143,7 @@ std::string_view view;
 }
 cout << view;
 ```
-In the above, example, we define a `std::string str` inside a block `{}`, which means `str` only lives until the end of the block.
-But, then we assigned it to `view` (which we defined as a `std::string_view` outside the block) inside the block.
+In the above, example, we define a `std::string str` inside a block `{}`, which means `str` only lives until the end of the block. But, then we assigned it to `view` (which we defined as a `std::string_view` outside the block) inside the block.
 
 And then we tried printing `view` inside the block, which is okay! The `str` is still alive, as the block hasn't ended, so the `view` still points to `str`, hence we can print it!
 
@@ -158,11 +157,11 @@ That is, `std::string_view` doesn't extend the lifetime of the object it points 
 > Due to this, storing `std::string_view` is also very risky, as it depends directly on the lifetime of the object it points to, so ensure that you store the object directly rather than a `std::string_view` pointer to that object.
 
 Here, a couple of points you can keep in mind while using `std::string_view`:
-1. It is totally okay to pass a `std::string_view` parameter through a function, as long as you are NOT STORING (unless you are absolutely sure you want to).
+1. It is totally okay to pass a `std::string_view` parameter through a function, as long as you are NOT STORING IT (unless you are absolutely sure you want to).
 
-2. It is not necessary to pass a `std::string_view` as reference, or more sternly, **I do not recommend passing a `std::string_view` type parameter as a reference to a function**, since it is already a pointer, you are wasting your processes creating another pointer to it.
+2. It is not necessary to pass a `std::string_view` as **reference**, or more sternly, **I do not recommend passing a `std::string_view` type parameter as a reference to a function**, since it is already a pointer, you are wasting your processes creating another pointer to it.
 
-3. A `std::string_view` pointer/object lives as long as the function's execution if it is passed to or defined in a function.
+3. A `std::string_view` pointer/object lives as long as the function's execution frame, if it is passed to or defined in a function.
 
 4. Returning a `std::string_view` pointer/object is not *impossible*, you may return it, as long as you instantly use it and not store it.
 
@@ -291,7 +290,7 @@ Hence, instead of having minimum 7 allocation we will have 0 allocations just by
 
 So, as you can tell, as the number of function calls increase, the number of extra allocations will keep on increasing when using `std::string`, whereas while using `std::string_view` the number of extra allocations effectively remain 0, irrespective of the number of allocations.
 
-You may find this a very oddly specific case, but it's relevant everywhere, every time you call a member function of `std::string` which either modifies or updates the `std::string` object, you create a `std::string` copy of it, which is heavy, *very heavy*, whereas, a `std::string_view` object is literally just a pointer with an extra length value.
+You may find this as *a very oddly specific case*, but it's relevant everywhere, every time you call a member function of `std::string` which either modifies or updates the `std::string` object, you create a `std::string` copy of it, which is heavy, *very heavy*, whereas, a copy of `std::string_view` object is literally just a pointer with an extra length value.
 
 ## Don't trust me? Here, metrics:
 
@@ -319,7 +318,7 @@ string_view improvement: 248.069% Faster
 That's just how much performance can be improved by a very simple looking optimization (just using `std::string_view` instead of `std::string`).
 
 
-### So, is `std::string_view` ALWAYS better?
+## So, is `std::string_view` ALWAYS better?
 Depending on your application, *yes*. But, allow me to show you how bad it can affect performance if used unwisely.
 
 Consider this code from [`CommandParser.cpp`](../../src/CommandParser.cpp):
@@ -342,7 +341,7 @@ std::string setCommand(std::vector<std::string_view> args) {
 }
 ```
 
-Note that, we are passing a `std::string_view` object in this code. It goes throw all the conditions, and if it fits one, the condition block is replayed.
+Note that, we are passing a `std::string_view` object in this code. It goes through all the conditions, and if it fits one, the condition block is replayed.
 
 Our bottleneck code is when the function from the `g_dataStore` is called:
 ```cpp
@@ -350,9 +349,7 @@ g_dataStore->setValue(std::string(args[i]), std::string(args[i + 1]));
 ```
 See how we are converting `args` (a `std::string_view` object) to a `std::string` object (why am I doing this? Because I need the return value in `std::string`, it's a need).
 
-Now, this conversion, to `std::string` creates a heavy bulky `std::string` object, the very thing we wanted to avoid, and not just once, but twice.
-
-So, now we have got 2 extra allocations from a function instead of the expected 0 extra allocations.
+Now, this conversion, to `std::string` creates a heavy bulky `std::string` object, the very thing we wanted to avoid, and not just once, but twice. So, now we have got 2 extra allocations from a function instead of the expected 0 extra allocations.
 
 Now, look at the same code, but without using `std::string_view`:
 
@@ -377,9 +374,7 @@ Here, we passed a pointer to the `std::string` as the parameter (similar to what
 ```cpp
 g_dataStore->setValue(args[i], args[i + 1]);
 ```
-No conversion means no extra allocations hence no copy created which equals faster execution.
-
-And, also, the benchmark that made me realize that blindly using `std::string_view` is just as bad:
+No conversion means no extra allocations hence no copy created which equals faster execution. And, also, the benchmark results that made me realize that blindly using `std::string_view` is just as bad (*I initially benchmarked `setCommand` function instead of `parseCommand` and I was definitely surprised*):
 
 ```
 <!-- With -O3 -->
@@ -396,6 +391,8 @@ Performance Gain: -68.6275%
 ```
 
 So, the question itself is invalid, there is no *better*. But based on the context, requirement, return type and need, one can be significantly better than the other.
+
+And, yes yes, I will change the command functions in [`CommandParser.cpp`](../../src/CommandParser.cpp) to accept `std::string` type instead of the `std::string_view` soon.
 
 
 Compiler Used: `Clang++` with `lld`.
