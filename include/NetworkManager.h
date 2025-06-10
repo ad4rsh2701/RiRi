@@ -1,5 +1,4 @@
-#ifndef NETWORK_MANAGER_H
-#define NETWORK_MANAGER_H
+#pragma once
 
 #include <string>
 class NetworkManager {
@@ -16,4 +15,4 @@ class NetworkManager {
         void sendResponse(int clientSocket, const std::string& response); // Send response to client
 
 };
-#endif // NETWORK_MANAGER_H
+// NETWORK_MANAGER_H

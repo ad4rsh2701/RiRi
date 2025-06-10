@@ -7,7 +7,7 @@
 
 class DataStore {
 private:
-    //std::unordered_map<std::string, std::string> data; 
+
     ankerl::unordered_dense::map<std::string, std::string> data;            // Key-value store
     
 public:
@@ -19,9 +19,8 @@ public:
     
     bool updateValue(const std::string& key, const std::string& value);     // Update value by key
 
-    // std::unordered_map<std::string, std::string> returnData();
     ankerl::unordered_dense::map<std::string, std::string> returnData();    // Return all data
-    
+
     std::string getKey(const std::string& value) const;
     
     void clearData();                                                       // Clear all data

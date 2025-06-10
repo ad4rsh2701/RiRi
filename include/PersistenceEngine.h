@@ -1,5 +1,4 @@
-#ifndef PERSISTENCE_ENGINE_H
-#define PERSISTENCE_ENGINE_H
+#pragma once
 
 #include <fstream>
 #include <string>
@@ -15,4 +14,4 @@ public:
     void loadData(); // Load data from disk
 };
 
-#endif // PERSISTENCE_ENGINE_H
+// PERSISTENCE_ENGINE_H

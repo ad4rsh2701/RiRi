@@ -1,5 +1,4 @@
-#ifndef RIRI_SERVER_H
-#define RIRI_SERVER_H
+#pragma once
 
 #include <string>
 #include "DataStore.h"
@@ -23,4 +22,4 @@ class RiRiServer {
         void processRequest(const std::string& request, int clientSocket);
 };
 
-#endif // RIRI_SERVER_H
+// RIRI_SERVER_H
