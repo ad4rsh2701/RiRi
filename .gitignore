@@ -28,3 +28,8 @@ data/*.riri
 
 # Custom testing Folder
 .test/
+.temp/
+.old/
+
+# THE MOST AWAITED FOLDER
+release/
