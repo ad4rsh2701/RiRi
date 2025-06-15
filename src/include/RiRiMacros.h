@@ -1,4 +1,4 @@
-// Compiler: The project is built with MSVC (Microsoft Visual C++).
+// Compiler: The project is built with Clang C++.
 
 // This header defines macros used throughout RiRi.
 // Must be included before any use of RIRI_API or GO_AWAY.
