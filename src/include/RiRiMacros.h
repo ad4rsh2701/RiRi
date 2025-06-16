@@ -25,17 +25,6 @@
 #endif
 
 // =======================
-// Force inline
-// =======================
-#define RIRI_INLINE inline __attribute__((always_inline))
-
-// =======================
-// Branch prediction hints
-// =======================
-#define RIRI_LIKELY(x)   __builtin_expect(!!(x), 1)
-#define RIRI_UNLIKELY(x) __builtin_expect(!!(x), 0)
-
-// =======================
 // Dev-mode assert
 // =======================
 #ifdef RIRI_DEV_MODE

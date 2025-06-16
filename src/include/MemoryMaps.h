@@ -3,13 +3,10 @@
 #include <variant>
 #include <string_view>
 
-#include "include/riri/Commands.hpp"
+#include "src/include/RapidTypes.h"
 #include "ankerl/unordered_dense.h"
 #include "src/include/RiRiMacros.h"
 
-
-
-using RapidDataType = std::variant<std::string, int_fast64_t, double, bool>;
 
 /**
  * @brief ### WARNING: INTERNAL ZONE
@@ -56,7 +53,7 @@ namespace RiRi::Internal {
      * @brief ### Auxiliary Command Function Pointer Map
      * 
      * This map associates command names (as `std::string_view`) with their corresponding
-     * function pointers of type `RiRiCommandFn`. 
+     * function pointers of type `RapidCommandFn`. 
      * 
      * - Used for auxiliary command handling.
      * 
@@ -64,13 +61,13 @@ namespace RiRi::Internal {
      * 
      * @note - The map is initialized to support a limited number of commands efficiently.
      * @note - The map is initialized with a small reserved size to optimize performance.
-     * @note - The command functions should match the signature defined by `RiRiCommandFn`.
-     * @see RiRiCommandFn for the function pointer type used for commands.
+     * @note - The command functions should match the signature defined by `RapidCommandFn`.
+     * @see RapidCommandFn for the function pointer type used for commands.
      * @see Commands.h for the list of available commands and their implementations.
      */
     GO_AWAY extern ankerl::unordered_dense::map<
         std::string_view,
-        RiRiCommandFn,
+        RapidCommandFn,
         ankerl::unordered_dense::hash<std::string_view>,
         std::equal_to<>
     > AuxCommandMap;

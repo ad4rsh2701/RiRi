@@ -3,12 +3,14 @@ constexpr size_t DEFAULT_COMMAND_CAPACITY = 16;
 
 #include "MemoryMaps.h"
 
+using namespace RiRi;
+
 ankerl::unordered_dense::map<
     std::string_view,
     RapidDataType,
     ankerl::unordered_dense::hash<std::string_view>,
     std::equal_to<>
-> MemoryMap = [] {
+> Internal::MemoryMap = [] {
     ankerl::unordered_dense::map<
         std::string_view,
         RapidDataType,
@@ -25,13 +27,13 @@ ankerl::unordered_dense::map<
 
 ankerl::unordered_dense::map<
     std::string_view,
-    RiRiCommandFn,
+    RapidCommandFn,
     ankerl::unordered_dense::hash<std::string_view>,
     std::equal_to<>
-> AuxCommandMap = [] {
+> Internal::AuxCommandMap = [] {
     ankerl::unordered_dense::map<
         std::string_view,
-        RiRiCommandFn,
+        RapidCommandFn,
         ankerl::unordered_dense::hash<std::string_view>,
         std::equal_to<>
     > map;

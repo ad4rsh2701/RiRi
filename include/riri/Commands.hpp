@@ -2,21 +2,19 @@
 
 #include <string>
 #include <string_view>
-#include <vector>
+#include <span>
 
 #include "src/include/RiRiMacros.h"
-/** 
- * @brief Type alias for a command function that takes a vector of string views as arguments and returns a string result.
- * Used to define the signature for RiRi command handlers.
- * @note - You may use this type alias to define your own command functions that match this signature.
- * @note - The command name is expected to be stripped before calling these functions.
- */
-using RiRiCommandFn = std::string_view(*)(const std::vector<std::string_view>&);
+#include "src/utils/RapidError.h"
+
 
 /**
  * @namespace RiRi::Commands
  * @brief Contains all command functions for the RiRi key-value store.
  * 
+ * Command functions should be of the type:
+ * `RiRi::Error::RiRiResult<std::string_view>(*)(const std::span<std::string_view>)`
+ *
  * This namespace includes functions for setting, getting, updating, deleting keys, retrieving all keys, clearing the store, auto-setting keys, and searching by value.
  * @note - Each command function is designed to handle a specific operation on the key-value store (map).
  * @note - The command name is expected to be stripped before calling these functions.
@@ -32,11 +30,11 @@ namespace RiRi::Commands {
      * - Single PAIR: `{ key, value }`
      * 
      * - Bulk PAIR: `{ key1, value1, key2, value2, ... }`
-     * @return "OK" if successful, or error message for malformed input.
+     * @return "OK (N keys set)" where N is the number of key-value pairs set, or an error message.
      * @note The command name (`SET`) is already removed before this function is called.
      *       The args vector only contains the remaining arguments.
      */
-    RIRI_API std::string_view setCommand(const std::vector<std::string_view>& args);
+    RIRI_API RiRi::Error::RiRiResult<std::string_view> setCommand(const std::span<std::string_view> args);
 
     //GET
     /**
@@ -50,7 +48,7 @@ namespace RiRi::Commands {
      * @note The command name (`GET`) is already removed before this function is called.
      *       The args vector only contains the remaining arguments.
      */
-    RIRI_API std::string_view getCommand(const std::vector<std::string_view>& args);
+    RIRI_API RiRi::Error::RiRiResult<std::string_view> getCommand(const std::span<std::string_view> args);
 
     //UPDATE
     /**
@@ -60,12 +58,12 @@ namespace RiRi::Commands {
      * - Single: `{ key, newValue }`
      *        
      * - Bulk:   `{ key1, newVal1, key2, newVal2, ... }`
-     * @return "OK" with a count of updated keys, or an error message.
+     * @return "OK (N keys updated)" where N is the number of keys successfully updated, or an error message.
      * @note - Keys must already exist; this does not create new ones.
      * @note - The command name (`UPDATE`) is already removed before this function is called.
      *       The args vector only contains the remaining arguments.
      */
-    RIRI_API std::string_view updateCommand(const std::vector<std::string_view>& args);
+    RIRI_API RiRi::Error::RiRiResult<std::string_view> updateCommand(const std::span<std::string_view> args);
 
     //DELETE
     /**
@@ -75,12 +73,12 @@ namespace RiRi::Commands {
      * - Single: `{ key }`
      *        
      * - Bulk: `{ key1, key2, key3, ... }`
-     * @return "OK (N deleted)" where N is the number of keys successfully removed.
+     * @return "OK (N keys deleted)" where N is the number of keys successfully removed.
      * @note - Keys must already exist; there is no blackmagic which deletes non-existing keys.
      * @note - The command name (`DELETE` or `DEL`) is already removed before this function is called.
      *         The args vector only contains the remaining arguments.
      */
-    RIRI_API std::string_view deleteCommand(const std::vector<std::string_view>& args);
+    RIRI_API RiRi::Error::RiRiResult<std::string_view> deleteCommand(const std::span<std::string_view> args);
 
     //GET_ALL
     /**
@@ -93,7 +91,7 @@ namespace RiRi::Commands {
      * @note - The command name (`GET_ALL` or `DUMP`) is already removed before this function is called.
      *         The args vector should be empty.
      */
-    RIRI_API std::string_view getAllCommand(const std::vector<std::string_view>& args);
+    RIRI_API RiRi::Error::RiRiResult<std::string_view> getAllCommand(const std::span<std::string_view> args);
 
     // CLEAR
     /**
@@ -105,7 +103,7 @@ namespace RiRi::Commands {
      * @note - The command name (`CLEAR` or `CLR`) is already removed before this function is called.
      *         The args vector should be empty.
      */
-    RIRI_API std::string_view clearCommand(const std::vector<std::string_view>& args);
+    RIRI_API RiRi::Error::RiRiResult<std::string_view> clearCommand(const std::span<std::string_view> args);
 
     // AUTOSET
     /**
@@ -119,7 +117,7 @@ namespace RiRi::Commands {
      * @note - The command name (`AUTOSET` or `HASH_SET`) is already removed before this function is called.
      *       The args vector only contains the remaining arguments (values).
      */
-    RIRI_API std::string_view autoSetCommand(const std::vector<std::string_view>& args);
+    RIRI_API RiRi::Error::RiRiResult<std::string_view> autoSetCommand(const std::span<std::string_view> args);
 
     // SEARCH
     /**
@@ -138,6 +136,6 @@ namespace RiRi::Commands {
      * @note - The command name (`SEARCH` or `FIND_BY_VALUE`) is already removed before this function is called.
      *         The args vector only contains the remaining arguments (values).
      */
-    RIRI_API std::string_view searchCommand(const std::vector<std::string_view>& args);
+    RIRI_API RiRi::Error::RiRiResult<std::string_view> searchCommand(const std::span<std::string_view> args);
 
 } // namespace RiRi::Internal
