@@ -23,13 +23,15 @@
 namespace RiRi::Internal {
     
     /**
-     * @brief Set the Value object
+     * @brief ### Insert the key-value pair in the internal memory map.
      * 
-     * @param key 
-     * @param value 
-     * @return bool
+     * @param key Type: `std::string_view`
+     * @param value Type: `const RapidDataType&`
+     * @return `true` or `false`
+     * 
+     * @note Returns `true` if the key-value pair was successfully inserted, `false` if the key already exists or the insertion failed (very unlikely).
      */
-    GO_AWAY bool setValue(std::string_view key, RapidDataType value);
+    GO_AWAY bool setValue(std::string_view key, const RapidDataType& value) noexcept;
 
     GO_AWAY std::optional<RapidDataType> getValue(std::string_view key);
 
