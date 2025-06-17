@@ -85,5 +85,14 @@ namespace RiRi::Internal {
      */
     GO_AWAY void clearMap() noexcept;
 
-    GO_AWAY size_t size();
+
+    /**
+     * @brief ### Returns the size of the internal memory map.
+     * 
+     * This function is provided to avoid exposing the internal MemoryMap
+     * directly in public headers. It serves purely as an access abstraction.
+     * 
+     * @return `size_t` representing the number of key-value pairs.
+     */
+    GO_AWAY size_t size() noexcept;
 }

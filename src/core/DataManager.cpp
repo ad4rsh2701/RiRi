@@ -39,6 +39,12 @@ std::optional<std::string_view> Internal::getKeyByValue(const RapidDataType& val
     return std::nullopt; // No match found
 }
 
+
 void Internal::clearMap() noexcept {
     Internal::MemoryMap.clear();  // Clear all entries from the internal memory map
+}
+
+
+size_t Internal::size() noexcept {
+    return Internal::MemoryMap.size();  // Return the size of the internal memory map
 }
