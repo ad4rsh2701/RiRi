@@ -2,8 +2,10 @@
 
 #include <string_view>
 #include <optional>
+
 #include "RapidTypes.h"
 #include "RiRiMacros.h"
+#include "src/include/MemoryMaps.h"
 
 /**
  * @brief ### WARNING: INTERNAL ZONE
