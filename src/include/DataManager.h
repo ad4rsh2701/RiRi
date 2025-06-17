@@ -33,7 +33,17 @@ namespace RiRi::Internal {
      */
     GO_AWAY bool setValue(std::string_view key, const RapidDataType& value) noexcept;
 
-    GO_AWAY std::optional<RapidDataType> getValue(std::string_view key);
+
+    /**
+     * @brief ### Retrieve the value associated with the key from the internal memory map.
+     * 
+     * @param key Type: `std::string_view`
+     * @return `RapidDataType value` or `std::nullopt`
+     * 
+     * @note Returns the value associated with the key if it exists, `std::nullopt` otherwise.
+     * 
+     */
+    GO_AWAY std::optional<RapidDataType> getValue(std::string_view key) noexcept;
 
     GO_AWAY bool deleteKey(std::string_view key);
 
