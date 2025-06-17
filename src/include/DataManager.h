@@ -77,7 +77,13 @@ namespace RiRi::Internal {
      */
     GO_AWAY std::optional<std::string_view> getKeyByValue(const RapidDataType& value) noexcept;
 
-    GO_AWAY void clearMap();
+
+    /**
+     * @brief ### Clears all entries from the internal memory map.
+     * 
+     * This operation is guaranteed to succeed and does not throw.
+     */
+    GO_AWAY void clearMap() noexcept;
 
     GO_AWAY size_t size();
 }
