@@ -2,7 +2,7 @@
 
 #include <string_view>
 #include <optional>
-#include "MemoryMaps.h"
+#include "RapidTypes.h"
 #include "RiRiMacros.h"
 
 /**
@@ -21,7 +21,14 @@
  * Or you can create a fork of RiRi (here: https://github.com/ad4rsh2701/riri) and modify it as you wish.
  */
 namespace RiRi::Internal {
-
+    
+    /**
+     * @brief Set the Value object
+     * 
+     * @param key 
+     * @param value 
+     * @return bool
+     */
     GO_AWAY bool setValue(std::string_view key, RapidDataType value);
 
     GO_AWAY std::optional<RapidDataType> getValue(std::string_view key);
