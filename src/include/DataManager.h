@@ -54,7 +54,15 @@ namespace RiRi::Internal {
      */
     GO_AWAY bool deleteKey(std::string_view key);
 
-    GO_AWAY bool updateValue(std::string_view key, RapidDataType newValue);
+
+    /**
+     * @brief ### Update the value associated with the given key in the internal memory map.
+     * 
+     * @param key Type: `std::string_view`
+     * @param newValue Type: `RapidDataType`
+     * @return `true` if the key was found and updated, `false` if the key did not exist.
+     */
+    GO_AWAY bool updateValue(std::string_view key, const RapidDataType& newValue) noexcept;
 
     GO_AWAY std::optional<std::string_view> getKeyByValue(const RapidDataType& value);
 
