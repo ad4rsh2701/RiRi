@@ -66,7 +66,16 @@ namespace RiRi::Internal {
      */
     GO_AWAY bool updateValue(std::string_view key, const RapidDataType& newValue) noexcept;
 
-    GO_AWAY std::optional<std::string_view> getKeyByValue(const RapidDataType& value);
+
+    /**
+     * @brief ### Retrieve the key associated with the given value from the internal memory map.
+     * 
+     * @param value Type: `const RapidDataType&`
+     * @return `std::optional<std::string_view>` containing the key if found, `std::nullopt` otherwise.
+     * 
+     * @warning This is a `slow linear search`. Only use in rare or non-performance-critical cases.
+     */
+    GO_AWAY std::optional<std::string_view> getKeyByValue(const RapidDataType& value) noexcept;
 
     GO_AWAY void clearMap();
 

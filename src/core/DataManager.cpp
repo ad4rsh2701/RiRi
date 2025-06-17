@@ -28,3 +28,13 @@ bool Internal::updateValue(std::string_view key, const RapidDataType& newValue) 
     it->second = newValue;      // update the value associated with the key
     return true;
 }
+
+
+std::optional<std::string_view> Internal::getKeyByValue(const RapidDataType& value) noexcept {
+    for (const auto& [key, val] : Internal::MemoryMap) {
+        if (val == value) {
+            return key; // Return the first key that matches
+        }
+    }
+    return std::nullopt; // No match found
+}
