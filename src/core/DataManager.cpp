@@ -16,7 +16,7 @@ std::optional<RapidDataType> Internal::getValue(std::string_view key) noexcept {
 }
 
 
-bool Internal::deleteKey(std::string_view key) {
+bool Internal::deleteKey(std::string_view key) noexcept {
     return Internal::MemoryMap.erase(key) > 0;  // returns true if the key was found and erased else false
 }
 

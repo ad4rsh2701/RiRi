@@ -54,7 +54,7 @@ namespace RiRi::Internal {
      * @param key Type: `std::string_view`
      * @return `true` if the key was found and erased, `false` if the key did not exist.
      */
-    GO_AWAY bool deleteKey(std::string_view key);
+    GO_AWAY bool deleteKey(std::string_view key) noexcept;
 
 
     /**
