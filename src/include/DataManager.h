@@ -33,7 +33,7 @@ namespace RiRi::Internal {
      * 
      * @note Returns `true` if the key-value pair was successfully inserted, `false` if the key already exists or the insertion failed (very unlikely).
      */
-    GO_AWAY bool setValue(std::string_view key, const RapidDataType& value) noexcept;
+    GO_AWAY bool setValue(std::string&& key, const RapidDataType& value) noexcept;
 
 
     /**
