@@ -40,7 +40,7 @@ namespace RiRi::Internal {
     GO_AWAY extern ankerl::unordered_dense::map<
         std::string,
         RapidDataType,
-        ankerl::unordered_dense::hash<std::string_view>,
+        ankerl::unordered_dense::hash<std::string>,
         std::equal_to<>
     > MemoryMap;
     // Yes, I leveled up and am using ankerl::unordered_dense::map with hash and equality
