@@ -37,6 +37,10 @@ In memory, abstractly speaking, the data is structured like this — think of it
 ```
 (Benefits of storing like this? — should be obvious, if not... _it’s a great little homework_)
 
+> Inside RiRi
+>- `keys` are of the type `std::string_view`. HUH1?!?! WAIT A SEC
+>- `values` are of the type `std::variant` (C++23).
+
 That's essentially what a key-value map or a ‘k-v map’ is. With this clarified, we can finally explain what RiRi is, in a much better way:
 
 - RiRi is a bunch of code compiled into a binary, which _at your mercy_ modifies the key-value map however you command (add, search, delete, etc.).
@@ -45,3 +49,24 @@ That's essentially what a key-value map or a ‘k-v map’ is. With this clarifi
 
 The general idea of RiRi should be much clear now, as for the C++23 features and the _one of the fastest hash maps_; these are just used to implement RiRi. These will be discussed in the upcoming sections with great detail (especially that map).
 
+Oh and I almost forgot to mention, RiRi is made in **pure C++** and uses no external dependencies (except one, the hash map, which has no overhead).
+
+
+## Why RiRi? —like really, we already have Redis
+
+Oh so you know about Redis? The infamous backend caching service, which at core, does the same things as RiRi. That's... 
+
+Let's see what Redis claims itself to be (taken directly from their README):
+> For developers, who are building real-time data-driven applications, Redis is the preferred, fastest, and most feature-rich cache, data structure server, and document and vector query engine.
+
+I am going to ignore the "preferred" and "fastest" claims (those are true —for now), but the others:
+- Cache Engine — A fancy and a typical application of a key-value map/data store.
+- Data Structure Server
+- Document and vector query Engine
+
+And what was RiRi?
+- Key-value map/data Engine
+- Embeddable Data Engine
+- Backend Data Server
+
+So, yes, in the end, both modify a key-value data structure, but each have their own _ways to use_. Oh and let's not forget a few more things:
