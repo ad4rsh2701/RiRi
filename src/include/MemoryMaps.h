@@ -28,7 +28,7 @@ namespace RiRi::Internal {
     /**
      * @brief ### Main Memory Map for Rapid Data Access
      * 
-     * This map uses `std::string_view` as keys and `RapidDataType` as values.
+     * This map uses `std::string` as keys and `RapidDataType` as values.
      * It is designed for fast lookups and efficient memory usage.
      * 
      * The map is initialized with a reserved size to optimize performance.
@@ -38,21 +38,28 @@ namespace RiRi::Internal {
      * @see RapidDataType for the types of values stored in this map.
      */
     GO_AWAY extern ankerl::unordered_dense::map<
-        std::string_view,
+        std::string,
         RapidDataType,
-        ankerl::unordered_dense::hash<std::string_view>,
+        RapidHash,
         std::equal_to<>
     > MemoryMap;
     // Yes, I leveled up and am using ankerl::unordered_dense::map with hash and equality
-    // functions for std::string_view, as intended.
+    // functions for std::string, as intended. This allows us for fast lookups using std::string_view keys.
     // Previously, I just used ankerl::unordered_dense::map<std::string, std::string>, which was definitely not optimal.
+
+    // Levelled up AGAIN:
+    // Now using ankerl::unordered_dense::map<std::string, RapidDataType> with a custom hash and equality function.
+    // This allows us to store various types of data in the map, including strings, integers, doubles, and booleans.
+    // Why a custom hash and equality function?
+    // Because ankerl::unordered_dense::map does not support transparent hash and equality functions,
+    // and neither does clang's libc++.
 
 
 
     /**
      * @brief ### Auxiliary Command Function Pointer Map
      * 
-     * This map associates command names (as `std::string_view`) with their corresponding
+     * This map associates command names (as `std::string`) with their corresponding
      * function pointers of type `RapidCommandFn`. 
      * 
      * - Used for auxiliary command handling.
@@ -66,9 +73,9 @@ namespace RiRi::Internal {
      * @see Commands.h for the list of available commands and their implementations.
      */
     GO_AWAY extern ankerl::unordered_dense::map<
-        std::string_view,
+        std::string,
         RapidCommandFn,
-        ankerl::unordered_dense::hash<std::string_view>,
+        RapidHash,
         std::equal_to<>
     > AuxCommandMap;
 

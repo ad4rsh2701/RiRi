@@ -2,8 +2,8 @@
 
 using namespace RiRi;
 
-bool Internal::setValue(std::string_view key, const RapidDataType& value) noexcept {
-    return Internal::MemoryMap.insert({key, value}).second;
+bool Internal::setValue(std::string&& key, const RapidDataType& value) noexcept {
+    return Internal::MemoryMap.insert({std::move(key), value}).second;
 }
 
 
