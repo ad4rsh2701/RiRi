@@ -40,12 +40,19 @@ namespace RiRi::Internal {
     GO_AWAY extern ankerl::unordered_dense::map<
         std::string,
         RapidDataType,
-        ankerl::unordered_dense::hash<std::string>,
+        RapidHash,
         std::equal_to<>
     > MemoryMap;
     // Yes, I leveled up and am using ankerl::unordered_dense::map with hash and equality
     // functions for std::string, as intended. This allows us for fast lookups using std::string_view keys.
     // Previously, I just used ankerl::unordered_dense::map<std::string, std::string>, which was definitely not optimal.
+
+    // Levelled up AGAIN:
+    // Now using ankerl::unordered_dense::map<std::string, RapidDataType> with a custom hash and equality function.
+    // This allows us to store various types of data in the map, including strings, integers, doubles, and booleans.
+    // Why a custom hash and equality function?
+    // Because ankerl::unordered_dense::map does not support transparent hash and equality functions,
+    // and neither does clang's libc++.
 
 
 
@@ -68,7 +75,7 @@ namespace RiRi::Internal {
     GO_AWAY extern ankerl::unordered_dense::map<
         std::string,
         RapidCommandFn,
-        ankerl::unordered_dense::hash<std::string>,
+        RapidHash,
         std::equal_to<>
     > AuxCommandMap;
 

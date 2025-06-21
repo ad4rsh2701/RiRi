@@ -8,13 +8,13 @@ using namespace RiRi;
 ankerl::unordered_dense::map<
     std::string,
     RapidDataType,
-    ankerl::unordered_dense::hash<std::string>,
+    RapidHash,
     std::equal_to<>
 > Internal::MemoryMap = [] {
     ankerl::unordered_dense::map<
         std::string,
         RapidDataType,
-        ankerl::unordered_dense::hash<std::string>,
+        RapidHash,
         std::equal_to<>
     > map;
     map.reserve(DEFAULT_MEMORY_CAPACITY);
@@ -28,13 +28,13 @@ ankerl::unordered_dense::map<
 ankerl::unordered_dense::map<
     std::string,
     RapidCommandFn,
-    ankerl::unordered_dense::hash<std::string>,
+    RapidHash,
     std::equal_to<>
 > Internal::AuxCommandMap = [] {
     ankerl::unordered_dense::map<
         std::string,
         RapidCommandFn,
-        ankerl::unordered_dense::hash<std::string>,
+        RapidHash,
         std::equal_to<>
     > map;
     map.reserve(DEFAULT_COMMAND_CAPACITY);
