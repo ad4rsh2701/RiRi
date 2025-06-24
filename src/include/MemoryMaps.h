@@ -48,11 +48,11 @@ namespace RiRi::Internal {
     // Previously, I just used ankerl::unordered_dense::map<std::string, std::string>, which was definitely not optimal.
 
     // Levelled up AGAIN:
-    // Now using ankerl::unordered_dense::map<std::string, RapidDataType> with a custom hash and equality function.
+    // Now using ankerl::unordered_dense::map<std::string, RapidDataType> with a custom hash.
     // This allows us to store various types of data in the map, including strings, integers, doubles, and booleans.
-    // Why a custom hash and equality function?
-    // Because ankerl::unordered_dense::map does not support transparent hash and equality functions,
-    // and neither does clang's libc++.
+    // Why a custom hash?
+    // Because ankerl::unordered_dense::map does not support transparent hash "by default". You'd need to define a custom
+    // struct to enable heterogeneous lookup. More details here: https://github.com/martinus/unordered_dense/tree/main?tab=readme-ov-file#324-heterogeneous-overloads-using-is_transparent
 
 
 
