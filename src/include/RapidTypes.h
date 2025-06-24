@@ -50,22 +50,25 @@ GO_AWAY using RapidCommandFn = RiRi::Error::RiRiResult<std::string_view>(*)(cons
  * The `is_transparent` type is used to indicate that this hash function can be used with both `std::string` and `std::string_view` keys.
  * This is important, as `is_transparent` is not explicitly defined in the `ankerl::unordered_dense library` :(
  * 
- * I maybe wrong about that, but it doesn't seem to work without this workaround.
+ * I maybe wrong about that, but it doesn't seem to work without this workaround (I was wrong)
  * 
+ *EDIT: `ankerl` does support it, just not by default (unlike `unordered_map`), to enable heterogeneous lookup, you'd need to define a `struct` like this.
  * 
  * @param s A `std::string` to hash.
  * @param sv A `std::string_view` to hash.
  * @return The hash value as a `size_t`.
  * @note This is used in the `MemoryMap` and `AuxCommandMap` to allow fast lookups using both `std::string` and `std::string_view` keys.
+ * @note For more details refer: https://github.com/martinus/unordered_dense/tree/main?tab=readme-ov-file#324-heterogeneous-overloads-using-is_transparent
  */
 GO_AWAY struct RapidHash {
     using is_transparent = void;
+    using is_avalanching = void; // mark class as high quality avalanching hash
 
-    size_t operator()(const std::string& s) const noexcept {
+    [[nodiscard]] size_t operator()(const std::string& s) const noexcept {
         return ankerl::unordered_dense::hash<std::string>{}(s);
     }
 
-    size_t operator()(std::string_view sv) const noexcept {
+    [[nodiscard]] size_t operator()(std::string_view sv) const noexcept {
         return ankerl::unordered_dense::hash<std::string_view>{}(sv);
     }
 };
