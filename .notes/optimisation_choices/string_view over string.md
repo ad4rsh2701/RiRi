@@ -1,5 +1,11 @@
 # `std::string_view` over `std::string`: A surprisingly tricky optimization
 
+> ## OUTDATED & INCORRECT FACTS
+> This optimisation note is OUTDATED and presents some wrong facts, brought to light by external validation.
+>
+> However, the general opinion on `string_view` is still valid.
+> An update to this note is in the works.
+
 *I am still not sure whether my current version is the most optimal, that's how much there is to this optimization.*
 
 ## Context: The problem with `std::string`
