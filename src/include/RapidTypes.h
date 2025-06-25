@@ -7,6 +7,7 @@
 #include "RiRiMacros.h"
 #include "src/utils/RapidError.h"
 
+// I initially thought that creating this file would just be a bloat. But I guess, with great structs comes great responsibility.
 
 /**
  * @brief Represents a rapid data type that can hold various types of values.
@@ -72,3 +73,22 @@ GO_AWAY struct RapidHash {
         return ankerl::unordered_dense::hash<std::string_view>{}(sv);
     }
 };
+
+/**
+ * @brief Represents a key-value pair in the map.
+ * 
+ * This struct is used to store a key and its associated value.
+ * Used majorly during command parsing and command functions to represent a key-value pair.
+ *
+ * @param key The key as a `std::string_view`.
+ * @param value The value as a `RapidDataType`, which can be a string, integer, double, or boolean.
+ *  
+ * At this point, I feel like I am creating more and more structs, but anything for least possible memory usage, right?
+ */
+GO_AWAY struct RapidNode {
+    std::string_view key;
+    RapidDataType value;
+
+    constexpr RapidNode(std::string_view k, RapidDataType v)
+        : key(k), value(std::move(v)) {}
+} typedef node, field, kv;
