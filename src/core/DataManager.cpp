@@ -7,12 +7,12 @@ bool Internal::setValue(std::string&& key, const RapidDataType& value) noexcept 
 }
 
 
-std::optional<RapidDataType> Internal::getValue(std::string_view key) noexcept {
+const RapidDataType* Internal::getValue(std::string_view key) noexcept {
     auto it = Internal::MemoryMap.find(key);
     if (it == Internal::MemoryMap.end()) {
-        return std::nullopt;  // key not found
+        return nullptr;  // key not found
     }
-    return it->second;        // key found
+    return &it->second;      // key found
 }
 
 
@@ -30,13 +30,13 @@ bool Internal::updateValue(std::string_view key, const RapidDataType& newValue) 
 }
 
 
-std::optional<std::string_view> Internal::getKeyByValue(const RapidDataType& value) noexcept {
+const std::string* Internal::getKeyByValue(const RapidDataType& value) noexcept {
     for (const auto& [key, val] : Internal::MemoryMap) {
         if (val == value) {
-            return key; // Return the first key that matches
+            return &key; // Return the first key that matches
         }
     }
-    return std::nullopt; // No match found
+    return nullptr; // No match found
 }
 
 
