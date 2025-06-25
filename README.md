@@ -7,7 +7,7 @@ or simply **RiRi** :)
 ![Made with C++](https://img.shields.io/badge/Made_with-C++23-green)
 ![Compiler](https://img.shields.io/badge/compiler-clang++-blueviolet)
 ![Build](https://img.shields.io/badge/build-pending-lightgrey)  
-[![License](https://img.shields.io/badge/license-RRDL_v1-informational)](./LICENSE)
+[![License](https://img.shields.io/badge/license-RRDL_v1-informational)](./License.md)
 ![Last Commit](https://img.shields.io/github/last-commit/ad4rsh2701/RiRi)
 ![Contributors](https://img.shields.io/github/contributors/ad4rsh2701/RiRi)
 
