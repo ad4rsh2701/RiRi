@@ -8,6 +8,8 @@
 #include "../utils/RapidError.h"
 #include "../core/ankerl/unordered_dense.h"
 
+// I initially thought that creating this file would just be a bloat. But I guess, with great structs comes great responsibility.
+
 /**
  * @brief Represents a rapid data type that can hold various types of values.
  * 
@@ -28,15 +30,34 @@
 using RapidDataType = std::variant<std::string, int_fast64_t, double, bool>;
 
 
+/**
+ * @brief Represents a key-value pair in the map.
+ * 
+ * This struct is used to store a key and its associated value.
+ * Used majorly during command parsing and command functions to represent a key-value pair.
+ *
+ * @param key The key as a `std::string_view`.
+ * @param value The value as a `RapidDataType`, which can be a string, integer, double, or boolean.
+ *  
+ * At this point, I feel like I am creating more and more structs, but anything for least possible memory usage, right?
+ */
+GO_AWAY struct RapidNode {
+    std::string_view key;
+    RapidDataType value;
+
+    constexpr RapidNode(std::string_view k, RapidDataType v)
+        : key(k), value(std::move(v)) {}
+} typedef node, field, kv;
+
+
 /** 
  * @brief Type alias for a command function that takes a vector of string views as arguments and returns a result of type RiRiResult<std::string_view>.
  * 
  * Used to define the signature for RiRi command handlers.
- * @param args A vector of string views representing the command arguments.
+ * @param args A span of RapidNode or Key-Value pairs, representing the command arguments.
  * @note - The command name is expected to be stripped before calling these functions.
- * @note - Aliases: `RiRiCommandFn` for consistency with the existing codebase.
  */
-GO_AWAY using RapidCommandFn = RiRi::Error::RiRiResult<std::string_view>(*)(const std::span<std::string_view>);
+GO_AWAY using RapidCommandFn = RiRi::Error::RiRiResult<std::string_view>(*)(const std::span<RapidNode> args);
 
 
 /**

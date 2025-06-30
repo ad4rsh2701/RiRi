@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string_view>
-#include <optional>
 
 #include "RapidTypes.h"
 #include "RiRiMacros.h"
@@ -40,12 +39,11 @@ namespace RiRi::Internal {
      * @brief ### Retrieve the value associated with the key from the internal memory map.
      * 
      * @param key Type: `std::string_view`
-     * @return `RapidDataType value` or `std::nullopt`
+     * @return `RapidDataType*` or `nullptr`
      * 
-     * @note Returns the value associated with the key if it exists, `std::nullopt` otherwise.
-     * 
+     * @note Returns the value associated with the key if it exists, `nullptr` otherwise.
      */
-    GO_AWAY std::optional<RapidDataType> getValue(std::string_view key) noexcept;
+    GO_AWAY const RapidDataType* getValue(std::string_view key) noexcept;
     
     
     /**
@@ -71,12 +69,11 @@ namespace RiRi::Internal {
      * @brief ### Retrieve the key associated with the given value from the internal memory map.
      * 
      * @param value Type: `const RapidDataType&`
-     * @return `std::optional<std::string_view>` containing the key if found, `std::nullopt` otherwise.
-     * 
+     * @return `std::string*` containing the key if found, `nullptr` otherwise.
+     *
      * @warning This is a `slow linear search`. Only use in rare or non-performance-critical cases.
      */
-    GO_AWAY std::optional<std::string_view> getKeyByValue(const RapidDataType& value) noexcept;
-
+    GO_AWAY const std::string* getKeyByValue(const RapidDataType& value) noexcept;
 
     /**
      * @brief ### Clears all entries from the internal memory map.
