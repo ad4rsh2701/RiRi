@@ -4,7 +4,7 @@
 #include <expected>   // C++23: Like Rust's Result<T, E>
 #include <utility>    // for std::forward
 
-#include "src/include/RiRiMacros.h"  // For GO_AWAY macro
+#include "../include/RiRiMacros.h"  // For GO_AWAY macro
 
 /**
  * @brief ## INTERNAL ERROR SYSTEM
@@ -41,7 +41,7 @@ namespace RiRi::Error {
      * This function returns a string_view representing the error message
      * associated with the specified RiRiError.
      */
-    GO_AWAY std::string_view get_error_message(RiRiError error) noexcept {
+    GO_AWAY inline std::string_view get_error_message(RiRiError error) noexcept {
         switch (error) {
             case RiRiError::Success:
                 return "Success";

@@ -5,8 +5,8 @@
 #include <span>
 
 #include "RiRiMacros.h"
-#include "src/utils/RapidError.h"
-
+#include "../utils/RapidError.h"
+#include "../core/ankerl/unordered_dense.h"
 
 /**
  * @brief Represents a rapid data type that can hold various types of values.
