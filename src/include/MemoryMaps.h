@@ -18,7 +18,7 @@
  * 
  * - If you want to use `ankerl::unordered_dense::map`, please use it in your own code by including the appropriate headers (found [here](https://github.com/martinus/unordered_dense/blob/main/include/ankerl/unordered_dense.h)).
  * 
- * - If you really want to break something, go ahead or you can just use the public API, which is much safer and more stable.
+ * - If you really want to break something, go ahead, or you can just use the public API, which is much safer and more stable.
  * 
  * - Or you can create a fork of RiRi (here: https://github.com/ad4rsh2701/riri) and modify it as you wish.
  * 
@@ -43,7 +43,7 @@ namespace RiRi::Internal {
         RapidHash,
         std::equal_to<>
     > MemoryMap;
-    // Yes, I leveled up and am using ankerl::unordered_dense::map with hash and equality
+    // Yes, I leveled up, and I am using ankerl::unordered_dense::map with hash and equality
     // functions for std::string, as intended. This allows us for fast lookups using std::string_view keys.
     // Previously, I just used ankerl::unordered_dense::map<std::string, std::string>, which was definitely not optimal.
 
