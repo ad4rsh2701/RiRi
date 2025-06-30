@@ -17,7 +17,7 @@
  * If you really want to break something, go ahead.
  * But don't say I didn't warn you.
  * 
- * Or you can just use the public API, which is much safer and more stable.
+ * Or you can use the public API, which is much safer and more stable.
  * 
  * Or you can create a fork of RiRi (here: https://github.com/ad4rsh2701/riri) and modify it as you wish.
  */
@@ -32,7 +32,7 @@ namespace RiRi::Internal {
      * 
      * @note Returns `true` if the key-value pair was successfully inserted, `false` if the key already exists or the insertion failed (very unlikely).
      */
-    GO_AWAY bool setValue(std::string&& key, const RapidDataType& value) noexcept;
+    GO_AWAY bool setValue(std::string&& key, RapidDataType&& value) noexcept;
 
 
     /**
@@ -62,7 +62,7 @@ namespace RiRi::Internal {
      * @param newValue Type: `RapidDataType`
      * @return `true` if the key was found and updated, `false` if the key did not exist.
      */
-    GO_AWAY bool updateValue(std::string_view key, const RapidDataType& newValue) noexcept;
+    GO_AWAY bool updateValue(std::string_view key, RapidDataType&& newValue) noexcept;
 
 
     /**
@@ -71,9 +71,9 @@ namespace RiRi::Internal {
      * @param value Type: `const RapidDataType&`
      * @return `std::string*` containing the key if found, `nullptr` otherwise.
      *
-     * @warning This is a `slow linear search`. Only use in rare or non-performance-critical cases.
+     * @warning This is a `slow linear search`. Only used in rare or non-performance-critical cases.
      */
-    GO_AWAY const std::string* getKeyByValue(const RapidDataType& value) noexcept;
+    GO_AWAY const std::string* getKeyByValue(RapidDataType&& value) noexcept;
 
     /**
      * @brief ### Clears all entries from the internal memory map.

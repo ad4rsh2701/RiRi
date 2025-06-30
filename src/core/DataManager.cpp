@@ -2,13 +2,13 @@
 
 using namespace RiRi;
 
-bool Internal::setValue(std::string&& key, const RapidDataType& value) noexcept {
+bool Internal::setValue(std::string&& key, RapidDataType&& value) noexcept {
     return Internal::MemoryMap.insert({std::move(key), value}).second;
 }
 
 
-const RapidDataType* Internal::getValue(std::string_view key) noexcept {
-    auto it = Internal::MemoryMap.find(key);
+const RapidDataType* Internal::getValue(const std::string_view key) noexcept {
+    const auto it = Internal::MemoryMap.find(key);
     if (it == Internal::MemoryMap.end()) {
         return nullptr;  // key not found
     }
@@ -16,21 +16,21 @@ const RapidDataType* Internal::getValue(std::string_view key) noexcept {
 }
 
 
-bool Internal::deleteKey(std::string_view key) noexcept {
+bool Internal::deleteKey(const std::string_view key) noexcept {
     return Internal::MemoryMap.erase(key) > 0;  // returns true if the key was found and erased else false
 }
 
 
-bool Internal::updateValue(std::string_view key, const RapidDataType& newValue) noexcept {
-    auto it = Internal::MemoryMap.find(key);
+bool Internal::updateValue(const std::string_view key, RapidDataType&& newValue) noexcept {
+    const auto it = Internal::MemoryMap.find(key);
     if (it == Internal::MemoryMap.end()) return false;  // key not found
 
-    it->second = newValue;      // update the value associated with the key
+    it->second = std::move(newValue);      // update the value associated with the key
     return true;
 }
 
 
-const std::string* Internal::getKeyByValue(const RapidDataType& value) noexcept {
+const std::string* Internal::getKeyByValue(RapidDataType&& value) noexcept {
     for (const auto& [key, val] : Internal::MemoryMap) {
         if (val == value) {
             return &key; // Return the first key that matches
