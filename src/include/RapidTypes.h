@@ -5,7 +5,8 @@
 #include <span>
 
 #include "RiRiMacros.h"
-#include "src/utils/RapidError.h"
+#include "../utils/RapidError.h"
+#include "../core/ankerl/unordered_dense.h"
 
 // I initially thought that creating this file would just be a bloat. But I guess, with great structs comes great responsibility.
 

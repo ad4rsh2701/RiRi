@@ -4,7 +4,7 @@
 
 #include "RapidTypes.h"
 #include "RiRiMacros.h"
-#include "src/include/MemoryMaps.h"
+#include "MemoryMaps.h"
 
 /**
  * @brief ### WARNING: INTERNAL ZONE

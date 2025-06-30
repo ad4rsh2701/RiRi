@@ -3,9 +3,9 @@
 #include <variant>
 #include <string_view>
 
-#include "src/include/RapidTypes.h"
-#include "ankerl/unordered_dense.h"
-#include "src/include/RiRiMacros.h"
+#include "RapidTypes.h"
+#include "../core/ankerl/unordered_dense.h"
+#include "RiRiMacros.h"
 
 
 /**
