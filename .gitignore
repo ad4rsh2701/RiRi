@@ -12,6 +12,7 @@
 
 # IDE files (for VS Code or other editors)
 .vscode/
+.idea/
 
 # MacOS system files
 .DS_Store
