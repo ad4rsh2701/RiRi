@@ -14,7 +14,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 add_executable(riri
-        src/cli/main.cpp
+        src/cli/Main.cpp
         src/core/Commands.cpp
         src/core/MemoryMaps.cpp
         src/core/DataManager.cpp
@@ -30,7 +30,7 @@ target_compile_definitions(riri PRIVATE
 target_include_directories(riri PRIVATE
         ${CMAKE_SOURCE_DIR}/src/include
         ${CMAKE_SOURCE_DIR}/src/utils
-        #${CMAKE_SOURCE_DIR}/include/riri/
+        ${CMAKE_SOURCE_DIR}/include/riri/
 )
 
 target_compile_options(riri PRIVATE ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}})
