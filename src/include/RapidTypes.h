@@ -45,7 +45,7 @@ GO_AWAY struct RapidNode {
     std::string_view key;
     RapidDataType value;
 
-    constexpr RapidNode(std::string_view k, RapidDataType v)
+    constexpr RapidNode(const std::string_view k, RapidDataType v)
         : key(k), value(std::move(v)) {}
 } typedef node, field, kv;
 
@@ -71,7 +71,7 @@ GO_AWAY using RapidCommandFn = RiRi::Error::RiRiResult<std::string_view>(*)(cons
  * The `is_transparent` type is used to indicate that this hash function can be used with both `std::string` and `std::string_view` keys.
  * This is important, as `is_transparent` is not explicitly defined in the `ankerl::unordered_dense library` :(
  * 
- * I maybe wrong about that, but it doesn't seem to work without this workaround (I was wrong)
+ * I am maybe wrong about that, but it doesn't seem to work without this workaround (I was wrong)
  * 
  *EDIT: `ankerl` does support it, just not by default (unlike `unordered_map`), to enable heterogeneous lookup, you'd need to define a `struct` like this.
  * 
