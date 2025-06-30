@@ -1,6 +1,7 @@
 # CMake generated files
 /CMakeLists.txt.user
 /CMakeCache.txt
+/cmake-build-debug-clang
 /build/
 *.exe
 *.o
