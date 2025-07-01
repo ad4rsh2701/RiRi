@@ -73,7 +73,7 @@ namespace RiRi::Internal {
      *
      * @warning This is a `slow linear search`. Only used in rare or non-performance-critical cases.
      */
-    GO_AWAY const std::string* getKeyByValue(RapidDataType&& value) noexcept;
+    GO_AWAY const std::string* getKeyByValue(const RapidDataType& value) noexcept;
 
     /**
      * @brief ### Clears all entries from the internal memory map.

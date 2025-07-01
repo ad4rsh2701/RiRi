@@ -30,7 +30,7 @@ bool Internal::updateValue(const std::string_view key, RapidDataType&& newValue)
 }
 
 
-const std::string* Internal::getKeyByValue(RapidDataType&& value) noexcept {
+const std::string* Internal::getKeyByValue(const RapidDataType& value) noexcept {
     for (const auto& [key, val] : Internal::MemoryMap) {
         if (val == value) {
             return &key; // Return the first key that matches
