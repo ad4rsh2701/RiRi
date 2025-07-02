@@ -1,8 +1,9 @@
-// Compiler: The project is built with Clang C++.
+// Compiler: The project is built with Clang C++ ONLY.
+
+// Feel free to try compiling with other compilers (if you are a masochist).
 
 // This header defines macros used throughout RiRi.
 // Must be included before any use of RIRI_API or GO_AWAY.
-// Safe to include multiple times (uses #pragma once).
 
 #pragma once
 
@@ -43,3 +44,8 @@
 #else
   #define RIRI_DEV_LOG(...)
 #endif
+
+// =======================
+// Force Inlining
+// =======================
+#define GET_INLINE_PLEASE inline __attribute__((always_inline))
