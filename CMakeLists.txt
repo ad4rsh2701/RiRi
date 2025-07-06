@@ -13,6 +13,36 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
 
+set(PUBLIC_HEADERS
+        include/riri/Commands.hpp    # Public API
+        include/riri/RiRi.hpp        # Public API
+)
+
+set(PRIVATE_HEADERS
+        src/include/DataManager.h    # Internal implementation
+        src/include/MemoryMaps.h     # Internal implementation
+        src/include/RapidTypes.h     # Internal implementation
+        src/include/RiRiMacros.h     # Internal implementation
+)
+
+set(SEMI_PRIVATE_HEADERS
+        src/utils/RapidResponse.hpp
+        src/utils/helpers/status_to_string.hpp
+)
+
+# Install structure
+install(FILES ${PUBLIC_HEADERS}
+        DESTINATION include/riri
+)
+
+install(FILES ${SEMI_PRIVATE_HEADERS}
+        DESTINATION include/riri/utils
+)
+
+install(FILES ${PRIVATE_HEADERS}
+        DESTINATION include/riri/internal   # GO_AWAY zone
+)
+
 add_executable(riri
         src/cli/Main.cpp
         src/core/Commands.cpp
