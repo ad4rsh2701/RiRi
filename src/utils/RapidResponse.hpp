@@ -189,7 +189,7 @@ namespace RiRi::Response {
          * to `ERR_MULTIPLE_OPERATIONS_FAILED` if needed.
          * @return True if the number of failures exceeds or equals the capacity, otherwise false.
          */
-        constexpr bool isOverflow() noexcept {
+        constexpr bool handleOverflow() noexcept {
             if (failure_count >= capacity) {
                 OverallCode = StatusCode::ERR_MULTIPLE_OPERATIONS_FAILED;
                 return true;
@@ -208,12 +208,15 @@ namespace RiRi::Response {
          * @param error_code : The error code concerning the operation target.
          */
         void addFailure(std::string_view operation_target, StatusCode error_code) noexcept {
-            if (isOverflow()) return;
+            if (handleOverflow()) return;
 
             // A very neat use of `new` (I was not expecting this).
             // Basically, we are "constructing" the pair at the `failures` position (`failure_count`).
             // Oh and yes, the memory is properly aligned and pre-allocated.
             new(&failures[failure_count]) std::pair{operation_target, error_code};
+
+            // And update the OverallCode to ERR_SOME_OPERATIONS_FAILED (406) as well.
+            OverallCode = StatusCode::ERR_SOME_OPERATIONS_FAILED;
 
             ++failure_count;
         }
@@ -248,3 +251,5 @@ namespace RiRi::Response {
 // DEV NOTE: inside the `RapidResponseFull` struct, under the `addFailure()` functions, I think it should modify the
 // overall code to `ERR_SOME_OPERATIONS_FAILED` if no overflow too, but I am not too sure how this will work out yet,
 // but implementing command layers next should give a better idea (oh wait the reader helpers remain too, F).
+// Update: Yes, it should, let's not introduce complexity over at other layers, let this layer handle the 90% responses.
+// Yes, this reduces customizability, but RiRi is open source... modify and compile it yourself???
