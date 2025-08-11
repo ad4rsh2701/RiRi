@@ -5,10 +5,9 @@
 #include <span>
 
 #include "RiRiMacros.h"
-#include "../utils/RapidError.h"
 #include "../core/ankerl/unordered_dense.h"
 
-// I initially thought that creating this file would just be a bloat. But I guess, with great structs comes great responsibility.
+// I initially thought that creating this file would just be a bloat. But I guess with great structs comes great responsibility.
 
 /**
  * @brief Represents a rapid data type that can hold various types of values.
@@ -51,13 +50,14 @@ GO_AWAY struct RapidNode {
 
 
 /** 
- * @brief Type alias for a command function that takes a vector of string views as arguments and returns a result of type RiRiResult<std::string_view>.
+ * @brief Type alias for a command function that takes a vector of string views as arguments.
  * 
  * Used to define the signature for RiRi command handlers.
  * @param args A span of RapidNode or Key-Value pairs, representing the command arguments.
  * @note - The command name is expected to be stripped before calling these functions.
  */
-GO_AWAY using RapidCommandFn = RiRi::Error::RiRiResult<std::string_view>(*)(const std::span<RapidNode> args);
+template <typename Response>
+GO_AWAY using RapidCommandFn = Response(*)(std::span<RapidNode> args);
 
 
 /**
@@ -83,13 +83,13 @@ GO_AWAY using RapidCommandFn = RiRi::Error::RiRiResult<std::string_view>(*)(cons
  */
 GO_AWAY struct RapidHash {
     using is_transparent = void;
-    using is_avalanching = void; // mark class as high quality avalanching hash
+    using is_avalanching = void; // mark class as high-quality avalanching hash
 
     [[nodiscard]] size_t operator()(const std::string& s) const noexcept {
         return ankerl::unordered_dense::hash<std::string>{}(s);
     }
 
-    [[nodiscard]] size_t operator()(std::string_view sv) const noexcept {
+    [[nodiscard]] size_t operator()(const std::string_view sv) const noexcept {
         return ankerl::unordered_dense::hash<std::string_view>{}(sv);
     }
 };
