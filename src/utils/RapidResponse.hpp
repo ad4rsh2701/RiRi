@@ -16,7 +16,7 @@ static constexpr size_t TRACKING_CAPACITY = 8;
  *
  * - This single header handles/defines how RiRi responds to the end user when called.
  * - Response may either signify success or failure or their derivatives.
- * - This file can be used independently, in other systems if you know how to (and are desperate).
+ * - This file can be used independently in other systems if you know how to (and are desperate).
  *
  * @warning DO NOT use this header file unless you know what you are doing.
  * @note If you know what you are doing, then you may use this file to build on top RiRi's internals, go wild.
@@ -34,7 +34,7 @@ namespace RiRi::Response {
      * - CORE ERROR CODES (400-499): Represent errors related to core functionalities, such as missing keys or invalid arguments.
      * - GENERAL ERROR CODES (500-599): Represent parser, persistence, thread or other level issues, such as invalid input or argument counts.
      */
-    enum class StatusCode : std::uint8_t {
+    enum class StatusCode : std::uint16_t {
         // SUCCESS CODES (0-99)
         OK = 0, // Covers 90% of the use case, I guess?
             // Will add more as I see fit.
@@ -47,7 +47,7 @@ namespace RiRi::Response {
             // We might need warning codes, and a lot of them.
 
         // BUFFER RANGE (300-399)
-            // In case warning codes or anything else from above need more codes, though I doubt it, but still.
+            // In case warning codes or anything else from above needs more codes, though I doubt it, but still.
 
         // CORE ERROR CODES (400-499)
         ERR_KEY_STORE_FULL = 400,               // COMMAND LEVEL
@@ -160,7 +160,7 @@ namespace RiRi::Response {
 
         /// A fixed blob or block of memory, which stores `ErrorEntryType` objects.
         alignas(ErrorEntryType)
-        std::byte ERROR_STORE[TRACKING_CAPACITY * sizeof(ErrorEntryType)];
+        std::byte ERROR_STORE[TRACKING_CAPACITY * sizeof(ErrorEntryType)]{};
 
         /// Pointer that will track error entries, initialized in constructor to point to ERROR_STORE
         ErrorEntryType *failures = nullptr;     // Aptly name
@@ -171,7 +171,7 @@ namespace RiRi::Response {
         RapidResponseFull() noexcept {
             // Pointer now points to the ERROR_STORE and will move by `ErrorEntryType`
             failures = reinterpret_cast<ErrorEntryType*>(ERROR_STORE);
-            // "Good Programming Principles," they said, "it will be less repetitive", they said.
+            // "Good Programming Principles," they said, "it will be less repetitive," they said.
             capacity = TRACKING_CAPACITY;
         }
 
