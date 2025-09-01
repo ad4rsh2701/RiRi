@@ -5,9 +5,13 @@
 #include <utility>
 #include <new>
 
+#include "../include/RapidTypes.h"
 
 /// This constant defines the number of errors to be tracked
 static constexpr size_t TRACKING_CAPACITY = 8;
+
+/// This constant defines the number of ValueOrStatus entries to be tracked
+static constexpr size_t VALUE_TRACKING_CAPACITY = 16;
 
 /**
  * @brief RiRi's custom response system
@@ -150,10 +154,10 @@ namespace RiRi::Response {
          * targets; more specifically, the target is the parameter that distinguishes or makes the said
          * operation "identifiable".
          *
-         * For instance, the following could be how one may get the response when trying to fetch multiple keys
+         * For instance, the following could be how one may get the response when trying to delete multiple keys
          * which don't exist in the map:
-         * - `key3: KEY_NOT_FOUND`
-         * - `key7: KEY_NOT_FOUND`
+         * - `key3: ERR_KEY_NOT_FOUND`
+         * - `key7: ERR_KEY_NOT_FOUND`
          */
         using ErrorEntryType = std::pair<std::string_view, StatusCode>;
 
@@ -245,6 +249,86 @@ namespace RiRi::Response {
         constexpr auto end() const noexcept { return failures + failure_count; }
 
         // you're welcome for the iterators.
+    };
+
+    /**
+     * @brief Represents a value-returning response structure to track individual values and error
+     * status codes when a command operates on multiple inputs or when multiple errors/values need
+     * to be reported together.
+     *
+     * The `RapidResponseValue` struct functionality is largely similar to `RapidResponseFull` but
+     * with the following changes:
+     * - `EntryType` is a pair of `string_view` and either `StatusCode` or `RapidDataType*`
+     * - The default tracking (or value-returning capacity statically) is 16.
+     * - If `addFailure` or `addValue` is called beyond the static capacity, a vector is initialized
+     * which will further track the remaining entries dynamically (static overflow -> fallback to dynamic alloc).
+     * - If dynamic alloc occurs, the static STORE and the vector are chained and returned.
+     *
+     * An example of a stored response containing a value and StatusCode:
+     * [{"key2", "val2"}, {"key3", StatusCode::KEY_NOT_FOUND}, {...}, ...]
+     *
+    * @note Regardless of the size of the static blob, the entirety of requested values (or StatusCode)
+    * will be returned, nothing will be dropped.
+     */
+    struct RapidResponseValue{
+
+        /// The overall status code defaulted to `OK`. If errors, changes to `ERR_SOME_OPERATIONS_FAILED`
+        StatusCode OverallCode = StatusCode::OK;
+
+        /// Either `Value` or `StatusCode` will be returned per fetch request
+        using ValueOrStatus = std::variant<RapidDataType*, StatusCode>;
+
+        /**
+         * @brief Represents each OPERATIONS_TARGET-VALUE_OR_STATUS pair; this is how RiRi will carry
+         * individual return values (or StatusCode in case of errors) for each operation target.
+         *
+         *  For instance, the following could be how one may get the response when trying to fetch multiple
+         *  keys which may or may not exist in the map:
+         * - `Key1: Val1`
+         * - `Key2: ERR_KEY_NOT_FOUND`
+         * - `Key3: Val3`
+         */
+        using EntryType = std::pair<std::string_view, ValueOrStatus>;
+
+        /// A fixed blob or block of memory, which stores `EntryType` objects.
+        alignas(EntryType)
+        std::byte STORE[sizeof(EntryType)*VALUE_TRACKING_CAPACITY]{};
+
+        /// Pointer that will track entries, initialized in constructor to point to STORE
+        EntryType *entries = nullptr;
+
+        std::uint8_t entry_count = 0;
+        std::uint8_t capacity = 0;
+
+        RapidResponseValue() noexcept: capacity(VALUE_TRACKING_CAPACITY) {
+            // Pointer now points to the ERROR_STORE and will move by `ErrorEntryType`
+            entries = reinterpret_cast<EntryType *>(STORE);
+            // *insert shrug here*
+        }
+
+        /**
+         * @brief Checks whether the overall status code is `StatusCode::OK`.
+         * @return True if the overall status code is `StatusCode::OK`, otherwise false.
+         */
+        constexpr bool ok() const noexcept {
+            return OverallCode == StatusCode::OK;
+        }
+
+        // placeholder handleOverflow function for now
+        constexpr bool handleOverflow() const noexcept {
+            if (entry_count >= capacity) {
+                // TODO: Dynamically allocate entries to a vector
+                return true;
+            }
+            return false;
+        }
+
+        // TODO: INSTEAD OF ONE FUNCTION, make it TWO functions addValue, addFailure/addStatus (CPU will love you)
+        // PLACEHOLDER function
+        void add(std::string_view operation_target, std::variant<RapidDataType*, StatusCode> entry) noexcept {
+            new(&entries[entry_count]) std::pair{operation_target, entry};
+            ++entry_count;
+        }
     };
 }
 
