@@ -323,13 +323,6 @@ namespace RiRi::Response {
             return false;
         }
 
-        // TODO: INSTEAD OF ONE FUNCTION, make it TWO functions addValue, addFailure/addStatus (CPU will love you)
-        // PLACEHOLDER function
-        void add(std::string_view operation_target, std::variant<RapidDataType*, StatusCode> entry) noexcept {
-            new(&entries[entry_count]) std::pair{operation_target, entry};
-            ++entry_count;
-        }
-
         /**
          * @brief Adds a OPERATION_TARGET-VALUE pair to the Response's memory blob.
          *
