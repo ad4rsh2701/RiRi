@@ -348,6 +348,23 @@ namespace RiRi::Response {
             new(&entries[entry_count]) std::pair{operation_target, entry};
             ++entry_count;
         }
+
+        /**
+         * @brief Adds a OPERATION_TARGET-STATUS_CODE pair to the Response's memory blob.
+         * @param operation_target : The target of an operation or an operation itself
+         * @param status_code : The value concerning the target
+         */
+        void addStatus(std::string_view operation_target, StatusCode status_code) noexcept {
+            // shrugieeee
+            OverallCode = StatusCode::ERR_SOME_OPERATIONS_FAILED;
+
+            // Is the overflow handled, if any? (if overflowed, start dynamic allocation)
+            if (handleOverflow()) return;
+
+            // Construct OPERATION_TARGET-STATUS_CODE in STORE at entry_count.
+            new(&entries[entry_count]) std::pair{operation_target, status_code};
+            ++entry_count;
+        }
     };
 }
 
