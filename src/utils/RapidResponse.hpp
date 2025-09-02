@@ -329,6 +329,25 @@ namespace RiRi::Response {
             new(&entries[entry_count]) std::pair{operation_target, entry};
             ++entry_count;
         }
+
+        /**
+         * @brief Adds a OPERATION_TARGET-VALUE pair to the Response's memory blob.
+         *
+         * @param operation_target : The target of an operation or an operation itself.
+         * @param entry : The value concerning the target.
+         */
+        void addValue(std::string_view operation_target, RapidDataType* entry) noexcept {
+            // We are going to update the OverallCode early, since this is the only error
+            // code this function can return.
+            OverallCode = StatusCode::ERR_SOME_OPERATIONS_FAILED;
+
+            // Is the overflow handled, if any? (if overflowed, start dynamic allocation)
+            if (handleOverflow()) return;
+
+            // Construct OPERATION_TARGET-VALUE in STORE at entry_count.
+            new(&entries[entry_count]) std::pair{operation_target, entry};
+            ++entry_count;
+        }
     };
 }
 
