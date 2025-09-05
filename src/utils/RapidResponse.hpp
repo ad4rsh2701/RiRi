@@ -332,7 +332,9 @@ namespace RiRi::Response {
         void addValue(std::string_view operation_target, RapidDataType* entry) noexcept {
             // We are going to update the OverallCode early, since this is the only error
             // code this function can return.
-            OverallCode = StatusCode::ERR_SOME_OPERATIONS_FAILED;
+            // Update: We don't need to update the status code at all. This is the "OK" case,
+            // which is the default status code.
+            // OverallCode = StatusCode::ERR_SOME_OPERATIONS_FAILED;
 
             // Is the overflow handled, if any? (if overflowed, start dynamic allocation)
             if (handleOverflow()) return;
