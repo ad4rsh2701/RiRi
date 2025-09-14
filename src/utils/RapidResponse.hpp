@@ -162,34 +162,34 @@ namespace RiRi::Response {
 
         RapidResponseFull() noexcept {
             // Pointer now points to the ERROR_STORE and will move by `ErrorEntryType`
-            failures = reinterpret_cast<ErrorEntryType*>(ERROR_STORE);
+            _failures = reinterpret_cast<ErrorEntryType*>(_error_store);
             // "Good Programming Principles," they said, "it will be less repetitive," they said.
-            capacity = TRACKING_CAPACITY;
+            _capacity = TRACKING_CAPACITY;
         }
 
 
     private:
 
         /// The overall status code defaulted to OK; if it stays OK, you are fine (probably).
-        StatusCode OverallCode = StatusCode::OK;
+        StatusCode _overall_code = StatusCode::OK;
 
         /// A fixed blob or block of memory, which stores `ErrorEntryType` objects.
         alignas(ErrorEntryType)
-        std::byte ERROR_STORE[TRACKING_CAPACITY * sizeof(ErrorEntryType)]{};
+        std::byte _error_store[TRACKING_CAPACITY * sizeof(ErrorEntryType)]{};
 
         /// Pointer that will track error entries, initialized in constructor to point to ERROR_STORE
-        ErrorEntryType *failures = nullptr;     // Aptly name
+        ErrorEntryType *_failures = nullptr;     // Aptly named
 
-        std::uint8_t failure_count = 0;
-        std::uint8_t capacity = 0;
+        std::uint8_t _failure_count = 0;
+        std::uint8_t _capacity = 0;
         /**
          * @brief Checks if the number of failures has exceeded the specified capacity and modifies the `OverallCode`
          * to `ERR_MULTIPLE_OPERATIONS_FAILED` if needed.
          * @return True if the number of failures exceeds or equals the capacity, otherwise false.
          */
-        constexpr bool handleOverflow() noexcept {
-            if (failure_count >= capacity) {
-                OverallCode = StatusCode::ERR_MULTIPLE_OPERATIONS_FAILED;
+        constexpr bool handle_overflow() noexcept {
+            if (_failure_count >= _capacity) {
+                _overall_code = StatusCode::ERR_MULTIPLE_OPERATIONS_FAILED;
                 return true;
             }
             return false;
@@ -205,17 +205,17 @@ namespace RiRi::Response {
          * @param error_code : The error code concerning the operation target.
          */
         void addFailure(std::string_view operation_target, StatusCode error_code) noexcept {
-            if (handleOverflow()) return;
+            if (handle_overflow()) return;
 
             // A very neat use of `new` (I was not expecting this).
             // Basically, we are "constructing" the pair at the `failures` position (`failure_count`).
             // Oh and yes, the memory is properly aligned and pre-allocated.
-            new(&failures[failure_count]) std::pair{operation_target, error_code};
+            new(&_failures[_failure_count]) std::pair{operation_target, error_code};
 
             // And update the OverallCode to ERR_SOME_OPERATIONS_FAILED (406) as well.
-            OverallCode = StatusCode::ERR_SOME_OPERATIONS_FAILED;
+            _overall_code = StatusCode::ERR_SOME_OPERATIONS_FAILED;
 
-            ++failure_count;
+            ++_failure_count;
         }
 
         /**
@@ -223,7 +223,7 @@ namespace RiRi::Response {
          * @return True if the overall status code is `StatusCode::OK`, otherwise false.
          */
         constexpr bool ok() const noexcept {
-            return OverallCode == StatusCode::OK;
+            return _overall_code == StatusCode::OK;
         }
 
         /**
@@ -231,8 +231,8 @@ namespace RiRi::Response {
          * setting the overall status code to `StatusCode::OK`.
          */
         constexpr void reset() noexcept {
-            failure_count = 0;
-            OverallCode = StatusCode::OK;
+            _failure_count = 0;
+            _overall_code = StatusCode::OK;
 
             // No destructors needed since we only hold trivially destructible types
         }
@@ -241,13 +241,13 @@ namespace RiRi::Response {
          * @brief Provides a constant iterator pointing to the beginning of the `failures` collection.
          * @return A pointer to the first error entry in the failure collection.
          */
-        constexpr auto begin() const noexcept { return failures; }
+        constexpr auto begin() const noexcept { return _failures; }
 
         /**
          * @brief Provides a constant iterator pointing to the end of the `failures` collection.
          * @return A pointer to one past the last error entry in the failure collection.
          */
-        constexpr auto end() const noexcept { return failures + failure_count; }
+        constexpr auto end() const noexcept { return _failures + _failure_count; }
 
         // you're welcome for the iterators.
     };
