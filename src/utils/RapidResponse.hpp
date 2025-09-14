@@ -227,6 +227,14 @@ namespace RiRi::Response {
         }
 
         /**
+         * @brief Getter to return the overall status code
+         * @return _overall_code
+         */
+        constexpr StatusCode code() const noexcept {
+            return _overall_code;
+        }
+
+        /**
          * @brief Resets the RapidResponseFull state by clearing the failure count and
          * setting the overall status code to `StatusCode::OK`.
          */
