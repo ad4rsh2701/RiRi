@@ -28,7 +28,7 @@ static constexpr size_t VALUE_TRACKING_CAPACITY = 16;
 namespace RiRi::Response {
     /**
      * @brief Represents various status codes for responses within the RapidResponse framework.
-     *
+     *x
      * Status codes are categorized into multiple ranges based on their meanings:
      *
      * - SUCCESS CODES (0-99): Indicate successful operations.
@@ -140,9 +140,8 @@ namespace RiRi::Response {
      *
      *  Made with agony for the 10% use cases :D
      */
-    struct RapidResponseFull {
-        /// The overall status code defaulted to OK; if it stays OK, you are fine (probably).
-        StatusCode OverallCode = StatusCode::OK;
+    class RapidResponseFull {
+    public:
 
         // "No silly names yet?", Hey! I am trying to implement good coding habits okay
         // It's called self-explainable code, don't laugh... or ykw, here, a doc-string too, just in case
@@ -161,6 +160,18 @@ namespace RiRi::Response {
          */
         using ErrorEntryType = std::pair<std::string_view, StatusCode>;
 
+        RapidResponseFull() noexcept {
+            // Pointer now points to the ERROR_STORE and will move by `ErrorEntryType`
+            failures = reinterpret_cast<ErrorEntryType*>(ERROR_STORE);
+            // "Good Programming Principles," they said, "it will be less repetitive," they said.
+            capacity = TRACKING_CAPACITY;
+        }
+
+
+    private:
+
+        /// The overall status code defaulted to OK; if it stays OK, you are fine (probably).
+        StatusCode OverallCode = StatusCode::OK;
 
         /// A fixed blob or block of memory, which stores `ErrorEntryType` objects.
         alignas(ErrorEntryType)
@@ -171,23 +182,6 @@ namespace RiRi::Response {
 
         std::uint8_t failure_count = 0;
         std::uint8_t capacity = 0;
-
-        RapidResponseFull() noexcept {
-            // Pointer now points to the ERROR_STORE and will move by `ErrorEntryType`
-            failures = reinterpret_cast<ErrorEntryType*>(ERROR_STORE);
-            // "Good Programming Principles," they said, "it will be less repetitive," they said.
-            capacity = TRACKING_CAPACITY;
-        }
-
-        /**
-         * @brief Checks whether the overall status code is `StatusCode::OK`.
-         * @return True if the overall status code is `StatusCode::OK`, otherwise false.
-         */
-        constexpr bool ok() const noexcept {
-            return OverallCode == StatusCode::OK;
-        }
-
-
         /**
          * @brief Checks if the number of failures has exceeded the specified capacity and modifies the `OverallCode`
          * to `ERR_MULTIPLE_OPERATIONS_FAILED` if needed.
@@ -201,9 +195,8 @@ namespace RiRi::Response {
             return false;
         }
 
-
+    public:
         // At this point, everything should be very self-explainable.
-
         /**
          * @brief Adds a OPERATION_TARGET-STATUS_CODE pair to the Response's memory blob,
          * only if there is no overflow.
@@ -223,6 +216,14 @@ namespace RiRi::Response {
             OverallCode = StatusCode::ERR_SOME_OPERATIONS_FAILED;
 
             ++failure_count;
+        }
+
+        /**
+         * @brief Checks whether the overall status code is `StatusCode::OK`.
+         * @return True if the overall status code is `StatusCode::OK`, otherwise false.
+         */
+        constexpr bool ok() const noexcept {
+            return OverallCode == StatusCode::OK;
         }
 
         /**
@@ -250,6 +251,7 @@ namespace RiRi::Response {
 
         // you're welcome for the iterators.
     };
+
 
     /**
      * @brief Represents a value-returning response structure to track individual values and error
@@ -339,7 +341,7 @@ namespace RiRi::Response {
             // Is the overflow handled, if any? (if overflowed, start dynamic allocation)
             if (handleOverflow()) return;
 
-            // Construct OPERATION_TARGET-VALUE in STORE at entry_count.
+            // Construct OPERATION_TARGET-VALUE in STORE at entry_count.5
             new(&entries[entry_count]) std::pair{operation_target, entry};
             ++entry_count;
         }
