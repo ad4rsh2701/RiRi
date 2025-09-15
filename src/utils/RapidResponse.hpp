@@ -306,17 +306,26 @@ namespace RiRi::Response {
 
     private:
         /// The overall status code defaulted to `OK`. If errors, changes to `ERR_SOME_OPERATIONS_FAILED`
-        StatusCode OverallCode = StatusCode::OK;
+        StatusCode _overall_code = StatusCode::OK;
 
         /// A fixed blob or block of memory, which stores `EntryType` objects.
         alignas(EntryType)
-        std::byte STORE[sizeof(EntryType)*VALUE_TRACKING_CAPACITY]{};
+        std::byte _store[sizeof(EntryType)*VALUE_TRACKING_CAPACITY]{};
 
         /// Pointer that will track entries, initialized in constructor to point to STORE
-        EntryType *entries = nullptr;
+        EntryType *_entries = nullptr;
 
-        std::uint8_t entry_count = 0;
-        std::uint8_t capacity = 0;
+        std::uint8_t _entry_count = 0;
+        std::uint8_t _capacity = 0;
+
+        // placeholder handleOverflow function for now
+        constexpr bool handle_overflow() const noexcept {
+            if (_entry_count >= _capacity) {
+                // TODO: Dynamically allocate entries to a vector
+                return true;
+            }
+            return false;
+        }
 
     public:
         /**
@@ -324,16 +333,7 @@ namespace RiRi::Response {
          * @return True if the overall status code is `StatusCode::OK`, otherwise false.
          */
         constexpr bool ok() const noexcept {
-            return OverallCode == StatusCode::OK;
-        }
-
-        // placeholder handleOverflow function for now
-        constexpr bool handleOverflow() const noexcept {
-            if (entry_count >= capacity) {
-                // TODO: Dynamically allocate entries to a vector
-                return true;
-            }
-            return false;
+            return _overall_code == StatusCode::OK;
         }
 
         /**
@@ -350,11 +350,11 @@ namespace RiRi::Response {
             // OverallCode = StatusCode::ERR_SOME_OPERATIONS_FAILED;
 
             // Is the overflow handled, if any? (if overflowed, start dynamic allocation)
-            if (handleOverflow()) return;
+            if (handle_overflow()) return;
 
             // Construct OPERATION_TARGET-VALUE in STORE at entry_count.5
-            new(&entries[entry_count]) std::pair{operation_target, entry};
-            ++entry_count;
+            new(&_entries[_entry_count]) std::pair{operation_target, entry};
+            ++_entry_count;
         }
 
         /**
@@ -364,14 +364,14 @@ namespace RiRi::Response {
          */
         void addStatus(std::string_view operation_target, StatusCode status_code) noexcept {
             // shrugieeee
-            OverallCode = StatusCode::ERR_SOME_OPERATIONS_FAILED;
+            _overall_code = StatusCode::ERR_SOME_OPERATIONS_FAILED;
 
             // Is the overflow handled, if any? (if overflowed, start dynamic allocation)
-            if (handleOverflow()) return;
+            if (handle_overflow()) return;
 
             // Construct OPERATION_TARGET-STATUS_CODE in STORE at entry_count.
-            new(&entries[entry_count]) std::pair{operation_target, status_code};
-            ++entry_count;
+            new(&_entries[_entry_count]) std::pair{operation_target, status_code};
+            ++_entry_count;
         }
     };
 }
