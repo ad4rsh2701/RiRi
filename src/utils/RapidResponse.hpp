@@ -286,12 +286,6 @@ namespace RiRi::Response {
         /// Either `Value` or `StatusCode` will be returned per fetch request
         using ValueOrStatus = std::variant<RapidDataType*, StatusCode>;
 
-        RapidResponseValue() noexcept: _capacity(VALUE_TRACKING_CAPACITY) {
-            // Pointer now points to the ERROR_STORE and will move by `ErrorEntryType`
-            _entries = reinterpret_cast<EntryType *>(_store);
-            // *insert shrug here*
-        }
-
         /**
          * @brief Represents each OPERATIONS_TARGET-VALUE_OR_STATUS pair; this is how RiRi will carry
          * individual return values (or StatusCode in case of errors) for each operation target.
@@ -304,27 +298,45 @@ namespace RiRi::Response {
          */
         using EntryType = std::pair<std::string_view, ValueOrStatus>;
 
+        constexpr RapidResponseValue() noexcept
+        :_entries{reinterpret_cast<EntryType *>(_static_store)},
+        _entry_count{0},
+        _capacity{VALUE_TRACKING_CAPACITY}
+        {
+            // *insert shrug here*
+        }
+
     private:
         /// The overall status code defaulted to `OK`. If errors, changes to `ERR_SOME_OPERATIONS_FAILED`
         StatusCode _overall_code = StatusCode::OK;
 
         /// A fixed blob or block of memory, which stores `EntryType` objects.
         alignas(EntryType)
-        std::byte _store[sizeof(EntryType)*VALUE_TRACKING_CAPACITY]{};
+        std::byte _static_store[sizeof(EntryType)*VALUE_TRACKING_CAPACITY]{};
+
+        std::unique_ptr<EntryType[]> _dynamic_store = nullptr;
 
         /// Pointer that will track entries, initialized in constructor to point to STORE
         EntryType *_entries = nullptr;
+        std::uint32_t _entry_count;
+        std::uint32_t _capacity;
 
-        std::uint8_t _entry_count = 0;
-        std::uint8_t _capacity = 0;
+        void dynamically_grow() noexcept {
+            const std::uint32_t new_capacity = _capacity + _capacity / 2 + 8; // The +8 helps for small initial sizes
+            auto new_dynamic_store = std::make_unique<EntryType[]>(new_capacity);
 
-        // placeholder handleOverflow function for now
-        constexpr bool handle_overflow() const noexcept {
-            if (_entry_count >= _capacity) {
-                // TODO: Dynamically allocate entries to a vector
-                return true;
-            }
-            return false;
+            // Move the existing, constructed objects from the
+            // old buffer (wherever it was) to the new heap buffer.
+            std::move(_entries, _entries + _entry_count, new_dynamic_store.get());
+
+            //- If we were previously on the heap, the old _heap_store's
+            //  destructor is called automatically when we re-assign it, freeing the old memory.
+            //- We move the new buffer into our class's ownership.
+            _dynamic_store = std::move(new_dynamic_store);
+
+            // The capacity is updated to reflect the new, larger size.
+            _entries = _dynamic_store.get();
+            _capacity = new_capacity;
         }
 
     public:
@@ -349,11 +361,12 @@ namespace RiRi::Response {
             // which is the default status code.
             // OverallCode = StatusCode::ERR_SOME_OPERATIONS_FAILED;
 
-            // Is the overflow handled, if any? (if overflowed, start dynamic allocation)
-            if (handle_overflow()) return;
+            if (_entry_count >= _capacity) {
+                dynamically_grow();
+            }
 
             // Construct OPERATION_TARGET-VALUE in STORE at entry_count.5
-            new(&_entries[_entry_count]) std::pair{operation_target, entry};
+            new(&_entries[_entry_count]) EntryType{operation_target, entry};
             ++_entry_count;
         }
 
@@ -366,11 +379,12 @@ namespace RiRi::Response {
             // shrugieeee
             _overall_code = StatusCode::ERR_SOME_OPERATIONS_FAILED;
 
-            // Is the overflow handled, if any? (if overflowed, start dynamic allocation)
-            if (handle_overflow()) return;
+            if (_entry_count >= _capacity) {
+                dynamically_grow();
+            }
 
             // Construct OPERATION_TARGET-STATUS_CODE in STORE at entry_count.
-            new(&_entries[_entry_count]) std::pair{operation_target, status_code};
+            new(&_entries[_entry_count]) EntryType{operation_target, status_code};
             ++_entry_count;
         }
     };
