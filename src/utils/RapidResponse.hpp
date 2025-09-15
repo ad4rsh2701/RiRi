@@ -28,7 +28,7 @@ static constexpr size_t VALUE_TRACKING_CAPACITY = 16;
 namespace RiRi::Response {
     /**
      * @brief Represents various status codes for responses within the RapidResponse framework.
-     *x
+     *
      * Status codes are categorized into multiple ranges based on their meanings:
      *
      * - SUCCESS CODES (0-99): Indicate successful operations.
@@ -286,9 +286,9 @@ namespace RiRi::Response {
         /// Either `Value` or `StatusCode` will be returned per fetch request
         using ValueOrStatus = std::variant<RapidDataType*, StatusCode>;
 
-        RapidResponseValue() noexcept: capacity(VALUE_TRACKING_CAPACITY) {
+        RapidResponseValue() noexcept: _capacity(VALUE_TRACKING_CAPACITY) {
             // Pointer now points to the ERROR_STORE and will move by `ErrorEntryType`
-            entries = reinterpret_cast<EntryType *>(STORE);
+            _entries = reinterpret_cast<EntryType *>(_store);
             // *insert shrug here*
         }
 
