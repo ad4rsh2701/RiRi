@@ -280,13 +280,17 @@ namespace RiRi::Response {
     * @note Regardless of the size of the static blob, the entirety of requested values (or StatusCode)
     * will be returned, nothing will be dropped.
      */
-    struct RapidResponseValue{
-
-        /// The overall status code defaulted to `OK`. If errors, changes to `ERR_SOME_OPERATIONS_FAILED`
-        StatusCode OverallCode = StatusCode::OK;
+    class RapidResponseValue{
+    public:
 
         /// Either `Value` or `StatusCode` will be returned per fetch request
         using ValueOrStatus = std::variant<RapidDataType*, StatusCode>;
+
+        RapidResponseValue() noexcept: capacity(VALUE_TRACKING_CAPACITY) {
+            // Pointer now points to the ERROR_STORE and will move by `ErrorEntryType`
+            entries = reinterpret_cast<EntryType *>(STORE);
+            // *insert shrug here*
+        }
 
         /**
          * @brief Represents each OPERATIONS_TARGET-VALUE_OR_STATUS pair; this is how RiRi will carry
@@ -300,6 +304,10 @@ namespace RiRi::Response {
          */
         using EntryType = std::pair<std::string_view, ValueOrStatus>;
 
+    private:
+        /// The overall status code defaulted to `OK`. If errors, changes to `ERR_SOME_OPERATIONS_FAILED`
+        StatusCode OverallCode = StatusCode::OK;
+
         /// A fixed blob or block of memory, which stores `EntryType` objects.
         alignas(EntryType)
         std::byte STORE[sizeof(EntryType)*VALUE_TRACKING_CAPACITY]{};
@@ -310,12 +318,7 @@ namespace RiRi::Response {
         std::uint8_t entry_count = 0;
         std::uint8_t capacity = 0;
 
-        RapidResponseValue() noexcept: capacity(VALUE_TRACKING_CAPACITY) {
-            // Pointer now points to the ERROR_STORE and will move by `ErrorEntryType`
-            entries = reinterpret_cast<EntryType *>(STORE);
-            // *insert shrug here*
-        }
-
+    public:
         /**
          * @brief Checks whether the overall status code is `StatusCode::OK`.
          * @return True if the overall status code is `StatusCode::OK`, otherwise false.
