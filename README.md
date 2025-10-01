@@ -1,5 +1,4 @@
-# Rapid In-Memory Redis Interface
-or simply **RiRi** :)
+# RiRi —A rapid, low-latency, in-memory key-value data engine
 
 ![Status](https://img.shields.io/badge/Status-PRE--MVP-red)
 ![Stage](https://img.shields.io/badge/stage-Under_Active_Development-darkorange)
@@ -11,7 +10,7 @@ or simply **RiRi** :)
 ![Last Commit](https://img.shields.io/github/last-commit/ad4rsh2701/RiRi)
 ![Contributors](https://img.shields.io/github/contributors/ad4rsh2701/RiRi)
 
-RiRi, or **Rapid In-Memory Redis Interface**, is a high-performance, multi-modal system for managing in-memory key-value data. It’s designed to be used as a lightweight C++ **library**, a drop-in **embedded** data engine, or a standalone **backend server** — depending on your use case.
+RiRi is a high-performance, multi-modal system for managing in-memory key-value data. It’s designed to be used as a lightweight C++ **library**, a drop-in **embedded** data engine, or a standalone **backend server** — depending on your use case.
 
 Built entirely from _scratch_ with performance and simplicity in mind, RiRi is crafted to be **fast**, **lightweight**, and **memory-efficient**. It leverages modern _C++23 features_ and relies on _one of the fastest hash maps available_ for its internal map structure.
 
@@ -32,26 +31,26 @@ In memory, abstractly speaking, the data is structured like this — think of it
 {
   "name": "RiRi",
   "complete": false,
-  "builds": 0,
+  "builds": 0
 }
 ```
 (Benefits of storing like this? — should be obvious, if not... _it’s a great little homework_)
 
 > Inside RiRi
 >- `keys` are of the type `std::string`.
->- `values` are of `RapidDataType` (via `std::variant` (C++23)), and currently supports boolean, integer, floating, string and character types.
+>- `values` are of `RapidDataType` (via `std::variant` (C++23)), and currently supports boolean, integer, floating, string, and character types.
 
-That's essentially what a key-value map or a ‘k-v map’ is. With this clarified, we can finally explain what RiRi is, in a much better way:
+That's what a key-value map or a ‘k-v map’ is. With this clarified, we can finally explain what RiRi is, in a much better way:
 
 - RiRi is a bunch of code compiled into a binary, which _at your mercy_ modifies the key-value map however you command (add, search, delete, etc.).
-- To achieve this, RiRi can be embedded directly into your code — acting as your own _temporary data holder/engine_. However with one difference... it's **extremely fast**.
+- To achieve this, RiRi can be embedded directly into your code — acting as your own _temporary data holder/engine_. However, with one difference... it's **extremely fast**.
 - Alternatively, RiRi can run as a standalone backend — in a traditional client-server setup. RiRi becomes the **server**, your program(s) the **client(s)**.
 
-The general idea of RiRi should be much clear now, as for the C++23 features and the _one of the fastest hash maps_; these are just tools, used to implement RiRi. These will be discussed in the upcoming sections with great detail (especially that map).
+The general idea of RiRi should be much clearer now, as for the C++23 features and the _one of the fastest hash maps_; these are just tools used to implement RiRi. These will be discussed in the upcoming sections with great detail (especially that map).
 
 Reiterating again, RiRi is made in **pure C++** and uses no external dependencies (except one, the hash map, which has no overhead, included with RiRi). Future scaling may involve python, node.js and java into RiRi (connector implementation).
 
-Oh and RiRi is made to be compiled in C++23 and above versions only. Why the latest C++ and not standard C++17? Because RiRi requires better and faster features, with minimal overhead, not standards.
+Oh, and RiRi is made to be compiled in C++23 and above versions only. Why the latest C++ and not standard C++17? Because RiRi requires better and faster features, with minimal overhead, which the latest C++ provides.
 
 ---
 This readme is incomplete
