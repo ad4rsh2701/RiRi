@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string_view>
 #include <utility>
+#include <memory>
 #include <new>
 
 #include "../include/RapidTypes.h"
@@ -297,6 +298,11 @@ namespace RiRi::Response {
          */
         using EntryType = std::pair<std::string_view, ValueOrStatus>;
 
+        // Just in case my future self decides to make the EntryType trivially non-copyable.
+        static_assert(std::is_trivially_copyable_v<EntryType>,
+          "EntryType must be trivially copyable!!! Don't Forget!");
+        // A little reminder for him when his code doesn't compile.
+
         constexpr RapidResponseValue() noexcept
         :_entries{reinterpret_cast<EntryType *>(_static_store)},
         _entry_count{0},
@@ -313,6 +319,7 @@ namespace RiRi::Response {
         alignas(EntryType)
         std::byte _static_store[sizeof(EntryType)*VALUE_TRACKING_CAPACITY]{};
 
+        /// A unique pointer to manage an array of type EntryType
         std::unique_ptr<EntryType[]> _dynamic_store = nullptr;
 
         /// Pointer that will track entries, initialized in constructor to point to STORE
@@ -320,24 +327,35 @@ namespace RiRi::Response {
         std::uint32_t _entry_count;
         std::uint32_t _capacity;
 
+        /**
+         * @brief Increases the dynamic storage capacity for entries when the current capacity is not enough.
+         *
+         * This method allocates a new buffer of larger size (by a factor of 1.5x) while copying the previous
+         * existing elements of the older buffer.
+         *
+         * @note This operation is noexcept and assumes that `EntryType` is trivially copyable.
+         */
         void dynamically_grow() noexcept {
 
-            // violence
+            // HOW TO: ns to μs
+
+            // Increasing the capacity by 1.5x (new buffer RAHH)
             const std::uint32_t new_capacity = _capacity + _capacity / 2 + 8; // The +8 helps for small initial sizes
+
+            // Allocate a new heap buffer of the new capacity.
             auto new_dynamic_store = std::make_unique<EntryType[]>(new_capacity);
 
-            // Move the existing, constructed objects from the
-            // old buffer (wherever it was) to the new heap buffer.
-            std::move(_entries, _entries + _entry_count, new_dynamic_store.get());
+            // Copy elements from old buffer to new buffer (safe to do so; EntryType is trivially copyable)
+            std::memcpy(new_dynamic_store.get(), _entries, _entry_count * sizeof(EntryType));
 
-            //- If we were previously on the heap, the old _heap_store's
-            //  destructor is called automatically when we re-assign it, freeing the old memory.
-            //- We move the new buffer into our class's ownership.
+            // We move the new buffer into our class's ownership.
             _dynamic_store = std::move(new_dynamic_store);
+            // If we were previously on the heap, the old _heap_store's
+            // destructor is called automatically when we re-assign it,
+            // freeing the old memory; perks of unique_ptr
 
-            // The capacity is updated to reflect the new, larger size.
-            _entries = _dynamic_store.get();
-            _capacity = new_capacity;
+            _entries = _dynamic_store.get();   // Point to the new buffer
+            _capacity = new_capacity;          // Update capacity
         }
 
     public:
