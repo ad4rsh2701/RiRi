@@ -62,10 +62,10 @@ namespace RiRi::Response {
         ERR_VALUE_NOT_FOUND = 405,              // COMMAND LEVEL
 
         // Do I really need these? Overkill much?
-        // ERR_SOME_KEYS_NOT_SET = 406,          // COMMAND LEVEL
-        // ERR_MANY_KEYS_NOT_SET = 407,          // COMMAND LEVEL
-        // ERR_SOME_KEYS_NOT_FOUND = 408,        // COMMAND LEVEL
-        // ERR_MANY_KEYS_NOT_FOUND = 409,        // COMMAND LEVEL
+        // ERR_SOME_KEYS_NOT_SET = 406,
+        // ERR_MANY_KEYS_NOT_SET = 407,
+        // ERR_SOME_KEYS_NOT_FOUND = 408,
+        // ERR_MANY_KEYS_NOT_FOUND = 409,
 
         // Instead, what if I do this:
         ERR_SOME_OPERATIONS_FAILED = 406,        // COMMAND LEVEL
@@ -210,7 +210,7 @@ namespace RiRi::Response {
             // A very neat use of `new` (I was not expecting this).
             // Basically, we are "constructing" the pair at the `failures` position (`failure_count`).
             // Oh and yes, the memory is properly aligned and pre-allocated.
-            new(&_failures[_failure_count]) std::pair{operation_target, error_code};
+            new(&_failures[_failure_count]) ErrorEntryType{operation_target, error_code};
 
             // And update the OverallCode to ERR_SOME_OPERATIONS_FAILED (406) as well.
             _overall_code = StatusCode::ERR_SOME_OPERATIONS_FAILED;
@@ -262,7 +262,7 @@ namespace RiRi::Response {
 
 
     /**
-     * @brief Represents a value-returning response structure to track individual values and error
+     * @brief Represents a value-returning response class to track individual values and error
      * status codes when a command operates on multiple inputs or when multiple errors/values need
      * to be reported together.
      *
@@ -270,9 +270,8 @@ namespace RiRi::Response {
      * with the following changes:
      * - `EntryType` is a pair of `string_view` and either `StatusCode` or `RapidDataType*`
      * - The default tracking (or value-returning capacity statically) is 16.
-     * - If `addFailure` or `addValue` is called beyond the static capacity, a vector is initialized
-     * which will further track the remaining entries dynamically (static overflow -> fallback to dynamic alloc).
-     * - If dynamic alloc occurs, the static STORE and the vector are chained and returned.
+     * - If `addFailure` or `addValue` is called beyond the static capacity, a dynamic array is initialized
+     *   and it grows dynamically.
      *
      * An example of a stored response containing a value and StatusCode:
      * [{"key2", "val2"}, {"key3", StatusCode::KEY_NOT_FOUND}, {...}, ...]
@@ -322,6 +321,8 @@ namespace RiRi::Response {
         std::uint32_t _capacity;
 
         void dynamically_grow() noexcept {
+
+            // violence
             const std::uint32_t new_capacity = _capacity + _capacity / 2 + 8; // The +8 helps for small initial sizes
             auto new_dynamic_store = std::make_unique<EntryType[]>(new_capacity);
 
