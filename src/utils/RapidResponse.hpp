@@ -336,8 +336,7 @@ namespace RiRi::Response {
          * @note This operation is noexcept and assumes that `EntryType` is trivially copyable.
          */
         void dynamically_grow() noexcept {
-
-            // HOW TO: ns to μs
+            // Increases capacity dynamically (RIP ns performance, hello μs)
 
             // Increasing the capacity by 1.5x (new buffer RAHH)
             const std::uint32_t new_capacity = _capacity + _capacity / 2 + 8; // The +8 helps for small initial sizes
@@ -393,7 +392,7 @@ namespace RiRi::Response {
                 dynamically_grow();
             }
 
-            // Construct OPERATION_TARGET-VALUE in STORE at entry_count.5
+            // Construct OPERATION_TARGET-VALUE in STORE at entry_count.
             new(&_entries[_entry_count]) EntryType{operation_target, entry};
             ++_entry_count;
         }
