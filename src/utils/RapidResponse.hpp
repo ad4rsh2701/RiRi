@@ -359,6 +359,15 @@ namespace RiRi::Response {
         }
 
     public:
+
+        /**
+         * @brief Getter to return the overall status code
+         * @return _overall_code
+         */
+        constexpr StatusCode code() const noexcept {
+            return _overall_code;
+        }
+
         /**
          * @brief Checks whether the overall status code is `StatusCode::OK`.
          * @return True if the overall status code is `StatusCode::OK`, otherwise false.
@@ -406,6 +415,19 @@ namespace RiRi::Response {
             new(&_entries[_entry_count]) EntryType{operation_target, status_code};
             ++_entry_count;
         }
+
+        /**
+        * @brief Provides a constant iterator pointing to the beginning of the `entries` collection.
+        * @return A pointer to the first error entry in the `entries` collection.
+        */
+        constexpr auto begin() const noexcept { return _entries; }
+
+        /**
+         * @brief Provides a constant iterator pointing to the end of the `entries` collection.
+         * @return A pointer to one past the last error entry in the `entries` collection.
+         */
+        constexpr auto end() const noexcept { return _entries + _entry_count; }
+
     };
 }
 
