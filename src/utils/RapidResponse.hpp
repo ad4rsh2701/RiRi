@@ -95,10 +95,12 @@ namespace RiRi::Response {
 
 
     /**
-     * @brief Represents a response structure within the RapidResponse framework.
+     * @brief Represents a response class within the RapidResponse framework.
      *
-     * The `RapidResponse` struct encapsulates the response status and
+     * The `RapidResponse` class encapsulates the response status and
      * provides helper functions within it to evaluate the `StatusCode` state.
+     *
+     * It also provides a getter function to retrieve the response status.
      *
      * This only holds the overall status code; even in cases where multiple
      * status codes might be required, in such cases, an appropriate status
@@ -110,8 +112,11 @@ namespace RiRi::Response {
     class RapidResponse {
 
     public:
-        // Default constructor initializes response to the most common case.
+        // Default constructor initializes `response` to the most common case.
         RapidResponse() noexcept : response(StatusCode::OK) {}
+
+        // Explicit constructor to initialize `response` with StatusCode types.
+        explicit RapidResponse(StatusCode status_code) noexcept : response(status_code) {}
 
     private:
         /// Represents a single status outcome — either from a single operation
