@@ -6,7 +6,7 @@
 
 #include "../../src/include/RiRiMacros.h"
 #include "../../src/include/RapidTypes.h"
-#include "../../src/utils/RapidResponse.hpp"
+#include "../../src/utils/RapidResponse.hpp" // That one HEINOUS header file
 
 
 /**
@@ -44,8 +44,8 @@ namespace RiRi {
                  * @note The command name (`SET`) is already removed before this function is called.
                  *       The args vector only contains the remaining arguments.
                  */
-                RIRI_API Response::RapidResponse setCommand(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull setCommand(std::span<RapidNode> args, enableFullResponse);
+                RIRI_API Response::RapidResponse SET(std::span<RapidNode> args);
+                RIRI_API Response::RapidResponseFull SET(std::span<RapidNode> args, enableFullResponse);
 
                 //GET
                 /**
@@ -55,8 +55,8 @@ namespace RiRi {
                  * @note The command name (`GET`) is already removed before this function is called.
                  *       The args vector only contains the remaining arguments.
                  */
-                RIRI_API Response::RapidResponse getCommand(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull getCommand(std::span<RapidNode> args, enableFullResponse);
+                RIRI_API Response::RapidResponse GET(std::span<RapidNode> args);
+                RIRI_API Response::RapidResponseFull GET(std::span<RapidNode> args, enableFullResponse);
 
                 //UPDATE
                 /**
@@ -67,8 +67,8 @@ namespace RiRi {
                  * @note - The command name (`UPDATE`) is already removed before this function is called.
                  *       The args vector only contains the remaining arguments.
                  */
-                RIRI_API Response::RapidResponse updateCommand(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull updateCommand(std::span<RapidNode> args, enableFullResponse);
+                RIRI_API Response::RapidResponse UPDATE(std::span<RapidNode> args);
+                RIRI_API Response::RapidResponseFull UPDATE(std::span<RapidNode> args, enableFullResponse);
 
                 //DELETE
                 /**
@@ -79,8 +79,8 @@ namespace RiRi {
                  * @note - The command name (`DELETE` or `DEL`) is already removed before this function is called.
                  *         The args vector only contains the remaining arguments.
                  */
-                RIRI_API Response::RapidResponse deleteCommand(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull deleteCommand(std::span<RapidNode> args, enableFullResponse);
+                RIRI_API Response::RapidResponse DELETE(std::span<RapidNode> args);
+                RIRI_API Response::RapidResponseFull DELETE(std::span<RapidNode> args, enableFullResponse);
 
                 //GET_ALL
                 /**
@@ -93,8 +93,8 @@ namespace RiRi {
                  * @note - The command name (`GET_ALL` or `DUMP`) is already removed before this function is called.
                  *         The args vector should be empty.
                  */
-                RIRI_API Response::RapidResponse getAllCommand(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull getAllCommand(std::span<RapidNode> args, enableFullResponse);
+                RIRI_API Response::RapidResponse GET_ALL(std::span<RapidNode> args);
+                RIRI_API Response::RapidResponseFull GET_ALL(std::span<RapidNode> args, enableFullResponse);
 
                 // CLEAR
                 /**
@@ -106,8 +106,8 @@ namespace RiRi {
                  * @note - The command name (`CLEAR` or `CLR`) is already removed before this function is called.
                  *         The args vector should be empty.
                  */
-                RIRI_API Response::RapidResponse clearCommand(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull clearCommand(std::span<RapidNode> args, enableFullResponse);
+                RIRI_API Response::RapidResponse CLEAR(std::span<RapidNode> args);
+                RIRI_API Response::RapidResponseFull CLEAR(std::span<RapidNode> args, enableFullResponse);
 
                 // AUTOSET
                 /**
@@ -121,8 +121,8 @@ namespace RiRi {
                  * @note - The command name (`AUTOSET` or `HASH_SET`) is already removed before this function is called.
                  *       The args vector only contains the remaining arguments (values).
                  */
-                RIRI_API Response::RapidResponseFull autoSetCommand(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull autoSetCommand(std::span<RapidNode> args, enableFullResponse);
+                RIRI_API Response::RapidResponseFull AUTO_SET(std::span<RapidNode> args);
+                RIRI_API Response::RapidResponseFull AUTO_SET(std::span<RapidNode> args, enableFullResponse);
 
                 // SEARCH
                 /**
@@ -140,7 +140,7 @@ namespace RiRi {
                  * @note - The command name (`SEARCH` or `FIND_BY_VALUE`) is already removed before this function is called.
                  *         The args vector only contains the remaining arguments (values).
                  */
-                RIRI_API Response::RapidResponse searchCommand(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull searchCommand(std::span<RapidNode> args, enableFullResponse);
+                RIRI_API Response::RapidResponse SEARCH(std::span<RapidNode> args);
+                RIRI_API Response::RapidResponseFull SEARCH(std::span<RapidNode> args, enableFullResponse);
         }
 } // namespace RiRi::Internal
