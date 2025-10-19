@@ -107,13 +107,26 @@ namespace RiRi::Response {
      * Though let's be honest, you will still most likely use this, 90% of the time.
      *
      */
-    struct RapidResponse {
+    class RapidResponse {
+
+    public:
+        // Default constructor initializes response to the most common case.
+        RapidResponse() noexcept : response(StatusCode::OK) {}
+
+    private:
         /// Represents a single status outcome — either from a single operation
         /// or an overall result when no per-operation diagnostics are needed.
         StatusCode response;
 
+    public:
+        /**
+         * @brief Returns the response of the container
+         * @return StatusCode
+         */
+        constexpr StatusCode code() const noexcept {
+            return response;
+        }
 
-        // should be obvious but-
         /**
          * @brief Checks if the response status is successful.
          * @return `true` if the response status is `StatusCode::OK`, otherwise false.
