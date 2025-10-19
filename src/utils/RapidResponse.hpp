@@ -346,6 +346,8 @@ namespace RiRi::Response {
 
             // Copy elements from old buffer to new buffer (safe to do so; EntryType is trivially copyable)
             std::memcpy(new_dynamic_store.get(), _entries, _entry_count * sizeof(EntryType));
+            // Using `memcpy` for now (trivially copyable types only, enforced by static_assert above).
+            // Will switch to `std::uninitialized_move` if EntryType becomes non-trivial in the future.
 
             // We move the new buffer into our class's ownership.
             _dynamic_store = std::move(new_dynamic_store);
