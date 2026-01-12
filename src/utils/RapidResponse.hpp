@@ -124,6 +124,11 @@ namespace RiRi::Response {
         StatusCode response;
 
     public:
+
+        constexpr void addCode(StatusCode status_code) noexcept {
+            response = status_code;
+        }
+
         /**
          * @brief Returns the response of the container
          * @return StatusCode
@@ -317,7 +322,7 @@ namespace RiRi::Response {
         using EntryType = std::pair<std::string_view, ValueOrStatus>;
 
         // Just in case my future self decides to make the EntryType trivially non-copyable.
-        static_assert(std::is_trivially_copyable_v<EntryType>,
+        static_assert(std::is_trivially_destructible_v<EntryType>,
           "EntryType must be trivially copyable!!! Don't Forget!");
         // A little reminder for him when his code doesn't compile.
 
@@ -455,3 +460,9 @@ namespace RiRi::Response {
 // but implementing command layers next should give a better idea (oh wait the reader helpers remain too, F).
 // Update: Yes, it should, let's not introduce complexity over at other layers, let this layer handle the 90% responses.
 // Yes, this reduces customizability, but RiRi is open source... modify and compile it yourself???
+
+// And we can shrink the minimum size of the RapidResponseValue class to less than 544 bits by using a union instead of
+// two stores. Which will save us around... I think 16-24 bits? I am not sure, but essentially, making it all fit under
+// 64 bytes (that's 512 bits) will make it fit under one CPU cache lane, which is a "nice to have" (it sounds good).
+// Though I will not make this change yet, cuz this class's objects will definitely not be of the "minimum size" most of
+// the time. Just writing here so I don't forget.
