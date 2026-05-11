@@ -35,19 +35,22 @@ using RapidDataType = std::variant<std::string, int_fast64_t, double, bool>;
  * This struct is used to store a key and its associated value.
  * Used majorly during command parsing and command functions to represent a key-value pair.
  *
- * @param key The key as a `std::string_view`.
- * @param value The value as a `RapidDataType`, which can be a string, integer, double, or boolean.
- *  
- * At this point, I feel like I am creating more and more structs, but anything for least possible memory usage, right?
+ * @var RapidNode::key The key as a `std::string`.
+ * @var RapidNode::value The value as a `RapidDataType`, which can be a string, integer, double, or boolean.
+ *
+ * You can either pass the values normally enforcing a copy, i.e., one allocation during node creation OR
+ * move the values entirely via std::move, zero allocation during node creation
+ * NOTE: moving steals the buffer, the original variable's value is lost, do not rely on its value post-move
+ * (and apparently this post-move-accessing isn't UB).
  */
 GO_AWAY struct RapidNode {
-    std::string_view key;
+    std::string key;
     RapidDataType value;
-
-    constexpr RapidNode(const std::string_view k, RapidDataType v)
-        : key(k), value(std::move(v)) {}
 } typedef node, field, kv;
-
+// Rule of 0 states that...
+// "If you can, write none of the special members. Let the compiler generate all of them."
+// So, one can either move values directly to RapidNode if they know what they are doing
+// Or pass the values (enforcing a copy once) normally.
 
 /** 
  * @brief Type alias for a command function that takes a vector of string views as arguments.
