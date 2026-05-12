@@ -6,7 +6,7 @@
 #include <memory>
 #include <new>
 
-#include "../include/RapidTypes.h"
+#include <RapidTypes.h>
 
 /// This constant defines the number of errors to be tracked
 static constexpr size_t TRACKING_CAPACITY = 8;
@@ -86,7 +86,7 @@ namespace RiRi::Response {
         ERR_INVALID_ARGUMENT_COUNT = 504,   // PARSER LEVEL
         ERR_DOES_NOT_TAKE_ARGUMENTS = 505,  // PARSER LEVEL
         ERR_NO_ARGUMENTS_GIVEN = 506,       // PARSER LEVEL
-        ERR_INVALID_DELIMITER = 507,        // PARSER LEVEL // Last fall back error code, if none of the above.
+        ERR_INVALID_DELIMITER = 507,        // PARSER LEVEL // Last fallback error code, if none of the above.
             // This looks overkill, but parser is yet to be implemented, so let's see.
             // More to be added as RiRi grows.
             // Pretty sure I'd need more than 100
@@ -150,25 +150,36 @@ namespace RiRi::Response {
      * @brief Represents a full response structure used to track individual error status codes
      * when a command operates on multiple inputs or when multiple errors need to be reported together.
      *
-     * The `RapidResponseFull` struct does four things:
-     * 1. Captures a blob or block of memory, statically.
-     * 2. Makes the compiler treat the blob as if it stores elements of type `ErrorEntryType`
-     *    (a pair of `string_view` and `StatusCode`).
-     * 3. Constructs and stores an `ErrorEntryType` when `addFailure` is called and sets the status
-     *    code to `ERR_SOME_OPERATIONS_FAILED`.
-     * 4. If `addFailure` is called beyond the blob’s capacity, the status is changed to
-     *    `ERR_MULTIPLE_OPERATIONS_FAILED`, and no further entries are added to the blob.
+     * This essentially holds a list of "errors"
      *
      * For instance, this is what a stored response might look like:
      *  [{"key2", StatusCode::KEY_NOT_FOUND}, {"Key3", StatusCode::INVALID_ARGS}, {...}, ...]
      *
-     *  Made with agony for the 10% use cases :D
+     * Also holds and tracks the total number of errors.
+     *
+     * Made with agony for the 10% use cases :D
+     *
+     * @note Success cases are not tracked, and the absence of keys in the response means the set was successful
+     * unless the overall code is `ERR_MULTIPLE_OPERATIONS_FAILED`, in which case... good luck ig (you bought this
+     * on yourself honestly).
+     *
+     * @note The tracking capacity is manually set; by default, set to 8. This means only 8 errors will be
+     * reported. If there are more errors than the tracking capacity, the overall status code becomes
+     * ERR_MULTIPLE_OPERATIONS_FAILED and the rest of the errors are not tracked.
      */
     class RapidResponseFull {
+
+        // `RapidResponseFull` does four things:
+        // 1. Captures a blob or block of memory, statically.
+        // 2. Makes the compiler treat the blob as if it stores elements of type `ErrorEntryType`
+        //    (a pair of `string_view` and `StatusCode`).
+        // 3. Constructs and stores an `ErrorEntryType` when `addFailure` is called and sets the status
+        //    code to `ERR_SOME_OPERATIONS_FAILED`.
+        // 4. If `addFailure` is called beyond the blob’s capacity, the status is changed to
+        //    `ERR_MULTIPLE_OPERATIONS_FAILED`, and no further entries are added to the blob.
+
     public:
 
-        // "No silly names yet?", Hey! I am trying to implement good coding habits okay
-        // It's called self-explainable code, don't laugh... or ykw, here, a doc-string too, just in case
         /** @brief Represents each OPERATION_TARGET-STATUS_CODE pair; this is how RiRi will carry individual
          * status codes for each operation's target.
          *
@@ -204,15 +215,16 @@ namespace RiRi::Response {
         /// Pointer that will track error entries, initialized in constructor to point to ERROR_STORE
         ErrorEntryType *_failures = nullptr;     // Aptly named
 
-        std::uint8_t _failure_count = 0;
+        std::uint32_t _failure_count = 0;
         std::uint8_t _capacity = 0;
+
         /**
          * @brief Checks if the number of failures has exceeded the specified capacity and modifies the `OverallCode`
          * to `ERR_MULTIPLE_OPERATIONS_FAILED` if needed.
-         * @return True if the number of failures exceeds or equals the capacity, otherwise false.
+         * @return True if the number of failures exceeds the capacity, otherwise false.
          */
         constexpr bool handle_overflow() noexcept {
-            if (_failure_count >= _capacity) {
+            if (_failure_count > _capacity) {
                 _overall_code = StatusCode::ERR_MULTIPLE_OPERATIONS_FAILED;
                 return true;
             }
@@ -229,17 +241,19 @@ namespace RiRi::Response {
          * @param error_code : The error code concerning the operation target.
          */
         void addFailure(std::string_view operation_target, StatusCode error_code) noexcept {
+
+            // We will always increase the failure count to keep track of the number of failures
+            ++_failure_count;
+
             if (handle_overflow()) return;
 
-            // A very neat use of `new` (I was not expecting this).
+            // A very neat use of `new`
             // Basically, we are "constructing" the pair at the `failures` position (`failure_count`).
             // Oh and yes, the memory is properly aligned and pre-allocated.
             new(&_failures[_failure_count]) ErrorEntryType{operation_target, error_code};
 
             // And update the OverallCode to ERR_SOME_OPERATIONS_FAILED (406) as well.
             _overall_code = StatusCode::ERR_SOME_OPERATIONS_FAILED;
-
-            ++_failure_count;
         }
 
         /**
@@ -256,6 +270,14 @@ namespace RiRi::Response {
          */
         constexpr StatusCode code() const noexcept {
             return _overall_code;
+        }
+
+        /**
+         * @brief Getter to return the total number of failures
+         * @return _failure_count
+         */
+        constexpr std::uint32_t totalFailures() const noexcept {
+            return _failure_count;
         }
 
         /**
@@ -279,7 +301,10 @@ namespace RiRi::Response {
          * @brief Provides a constant iterator pointing to the end of the `failures` collection.
          * @return A pointer to one past the last error entry in the failure collection.
          */
-        constexpr auto end() const noexcept { return _failures + _failure_count; }
+        constexpr auto end() const noexcept {
+            // only iterate upto the capacity or failure count; whichever is lower
+            return _failures + (_failure_count > _capacity ? _capacity : _failure_count);
+        }
 
         // you're welcome for the iterators.
     };
@@ -290,7 +315,7 @@ namespace RiRi::Response {
      * status codes when a command operates on multiple inputs or when multiple errors/values need
      * to be reported together.
      *
-     * The `RapidResponseValue` struct functionality is largely similar to `RapidResponseFull` but
+     * `RapidResponseValue`'s functionality is largely similar to `RapidResponseFull` but
      * with the following changes:
      * - `EntryType` is a pair of `string_view` and either `StatusCode` or `RapidDataType*`
      * - The default tracking (or value-returning capacity statically) is 16.
@@ -321,9 +346,9 @@ namespace RiRi::Response {
          */
         using EntryType = std::pair<std::string_view, ValueOrStatus>;
 
-        // Just in case my future self decides to make the EntryType trivially non-copyable.
+        // Just in case my future self decides to make the EntryType trivially non-destructible.
         static_assert(std::is_trivially_destructible_v<EntryType>,
-          "EntryType must be trivially copyable!!! Don't Forget!");
+          "EntryType must be trivially destructible!!! Don't Forget!");
         // A little reminder for him when his code doesn't compile.
 
         constexpr RapidResponseValue() noexcept
