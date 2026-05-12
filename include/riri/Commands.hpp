@@ -1,12 +1,9 @@
 #pragma once
 
-#include <string>
-#include <string_view>
 #include <span>
-
-#include "../../src/include/RiRiMacros.h"
-#include "../../src/include/RapidTypes.h"
-#include "../../src/utils/RapidResponse.hpp" // That one HEINOUS header file
+#include <RiRiMacros.h>
+#include <RapidTypes.h>
+#include <RapidResponse.hpp>    // That one HEINOUS header file
 
 
 /**
@@ -131,9 +128,6 @@ namespace RiRi {
                  *
                  * @param args Parsed arguments of the type: `span` of `RapidNode`: `{ {<empty>, value}, {<empty>, value2}, ... }`
                  * @return A list of matching keys, or "key: (not found)".
-                 *
-                 *
-                 * TREEEd
                  *
                  * @note - This operation performs a full scan of the datastore (O(N)).
                  *         It may be slow with large datasets.
