@@ -23,6 +23,7 @@ set(PRIVATE_HEADERS
         src/include/MemoryMaps.h     # Internal implementation
         src/include/RapidTypes.h     # Internal implementation
         src/include/RiRiMacros.h     # Internal implementation
+        src/include/ankerl/unordered_dense.h   # Internal dependency
 )
 
 set(SEMI_PRIVATE_HEADERS
@@ -61,6 +62,7 @@ target_include_directories(riri PRIVATE
         ${CMAKE_SOURCE_DIR}/src/include
         ${CMAKE_SOURCE_DIR}/src/utils
         ${CMAKE_SOURCE_DIR}/include/riri/
+        ${CMAKE_SOURCE_DIR}/src/include/ankerl/
 )
 
 target_compile_options(riri PRIVATE ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}})
