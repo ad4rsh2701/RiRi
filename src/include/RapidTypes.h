@@ -1,11 +1,9 @@
 #pragma once
-#include <variant>
-#include <string>
-#include <string_view>
-#include <span>
 
-#include "RiRiMacros.h"
-#include "../core/ankerl/unordered_dense.h"
+#include <cstdint>
+#include <string>
+#include <variant>
+#include <ankerl/unordered_dense.h>
 
 // I initially thought that creating this file would just be a bloat. But I guess with great structs comes great responsibility.
 
@@ -43,56 +41,23 @@ using RapidDataType = std::variant<std::string, int_fast64_t, double, bool>;
  * NOTE: moving steals the buffer, the original variable's value is lost, do not rely on its value post-move
  * (and apparently this post-move-accessing isn't UB).
  */
-GO_AWAY struct RapidNode {
+struct RapidNode {
     std::string key;
     RapidDataType value;
-} typedef node, field, kv;
+};
 // Rule of 0 states that...
 // "If you can, write none of the special members. Let the compiler generate all of them."
 // So, one can either move values directly to RapidNode if they know what they are doing
 // Or pass the values (enforcing a copy once) normally.
 
-/** 
- * @brief Type alias for a command function that takes a vector of string views as arguments.
- * 
- * Used to define the signature for RiRi command handlers.
- * @param args A span of RapidNode or Key-Value pairs, representing the command arguments.
- * @note - The command name is expected to be stripped before calling these functions.
- */
-template <typename Response>
-GO_AWAY using RapidCommandFn = Response(*)(std::span<RapidNode> args);
 
-
-/**
- * @brief Sigh, this is a workaround for the fact that ankerl's unordered_dense does not support transparent hash functions.
- * 
- * It allows us to use `std::string` and `std::string_view` as keys in the unordered map without needing to define separate hash functions for each type.
- * 
- * This struct provides a hash function that can handle both `std::string` and `std::string_view` seamlessly
- * by using the ankerl::unordered_dense::hash specialization for each type.
- * 
- * The `is_transparent` type is used to indicate that this hash function can be used with both `std::string` and `std::string_view` keys.
- * This is important, as `is_transparent` is not explicitly defined in the `ankerl::unordered_dense library` :(
- * 
- * I am maybe wrong about that, but it doesn't seem to work without this workaround (I was wrong)
- * 
- *EDIT: `ankerl` does support it, just not by default (unlike `unordered_map`), to enable heterogeneous lookup, you'd need to define a `struct` like this.
- * 
- * @param s A `std::string` to hash.
- * @param sv A `std::string_view` to hash.
- * @return The hash value as a `size_t`.
- * @note This is used in the `MemoryMap` and `AuxCommandMap` to allow fast lookups using both `std::string` and `std::string_view` keys.
- * @note For more details refer: https://github.com/martinus/unordered_dense/tree/main?tab=readme-ov-file#324-heterogeneous-overloads-using-is_transparent
- */
-GO_AWAY struct RapidHash {
-    using is_transparent = void;
-    using is_avalanching = void; // mark class as high-quality avalanching hash
-
-    [[nodiscard]] size_t operator()(const std::string& s) const noexcept {
-        return ankerl::unordered_dense::hash<std::string>{}(s);
-    }
-
-    [[nodiscard]] size_t operator()(const std::string_view sv) const noexcept {
-        return ankerl::unordered_dense::hash<std::string_view>{}(sv);
-    }
-};
+// Maybe I would need this for command dispatch? who knows? archiving in file
+// /**
+//  * @brief Type alias for a command function that takes a vector of string views as arguments.
+//  *
+//  * Used to define the signature for RiRi command handlers.
+//  * @param args A span of RapidNode or Key-Value pairs, representing the command arguments.
+//  * @note - The command name is expected to be stripped before calling these functions.
+//  */
+// template <typename Response>
+// GO_AWAY using RapidCommandFn = Response(*)(std::span<RapidNode> args);

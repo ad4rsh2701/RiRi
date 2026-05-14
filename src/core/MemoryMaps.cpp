@@ -1,14 +1,14 @@
 constexpr size_t DEFAULT_MEMORY_CAPACITY = 100;
 constexpr size_t DEFAULT_COMMAND_CAPACITY = 16;
 
-#include "MemoryMaps.h"
+#include <MemoryMaps.h>
 
 using namespace RiRi;
 
 ankerl::unordered_dense::map<
     std::string,
     RapidDataType,
-    RapidHash,
+    Internal::RapidHash,
     std::equal_to<>
 > Internal::MemoryMap = [] {
     ankerl::unordered_dense::map<
@@ -25,21 +25,23 @@ ankerl::unordered_dense::map<
     return map;
 }();
 
-ankerl::unordered_dense::map<
-    std::string,
-    RapidCommandFn,
-    RapidHash,
-    std::equal_to<>
-> Internal::AuxCommandMap = [] {
-    ankerl::unordered_dense::map<
-        std::string,
-        RapidCommandFn,
-        RapidHash,
-        std::equal_to<>
-    > map;
-    map.reserve(DEFAULT_COMMAND_CAPACITY);
-    // NOTE: The reserved size is small because we expect a limited number of commands.
-    // This can be adjusted based on the expected number of commands.
-    // Make sure to adjust the size if you add more commands.
-    return map;
-}();
+
+// buried in comments
+// ankerl::unordered_dense::map<
+//     std::string,
+//     RapidCommandFn,
+//     RapidHash,
+//     std::equal_to<>
+// > Internal::AuxCommandMap = [] {
+//     ankerl::unordered_dense::map<
+//         std::string,
+//         RapidCommandFn,
+//         RapidHash,
+//         std::equal_to<>
+//     > map;
+//     map.reserve(DEFAULT_COMMAND_CAPACITY);
+//     // NOTE: The reserved size is small because we expect a limited number of commands.
+//     // This can be adjusted based on the expected number of commands.
+//     // Make sure to adjust the size if you add more commands.
+//     return map;
+// }();
