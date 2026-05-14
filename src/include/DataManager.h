@@ -1,10 +1,9 @@
 #pragma once
 
 #include <string_view>
+#include <RapidTypes.h>
+#include <RiRiMacros.h>
 
-#include "RapidTypes.h"
-#include "RiRiMacros.h"
-#include "MemoryMaps.h"
 
 /**
  * @brief ### WARNING: INTERNAL ZONE

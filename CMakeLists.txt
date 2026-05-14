@@ -46,10 +46,8 @@ install(FILES ${PRIVATE_HEADERS}
 
 add_executable(riri
         src/cli/Main.cpp
-        src/core/Commands.cpp
         src/core/MemoryMaps.cpp
         src/core/DataManager.cpp
-        # Add more .cpp files here as needed
 )
 
 # Define preprocessor macros

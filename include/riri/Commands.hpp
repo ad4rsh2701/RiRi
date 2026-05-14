@@ -21,28 +21,54 @@ namespace RiRi {
 
         /**
          * @namespace RiRi::Commands
-         * @brief Contains all command functions for the RiRi key-value store.
+         * @brief Contains all command functions of RiRi
          *
-         * Command functions should be of the type:
-         * `RiRi::Error::RiRiResult<std::string_view>(*)(const std::span<RapidNode> args)`.
-         *
-         * This namespace includes functions for setting, getting, updating, deleting keys, retrieving all keys, clearing the store, auto-setting keys, and searching by value.
-         * @note - Each command function is designed to handle a specific operation on the key-value store (map).
-         * @note - The command name is expected to be stripped before calling these functions.
+         * This namespace includes functions for setting, getting, updating, deleting keys,
+         * retrieving all keys,clearing the store, auto-setting keys, and searching by value.
          */
         namespace Commands {
-                // Respective Command Functions
 
                 //SET
+
                 /**
-                 * @brief Sets a key to a value. Also supports bulk key-value pairs.
-                 * @param args Parsed arguments of the type: `span` of `RapidNode`: `{ {key, value}, {key2, value2}, ... }`
-                 * @return "OK (N keys set)" where N is the number of key-value pairs set, or an error message.
-                 * @note The command name (`SET`) is already removed before this function is called.
-                 *       The args vector only contains the remaining arguments.
+                 * @brief Stores a single key-value pair in the data store without the need for RapidNode creation.
+                 *
+                 * @note This is a user-friendly implementation requiring no creation of RapidNode prior.
+                 * @note This overload of the SET function DOES NOT support key-value pairs.
+                 *
+                 * @param key a `string` value; can be either copied to or moved into
+                 * @param value a `RapidDataType` value; can be either copied to or moved into
+                 * @return A `RapidResponse` object containing `StatusCode`
                  */
-                RIRI_API Response::RapidResponse SET(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull SET(std::span<RapidNode> args, enableFullResponse);
+                RIRI_API Response::RapidResponse SET(std::string key, RapidDataType value);
+
+                /**
+                 * @brief Stores key-value pairs in the data store (best effort approach).
+                 * Supports bulk key-value pairs.
+                 * @param nodes a `span` of `RapidNode`: `{ node1, node2, ... }`
+                 * @return A `RapidResponse` object containing `StatusCode`
+                 * @note To enable verbose response and get per-key diagnostics, pass the
+                 * enableFullResponse tag and switch to handling RapidResponseFull object.
+                 */
+                RIRI_API Response::RapidResponse SET(std::span<RapidNode> nodes);
+
+                /**
+                 * @brief Stores key-value pairs in the data store (best effort approach).
+                 * Supports bulk key-value pairs and provides a verbose response.
+                 * @param nodes a `span` of `RapidNode`: `{ node1, node2, ... }`
+                 * @return A `RapidResponseFull` object containing `StatusCode` for overall status code, and a buffer
+                 * containing ERROR responses as a key-error_code pair: `{ {key1, ERR_}, {key2, ERR_} }`.
+                 *
+                 * @note RapidResponseFull essentially returns a list of keys that "failed" to get inserted into the map
+                 * along with why the specific key failed to insert (per key diagnostics).
+                 *
+                 * If the overall code is ERR_SOME_OPERATIONS_FAILED, all errors are in the response. However, if the
+                 * overall code is ERR_MULTIPLE_OPERATIONS_FAILED, there are more errors than what the response is showing.
+                 *
+                 * @warning There is a hard error-tracking limit (default 8). If this limit is exceeded, this function will still
+                 * attempt to insert the remaining keys, but any further errors will be dropped from the response buffer.
+                 */
+                RIRI_API Response::RapidResponseFull SET(std::span<RapidNode> nodes, enableFullResponse);
 
                 //GET
                 /**

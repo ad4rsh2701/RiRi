@@ -1,9 +1,10 @@
-#include "../include/DataManager.h"
+#include <DataManager.h>
+#include <MemoryMaps.h>
 
 using namespace RiRi;
 
 bool Internal::setValue(std::string&& key, RapidDataType&& value) noexcept {
-    return Internal::MemoryMap.insert({std::move(key), value}).second;
+    return Internal::MemoryMap.try_emplace(std::move(key), std::move(value)).second;
 }
 
 
