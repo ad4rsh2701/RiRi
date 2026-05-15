@@ -133,7 +133,7 @@ namespace RiRi::Response {
          * @brief Returns the response of the container
          * @return StatusCode
          */
-        constexpr StatusCode code() const noexcept {
+        [[nodiscard]] constexpr StatusCode code() const noexcept {
             return response;
         }
 
@@ -141,7 +141,7 @@ namespace RiRi::Response {
          * @brief Checks if the response status is successful.
          * @return `true` if the response status is `StatusCode::OK`, otherwise false.
          */
-        constexpr bool ok() const noexcept {
+        [[nodiscard]] constexpr bool ok() const noexcept {
             return response == StatusCode::OK;
         }
     };
@@ -160,8 +160,8 @@ namespace RiRi::Response {
      * Made with agony for the 10% use cases :D
      *
      * @note Success cases are not tracked, and the absence of keys in the response means the set was successful
-     * unless the overall code is `ERR_MULTIPLE_OPERATIONS_FAILED`, in which case... good luck ig (you bought this
-     * on yourself honestly).
+     * unless the overall code is `ERR_MULTIPLE_OPERATIONS_FAILED`, in which case... good luck I guess(you bought
+     * this on yourself honestly).
      *
      * @note The tracking capacity is manually set; by default, set to 8. This means only 8 errors will be
      * reported. If there are more errors than the tracking capacity, the overall status code becomes
@@ -260,7 +260,7 @@ namespace RiRi::Response {
          * @brief Checks whether the overall status code is `StatusCode::OK`.
          * @return True if the overall status code is `StatusCode::OK`, otherwise false.
          */
-        constexpr bool ok() const noexcept {
+        [[nodiscard]] constexpr bool ok() const noexcept {
             return _overall_code == StatusCode::OK;
         }
 
@@ -268,7 +268,7 @@ namespace RiRi::Response {
          * @brief Getter to return the overall status code
          * @return _overall_code
          */
-        constexpr StatusCode code() const noexcept {
+        [[nodiscard]] constexpr StatusCode code() const noexcept {
             return _overall_code;
         }
 
@@ -276,7 +276,7 @@ namespace RiRi::Response {
          * @brief Getter to return the total number of failures
          * @return _failure_count
          */
-        constexpr std::uint32_t totalFailures() const noexcept {
+        [[nodiscard]] constexpr std::uint32_t totalFailures() const noexcept {
             return _failure_count;
         }
 
@@ -295,14 +295,14 @@ namespace RiRi::Response {
          * @brief Provides a constant iterator pointing to the beginning of the `failures` collection.
          * @return A pointer to the first error entry in the failure collection.
          */
-        constexpr auto begin() const noexcept { return _failures; }
+        [[nodiscard]] constexpr auto begin() const noexcept { return _failures; }
 
         /**
          * @brief Provides a constant iterator pointing to the end of the `failures` collection.
          * @return A pointer to one past the last error entry in the failure collection.
          */
-        constexpr auto end() const noexcept {
-            // only iterate upto the capacity or failure count; whichever is lower
+        [[nodiscard]] constexpr auto end() const noexcept {
+            // only iterate up to the capacity or failure count; whichever is lower
             return _failures + (_failure_count > _capacity ? _capacity : _failure_count);
         }
 
@@ -346,9 +346,11 @@ namespace RiRi::Response {
          */
         using EntryType = std::pair<std::string_view, ValueOrStatus>;
 
-        // Just in case my future self decides to make the EntryType trivially non-destructible.
+        // Just in case my future self decides to make the EntryType trivially non-destructible/copyable.
         static_assert(std::is_trivially_destructible_v<EntryType>,
-          "EntryType must be trivially destructible!!! Don't Forget!");
+          "EntryType must be trivially destructible!!!");
+        static_assert(std::is_trivially_copyable_v<EntryType>,
+          "EntryType must be trivially copyable!!!");
         // A little reminder for him when his code doesn't compile.
 
         constexpr RapidResponseValue() noexcept
@@ -392,7 +394,7 @@ namespace RiRi::Response {
             // Allocate a new heap buffer of the new capacity.
             auto new_dynamic_store = std::make_unique<EntryType[]>(new_capacity);
 
-            // Copy elements from old buffer to new buffer (safe to do so; EntryType is trivially copyable)
+            // Copy elements from the old buffer to the new buffer (safe to do so; EntryType is trivially copyable)
             std::memcpy(new_dynamic_store.get(), _entries, _entry_count * sizeof(EntryType));
             // Using `memcpy` for now (trivially copyable types only, enforced by static_assert above).
             // Will switch to `std::uninitialized_move` if EntryType becomes non-trivial in the future.
@@ -413,7 +415,7 @@ namespace RiRi::Response {
          * @brief Getter to return the overall status code
          * @return _overall_code
          */
-        constexpr StatusCode code() const noexcept {
+        [[nodiscard]] constexpr StatusCode code() const noexcept {
             return _overall_code;
         }
 
@@ -421,7 +423,7 @@ namespace RiRi::Response {
          * @brief Checks whether the overall status code is `StatusCode::OK`.
          * @return True if the overall status code is `StatusCode::OK`, otherwise false.
          */
-        constexpr bool ok() const noexcept {
+        [[nodiscard]] constexpr bool ok() const noexcept {
             return _overall_code == StatusCode::OK;
         }
 
@@ -469,13 +471,13 @@ namespace RiRi::Response {
         * @brief Provides a constant iterator pointing to the beginning of the `entries` collection.
         * @return A pointer to the first error entry in the `entries` collection.
         */
-        constexpr auto begin() const noexcept { return _entries; }
+        [[nodiscard]] constexpr auto begin() const noexcept { return _entries; }
 
         /**
          * @brief Provides a constant iterator pointing to the end of the `entries` collection.
          * @return A pointer to one past the last error entry in the `entries` collection.
          */
-        constexpr auto end() const noexcept { return _entries + _entry_count; }
+        [[nodiscard]] constexpr auto end() const noexcept { return _entries + _entry_count; }
 
     };
 }
