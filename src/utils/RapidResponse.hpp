@@ -45,7 +45,8 @@ namespace RiRi::Response {
             // Will add more as I see fit.
 
         // INFO CODES (100-199)
-            // Nothing here, for now.
+        ORPHANED = 100,                         // Default uninitialized state (equivalent to UNSET in other similar systems).
+            // Basically, the response is currently empty and pending assignment.
 
         // WARNING CODES (200-299)
         WARN_KEY_STORE_NEARING_CAPACITY = 200,  // COMMAND LEVEL
@@ -160,7 +161,7 @@ namespace RiRi::Response {
      * Made with agony for the 10% use cases :D
      *
      * @note Success cases are not tracked, and the absence of keys in the response means the set was successful
-     * unless the overall code is `ERR_MULTIPLE_OPERATIONS_FAILED`, in which case... good luck I guess(you bought
+     * unless the overall code is `ERR_MULTIPLE_OPERATIONS_FAILED`, in which case... good luck I guess (you bought
      * this on yourself honestly).
      *
      * @note The tracking capacity is manually set; by default, set to 8. This means only 8 errors will be
