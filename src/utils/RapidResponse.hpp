@@ -5,6 +5,7 @@
 #include <utility>
 #include <memory>
 #include <new>
+#include <concepts>
 
 #include <RapidTypes.h>
 
@@ -308,6 +309,35 @@ namespace RiRi::Response {
         }
 
         // you're welcome for the iterators.
+    };
+
+
+    /**
+     * @brief A single-status-value response class
+     * This class encapsulates the response status code and a RapidDataType object (value).
+     * @note This class does not own memory
+     */
+    class RapidResponseOneValue {
+
+        const RapidDataType* _value = nullptr;
+        StatusCode _status_code = StatusCode::ORPHANED;
+
+    public:
+
+        [[nodiscard]] StatusCode code() const noexcept { return _status_code; }
+
+        [[nodiscard]] bool ok() const noexcept { return _status_code == StatusCode::OK; }
+
+        [[nodiscard]] const RapidDataType* value () const noexcept { return _value; }
+
+        void fill(const RapidDataType* value, const StatusCode code) noexcept {
+            _value = value;
+            _status_code = code;
+        }
+
+        void setValue(const RapidDataType* ptr) noexcept { _value = ptr; }
+
+        void setCode(const StatusCode code) noexcept { _status_code = code; }
     };
 
 
