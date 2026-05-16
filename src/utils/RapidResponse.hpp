@@ -13,7 +13,7 @@
 static constexpr size_t TRACKING_CAPACITY = 8;
 
 /// This constant defines the number of ValueOrStatus entries to be tracked
-static constexpr size_t VALUE_TRACKING_CAPACITY = 16;
+static constexpr size_t VALUE_TRACKING_CAPACITY = 8;
 
 /**
  * @brief RiRi's custom response system
