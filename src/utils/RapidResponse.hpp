@@ -114,14 +114,14 @@ namespace RiRi::Response {
      * Though let's be honest, you will still most likely use this, 90% of the time.
      *
      */
-    class RapidResponse {
+    class Status {
 
     public:
         // Default constructor initializes `response` to the most common case.
-        RapidResponse() noexcept : response(StatusCode::OK) {}
+        Status() noexcept : response(StatusCode::OK) {}
 
         // Explicit constructor to initialize `response` with StatusCode types.
-        explicit RapidResponse(StatusCode status_code) noexcept : response(status_code) {}
+        explicit Status(StatusCode status_code) noexcept : response(status_code) {}
 
     private:
         /// Represents a single status outcome — either from a single operation
@@ -130,7 +130,7 @@ namespace RiRi::Response {
 
     public:
 
-        constexpr void addCode(StatusCode status_code) noexcept {
+        constexpr void setCode(StatusCode status_code) noexcept {
             response = status_code;
         }
 
