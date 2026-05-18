@@ -1,13 +1,16 @@
 #pragma once
 
+#include <concepts>
 #include <cstdint>
-#include <string_view>
-#include <utility>
 #include <memory>
 #include <new>
-#include <concepts>
-
+#include <string_view>
+#include <utility>
 #include <RapidTypes.h>
+
+
+template <typename T>
+concept ResponseField = std::same_as<T, const RapidDataType*> || std::same_as<T, std::string_view>;
 
 /// This constant defines the number of errors to be tracked
 static constexpr size_t TRACKING_CAPACITY = 8;
@@ -313,13 +316,14 @@ namespace RiRi::Response {
 
 
     /**
-     * @brief A single-status-value response class
-     * This class encapsulates the response status code and a RapidDataType object (value).
+     * @brief A single status-field response class
+     * This class encapsulates the response status code and a field value of the type ResponseField.
      * @note This class does not own memory
      */
-    class RapidResponseOneValue {
+    template<ResponseField T>
+    class StatusWith {
 
-        const RapidDataType* _value = nullptr;
+        T _field { };
         StatusCode _status_code = StatusCode::ORPHANED;
 
     public:
@@ -328,14 +332,14 @@ namespace RiRi::Response {
 
         [[nodiscard]] bool ok() const noexcept { return _status_code == StatusCode::OK; }
 
-        [[nodiscard]] const RapidDataType* value () const noexcept { return _value; }
+        [[nodiscard]] T field () const noexcept { return _field; }
 
-        void fill(const RapidDataType* value, const StatusCode code) noexcept {
-            _value = value;
+        void fill(const StatusCode code, T response_field) noexcept {
+            _field = response_field;
             _status_code = code;
         }
 
-        void setValue(const RapidDataType* ptr) noexcept { _value = ptr; }
+        void setField(T response_field) noexcept { _field = response_field; }
 
         void setCode(const StatusCode code) noexcept { _status_code = code; }
     };
