@@ -172,7 +172,8 @@ namespace RiRi::Response {
      * reported. If there are more errors than the tracking capacity, the overall status code becomes
      * ERR_MULTIPLE_OPERATIONS_FAILED and the rest of the errors are not tracked.
      */
-    class RapidResponseFull {
+    template <ResponseField F>
+    class StatusErrorBatchWith {
 
         // `RapidResponseFull` does four things:
         // 1. Captures a blob or block of memory, statically.
@@ -198,9 +199,9 @@ namespace RiRi::Response {
          * - `key3: ERR_KEY_NOT_FOUND`
          * - `key7: ERR_KEY_NOT_FOUND`
          */
-        using ErrorEntryType = std::pair<std::string_view, StatusCode>;
+        using ErrorEntryType = std::pair<F, StatusCode>;
 
-        RapidResponseFull() noexcept {
+        constexpr StatusErrorBatchWith() noexcept {
             // Pointer now points to the ERROR_STORE and will move by `ErrorEntryType`
             _failures = reinterpret_cast<ErrorEntryType*>(_error_store);
             // "Good Programming Principles," they said, "it will be less repetitive," they said.
@@ -242,10 +243,10 @@ namespace RiRi::Response {
          * @brief Adds a OPERATION_TARGET-STATUS_CODE pair to the Response's memory blob,
          * only if there is no overflow.
          *
-         * @param operation_target : The target of an operation or an operation itself.
+         * @param field_target : The target of an operation or an operation itself.
          * @param error_code : The error code concerning the operation target.
          */
-        void addFailure(std::string_view operation_target, StatusCode error_code) noexcept {
+        void addErrorEntry(F field_target, StatusCode error_code) noexcept {
 
             // We will always increase the failure count to keep track of the number of failures
             ++_failure_count;
@@ -255,7 +256,7 @@ namespace RiRi::Response {
             // A very neat use of `new`
             // Basically, we are "constructing" the pair at the `failures` position (`failure_count`).
             // Oh and yes, the memory is properly aligned and pre-allocated.
-            new(&_failures[_failure_count]) ErrorEntryType{operation_target, error_code};
+            new(&_failures[_failure_count]) ErrorEntryType{field_target, error_code};
 
             // And update the OverallCode to ERR_SOME_OPERATIONS_FAILED (406) as well.
             _overall_code = StatusCode::ERR_SOME_OPERATIONS_FAILED;
@@ -281,7 +282,7 @@ namespace RiRi::Response {
          * @brief Getter to return the total number of failures
          * @return _failure_count
          */
-        [[nodiscard]] constexpr std::uint32_t totalFailures() const noexcept {
+        [[nodiscard]] constexpr std::uint32_t totalErrorCount() const noexcept {
             return _failure_count;
         }
 
