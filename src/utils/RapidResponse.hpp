@@ -320,10 +320,10 @@ namespace RiRi::Response {
      * This class encapsulates the response status code and a field value of the type ResponseField.
      * @note This class does not own memory
      */
-    template<ResponseField T>
+    template<ResponseField F>
     class StatusWith {
 
-        T _field { };
+        F _field { };
         StatusCode _status_code = StatusCode::ORPHANED;
 
     public:
@@ -332,14 +332,14 @@ namespace RiRi::Response {
 
         [[nodiscard]] bool ok() const noexcept { return _status_code == StatusCode::OK; }
 
-        [[nodiscard]] T field () const noexcept { return _field; }
+        [[nodiscard]] F field () const noexcept { return _field; }
 
-        void fill(const StatusCode code, T response_field) noexcept {
+        void fill(const StatusCode code, F response_field) noexcept {
             _field = response_field;
             _status_code = code;
         }
 
-        void setField(T response_field) noexcept { _field = response_field; }
+        void setField(F response_field) noexcept { _field = response_field; }
 
         void setCode(const StatusCode code) noexcept { _status_code = code; }
     };
