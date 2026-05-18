@@ -363,11 +363,12 @@ namespace RiRi::Response {
     * @note Regardless of the size of the static blob, the entirety of requested values (or StatusCode)
     * will be returned, nothing will be dropped.
      */
-    class RapidResponseValue{
+    template <ResponseField F1, ResponseField F2>
+    class StatusBatchWith{
     public:
 
         /// Either `Value` or `StatusCode` will be returned per fetch request
-        using ValueOrStatus = std::variant<RapidDataType*, StatusCode>;
+        using ResultOrStatus = std::variant<F2, StatusCode>;
 
         /**
          * @brief Represents each OPERATIONS_TARGET-VALUE_OR_STATUS pair; this is how RiRi will carry
@@ -379,7 +380,7 @@ namespace RiRi::Response {
          * - `Key2: ERR_KEY_NOT_FOUND`
          * - `Key3: Val3`
          */
-        using EntryType = std::pair<std::string_view, ValueOrStatus>;
+        using EntryType = std::pair<F1, ResultOrStatus>;
 
         // Just in case my future self decides to make the EntryType trivially non-destructible/copyable.
         static_assert(std::is_trivially_destructible_v<EntryType>,
@@ -388,7 +389,7 @@ namespace RiRi::Response {
           "EntryType must be trivially copyable!!!");
         // A little reminder for him when his code doesn't compile.
 
-        constexpr RapidResponseValue() noexcept
+        constexpr StatusBatchWith() noexcept
         :_entries{reinterpret_cast<EntryType *>(_static_store)},
         _entry_count{0},
         _capacity{VALUE_TRACKING_CAPACITY}
@@ -468,7 +469,7 @@ namespace RiRi::Response {
          * @param operation_target : The target of an operation or an operation itself.
          * @param entry : The value concerning the target.
          */
-        void addValue(std::string_view operation_target, RapidDataType* entry) noexcept {
+        void addResultEntry(F1 target_field, F2 result_field) noexcept {
             // We are going to update the OverallCode early, since this is the only error
             // code this function can return.
             // Update: We don't need to update the status code at all. This is the "OK" case,
@@ -480,17 +481,20 @@ namespace RiRi::Response {
             }
 
             // Construct OPERATION_TARGET-VALUE in STORE at entry_count.
-            new(&_entries[_entry_count]) EntryType{operation_target, entry};
+            new(&_entries[_entry_count]) EntryType{target_field, result_field};
             ++_entry_count;
         }
 
         /**
          * @brief Adds a OPERATION_TARGET-STATUS_CODE pair to the Response's memory blob.
-         * @param operation_target : The target of an operation or an operation itself
+         * @param target_field : The target of an operation or an operation itself
          * @param status_code : The value concerning the target
          */
-        void addStatus(std::string_view operation_target, StatusCode status_code) noexcept {
+        void addStatusEntry(F1 target_field, StatusCode status_code) noexcept {
             // shrugieeee
+
+            // TO-be-DO: THIS IS WRONG NOW, ADD A SIMPLE ERROR CODE CHECKER
+            // TO CHECK IF IT'S ACTUALLY AN ERROR CODE OR NOT AND THEN UPDATE
             _overall_code = StatusCode::ERR_SOME_OPERATIONS_FAILED;
 
             if (_entry_count >= _capacity) {
@@ -498,7 +502,7 @@ namespace RiRi::Response {
             }
 
             // Construct OPERATION_TARGET-STATUS_CODE in STORE at entry_count.
-            new(&_entries[_entry_count]) EntryType{operation_target, status_code};
+            new(&_entries[_entry_count]) EntryType{target_field, status_code};
             ++_entry_count;
         }
 
