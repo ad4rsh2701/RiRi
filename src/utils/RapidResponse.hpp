@@ -143,6 +143,8 @@ namespace RiRi::Response {
     class Status {
 
     public:
+        // default formality constructor
+        constexpr Status() noexcept = default;
         // Explicit constructor to initialize `_status_code` with StatusCode types.
         explicit Status(StatusCode status_code) noexcept : _status_code(status_code) {}
 
