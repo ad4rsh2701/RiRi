@@ -236,6 +236,18 @@ namespace RiRi::Response {
         StatusErrorBatchWith(const StatusErrorBatchWith&) = delete;
         StatusErrorBatchWith& operator=(const StatusErrorBatchWith&) = delete;
 
+        // move constructor (in case NRVO fails; likely never)
+        StatusErrorBatchWith(StatusErrorBatchWith&& obj) noexcept
+        : _overall_code(obj._overall_code),
+        _failure_count(obj._failure_count),
+        _capacity(obj._capacity)
+        {
+            std::memcpy(_error_store, obj._error_store, _capacity * sizeof(ErrorEntryType));
+
+            // reset
+            obj._failure_count = 0;
+            obj._overall_code = StatusCode::OK;
+        }
 
     private:
 
@@ -474,6 +486,7 @@ namespace RiRi::Response {
             // resetting our obj
             obj._entries = reinterpret_cast<EntryType*>(obj._static_store);
             obj._entry_count = 0;
+            obj._overall_code = StatusCode::ORPHANED;
         }
 
     private:
