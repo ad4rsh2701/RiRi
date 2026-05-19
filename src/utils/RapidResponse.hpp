@@ -457,6 +457,25 @@ namespace RiRi::Response {
         StatusBatchWith(const StatusBatchWith&) = delete;
         StatusBatchWith& operator=(const StatusBatchWith&) = delete;
 
+        // move constructor (in case NRVO fails; likely never)
+        StatusBatchWith(StatusBatchWith&& obj) noexcept
+        : _overall_code(obj._overall_code),
+        _dynamic_store(std::move(obj._dynamic_store)),
+        _entry_count(obj._entry_count),
+        _capacity(obj._capacity)
+        {
+            // if static buffer, we copy it.
+            if (obj._entries == reinterpret_cast<EntryType *>(obj._static_store)) {
+                std::memcpy(_static_store, obj._static_store, _entry_count * sizeof(EntryType));
+            } else {
+                // else it's dynamic, so we just snatch it.
+                _entries = obj._entries;
+            }
+            // resetting our obj
+            obj._entries = reinterpret_cast<EntryType*>(obj._static_store);
+            obj._entry_count = 0;
+        }
+
     private:
         /// The initial status code `ORPHANED`
         StatusCode _overall_code = StatusCode::ORPHANED;
