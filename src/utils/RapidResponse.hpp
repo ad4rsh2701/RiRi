@@ -151,7 +151,10 @@ namespace RiRi::Response {
         StatusCode _status_code;
 
     public:
-
+        /**
+         * @brief Setter to set the status code of the response
+         * @param status_code The status code to be set
+         */
         constexpr void setCode(const StatusCode status_code) noexcept {
             _status_code = status_code;
         }
@@ -347,24 +350,52 @@ namespace RiRi::Response {
     template<ResponseField F>
     class StatusWith {
 
+        /// The field value: initialized to default values
         F _field { };
+
+        /// The status code: initialized to the default status code ORPHANED
         StatusCode _status_code = StatusCode::ORPHANED;
 
     public:
 
+        /**
+         * @brief Getter to return the overall status code
+         * @return _status_code
+         */
         [[nodiscard]] StatusCode code() const noexcept { return _status_code; }
 
+        /**
+         * @brief Checks whether the status code is `StatusCode::OK`.
+         * @return True if the status code is `StatusCode::OK`, otherwise false.
+         */
         [[nodiscard]] bool ok() const noexcept { return _status_code == StatusCode::OK; }
 
+        /**
+         * @brief Getter to return the field object
+         * @return ResponseField type object
+         */
         [[nodiscard]] F field () const noexcept { return _field; }
 
+        /**
+         * @brief Common setter to set both the status code and the field values
+         * @param code The status code of type StatusCode
+         * @param response_field The field of type ResponseField to set
+         */
         void fill(const StatusCode code, F response_field) noexcept {
             _field = response_field;
             _status_code = code;
         }
 
+        /**
+         * @brief Setter to set the field value of the response
+         * @param response_field The field of type ResponseField
+         */
         void setField(F response_field) noexcept { _field = response_field; }
 
+        /**
+         * @brief Setter to set the status code of the response
+         * @param code The status code of type StatusCode
+         */
         void setCode(const StatusCode code) noexcept { _status_code = code; }
     };
 
@@ -477,7 +508,7 @@ namespace RiRi::Response {
 
         /**
          * @brief Internal helper for determining the general status code based on status code
-         * @param status_code
+         * @param status_code The StausCode to find the general code of.
          * @return StatusCode
          */
         [[nodiscard]] static constexpr StatusCode determine_general_code(const StatusCode status_code) noexcept {
@@ -489,7 +520,7 @@ namespace RiRi::Response {
 
         /**
          * @brief Internal overall code modifier based on status code
-         * @param status_code
+         * @param status_code The added StatusCode to update the overall code accordingly.
          */
         constexpr void escalate_overall_code(const StatusCode status_code) noexcept {
 
