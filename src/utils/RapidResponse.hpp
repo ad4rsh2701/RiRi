@@ -180,187 +180,6 @@ namespace RiRi::Response {
         }
     };
 
-    /**
-     * @brief Represents a Batched Status-Error response, used to track individual error status codes
-     * when a command operates on multiple inputs or when multiple errors need to be reported together.
-     *
-     * This essentially holds a list of "errors"
-     *
-     * For instance, this is what a stored response might look like:
-     *  [{"key2", StatusCode::KEY_NOT_FOUND}, {"Key3", StatusCode::INVALID_ARGS}, {...}, ...]
-     *
-     * Also holds and tracks the total number of errors.
-     *
-     * Made with agony for the 10% use cases :D
-     *
-     * @note Success cases are not tracked, and the absence of keys in the response means the set was successful
-     * unless the overall code is `ERR_MULTIPLE_OPERATIONS_FAILED`, in which case... good luck I guess (you bought
-     * this on yourself honestly).
-     *
-     * @note The tracking capacity is manually set; by default, set to 8. This means only 8 errors will be
-     * reported. If there are more errors than the tracking capacity, the overall status code becomes
-     * ERR_MULTIPLE_OPERATIONS_FAILED and the rest of the errors are not tracked.
-     *
-     * @note This class does not own the target field's memory
-     */
-    template <ResponseField F>
-    class StatusErrorBatchWith {
-
-        // `StatusErrorBatchWith` does four things:
-        // 1. Captures a blob or block of memory, statically.
-        // 2. Makes the compiler treat the blob as if it stores elements of type `ErrorEntryType`
-        //    (a pair of `ResponseField` and `StatusCode`).
-        // 3. Constructs and stores an `ErrorEntryType` when `addErrorEntry` is called and sets the status
-        //    code to `ERR_SOME_OPERATIONS_FAILED`.
-        // 4. If `addErrorEntry` is called beyond the blob’s capacity, the status is changed to
-        //    `ERR_MULTIPLE_OPERATIONS_FAILED`, and no further entries are added to the blob.
-
-    public:
-
-        /** @brief Represents a FIELD_TARGET-STATUS_CODE pair; this is how RiRi will carry individual
-         * status codes for each operation's target.
-         *
-         * FIELD_TARGET is of type `ResponseField` and is usually of the intended type `string_view`. However,
-         * since `ResponseField` can also be `RapidDataType`, it is also supported programmatically.
-         *
-         * For instance, the following could be how one may get the response when trying to delete multiple keys
-         * which don't exist in the map:
-         * - `key3: ERR_KEY_NOT_FOUND`
-         * - `key7: ERR_KEY_NOT_FOUND`
-         */
-        using ErrorEntryType = std::pair<F, StatusCode>;
-        static_assert(std::is_trivially_destructible_v<ErrorEntryType>, "EntryType must be trivially destructible!!!");
-        // Must be trivially destructible
-
-        // Delete the copy constructors
-        StatusErrorBatchWith(const StatusErrorBatchWith&) = delete;
-        StatusErrorBatchWith& operator=(const StatusErrorBatchWith&) = delete;
-
-        // move constructor (in case NRVO fails; likely never)
-        StatusErrorBatchWith(StatusErrorBatchWith&& obj) noexcept
-        : _overall_code(obj._overall_code),
-        _failure_count(obj._failure_count),
-        _capacity(obj._capacity)
-        {
-            std::memcpy(_error_store, obj._error_store, _capacity * sizeof(ErrorEntryType));
-
-            // reset
-            obj._failure_count = 0;
-            obj._overall_code = StatusCode::OK;
-        }
-
-    private:
-
-        /// The overall status code defaulted to OK; if it stays OK, you are fine (probably).
-        StatusCode _overall_code = StatusCode::OK;
-
-        /// A fixed blob or block of memory, which stores `ErrorEntryType` objects.
-        alignas(ErrorEntryType)
-        std::byte _error_store[TRACKING_CAPACITY * sizeof(ErrorEntryType)]{};
-
-        /// Pointer that will track error entries, initialized in constructor to point to ERROR_STORE
-        ErrorEntryType *_failures = reinterpret_cast<ErrorEntryType*>(_error_store);;     // Aptly named
-
-        // Pointer points to the ERROR_STORE and will move by `ErrorEntryType`
-        std::uint32_t _failure_count = 0;
-        std::uint8_t _capacity = TRACKING_CAPACITY;
-
-        /**
-         * @brief Checks if the number of failures has exceeded the specified capacity and modifies the `OverallCode`
-         * to `ERR_MULTIPLE_OPERATIONS_FAILED` if needed.
-         * @return True if the number of failures exceeds the capacity, otherwise false.
-         */
-        constexpr bool handle_overflow() noexcept {
-            // DEV NOTE: _failure_count is pre-incremented and represents the 1-based human count.
-            // We strictly use > instead of >= so the exact capacity-th item (e.g., the 8th error)
-            // evaluates to False, allowing it to be safely written to index [count - 1] (index 7).
-            // I WILL NOT TOUCH THIS CODE AGAIN. I AM DONE. PERIOD.
-            if (_failure_count > _capacity) {
-                _overall_code = StatusCode::ERR_MULTIPLE_OPERATIONS_FAILED;
-                return true;
-            }
-            return false;
-        }
-
-    public:
-        // At this point, everything should be very self-explainable.
-        /**
-         * @brief Adds a FIELD_TARGET-STATUS_CODE pair to the Response's memory blob,
-         * only if there is no overflow.
-         *
-         * @param field_target : The target of an operation or an operation itself.
-         * @param error_code : The error code concerning the operation target.
-         */
-        void addErrorEntry(F field_target, StatusCode error_code) noexcept {
-
-            // We will always increase the failure count to keep track of the number of failures
-            ++_failure_count;
-
-            if (handle_overflow()) return;
-
-            // A very neat use of `new`
-            // Basically, we are "constructing" the pair at the `failures` position (`failure_count`).
-            // Oh and yes, the memory is properly aligned and pre-allocated.
-            new(&_failures[_failure_count-1]) ErrorEntryType{field_target, error_code};
-
-            // And update the OverallCode to ERR_SOME_OPERATIONS_FAILED (406) as well.
-            _overall_code = StatusCode::ERR_SOME_OPERATIONS_FAILED;
-        }
-
-        /**
-         * @brief Checks whether the overall status code is `StatusCode::OK`.
-         * @return True if the overall status code is `StatusCode::OK`, otherwise false.
-         */
-        [[nodiscard]] constexpr bool ok() const noexcept {
-            return _overall_code == StatusCode::OK;
-        }
-
-        /**
-         * @brief Getter to return the overall status code
-         * @return _overall_code
-         */
-        [[nodiscard]] constexpr StatusCode code() const noexcept {
-            return _overall_code;
-        }
-
-        /**
-         * @brief Getter to return the total number of errors occurred, not
-         * necessarily equal to the number of entries in the response buffer.
-         * @return _failure_count
-         */
-        [[nodiscard]] constexpr std::uint32_t totalErrorCount() const noexcept {
-            return _failure_count;
-        }
-
-        /**
-         * @brief Resets the class state by clearing the failure count and
-         * setting the overall status code to `StatusCode::OK`.
-         */
-        constexpr void reset() noexcept {
-            _failure_count = 0;
-            _overall_code = StatusCode::OK;
-
-            // No destructors needed since we only hold trivially destructible types
-        }
-
-        /**
-         * @brief Provides a constant iterator pointing to the beginning of the `failures` collection.
-         * @return A pointer to the first error entry in the failure collection.
-         */
-        [[nodiscard]] constexpr auto begin() const noexcept { return _failures; }
-
-        /**
-         * @brief Provides a constant iterator pointing to the end of the `failures` collection.
-         * @return A pointer to one past the last error entry in the failure collection.
-         */
-        [[nodiscard]] constexpr auto end() const noexcept {
-            // only iterate up to the capacity or failure count; whichever is lower
-            return _failures + (_failure_count > _capacity ? _capacity : _failure_count);
-        }
-
-        // you're welcome for the iterators.
-    };
-
 
     /**
      * @brief A single status-field response class
@@ -686,6 +505,188 @@ namespace RiRi::Response {
          */
         [[nodiscard]] constexpr auto end() const noexcept { return _entries + _entry_count; }
 
+    };
+
+
+     /**
+     * @brief Represents a Batched Status-Error response, used to track individual error status codes
+     * when a command operates on multiple inputs or when multiple errors need to be reported together.
+     *
+     * This essentially holds a list of "errors"
+     *
+     * For instance, this is what a stored response might look like:
+     *  [{"key2", StatusCode::KEY_NOT_FOUND}, {"Key3", StatusCode::INVALID_ARGS}, {...}, ...]
+     *
+     * Also holds and tracks the total number of errors.
+     *
+     * Made with agony for the 10% use cases :D
+     *
+     * @note Success cases are not tracked, and the absence of keys in the response means the set was successful
+     * unless the overall code is `ERR_MULTIPLE_OPERATIONS_FAILED`, in which case... good luck I guess (you bought
+     * this on yourself honestly).
+     *
+     * @note The tracking capacity is manually set; by default, set to 8. This means only 8 errors will be
+     * reported. If there are more errors than the tracking capacity, the overall status code becomes
+     * ERR_MULTIPLE_OPERATIONS_FAILED and the rest of the errors are not tracked.
+     *
+     * @note This class does not own the target field's memory
+     */
+    template <ResponseField F>
+    class StatusErrorBatchWith {
+
+        // `StatusErrorBatchWith` does four things:
+        // 1. Captures a blob or block of memory, statically.
+        // 2. Makes the compiler treat the blob as if it stores elements of type `ErrorEntryType`
+        //    (a pair of `ResponseField` and `StatusCode`).
+        // 3. Constructs and stores an `ErrorEntryType` when `addErrorEntry` is called and sets the status
+        //    code to `ERR_SOME_OPERATIONS_FAILED`.
+        // 4. If `addErrorEntry` is called beyond the blob’s capacity, the status is changed to
+        //    `ERR_MULTIPLE_OPERATIONS_FAILED`, and no further entries are added to the blob.
+
+    public:
+
+        /** @brief Represents a FIELD_TARGET-STATUS_CODE pair; this is how RiRi will carry individual
+         * status codes for each operation's target.
+         *
+         * FIELD_TARGET is of type `ResponseField` and is usually of the intended type `string_view`. However,
+         * since `ResponseField` can also be `RapidDataType`, it is also supported programmatically.
+         *
+         * For instance, the following could be how one may get the response when trying to delete multiple keys
+         * which don't exist in the map:
+         * - `key3: ERR_KEY_NOT_FOUND`
+         * - `key7: ERR_KEY_NOT_FOUND`
+         */
+        using ErrorEntryType = std::pair<F, StatusCode>;
+        static_assert(std::is_trivially_destructible_v<ErrorEntryType>, "EntryType must be trivially destructible!!!");
+        // Must be trivially destructible
+
+        // Delete the copy constructors
+        StatusErrorBatchWith(const StatusErrorBatchWith&) = delete;
+        StatusErrorBatchWith& operator=(const StatusErrorBatchWith&) = delete;
+
+        // move constructor (in case NRVO fails; likely never)
+        StatusErrorBatchWith(StatusErrorBatchWith&& obj) noexcept
+        : _overall_code(obj._overall_code),
+        _failure_count(obj._failure_count),
+        _capacity(obj._capacity)
+        {
+            std::memcpy(_error_store, obj._error_store, _capacity * sizeof(ErrorEntryType));
+
+            // reset
+            obj._failure_count = 0;
+            obj._overall_code = StatusCode::OK;
+        }
+
+    private:
+
+        /// The overall status code defaulted to OK; if it stays OK, you are fine (probably).
+        StatusCode _overall_code = StatusCode::OK;
+
+        /// A fixed blob or block of memory, which stores `ErrorEntryType` objects.
+        alignas(ErrorEntryType)
+        std::byte _error_store[TRACKING_CAPACITY * sizeof(ErrorEntryType)]{};
+
+        /// Pointer that will track error entries, initialized in constructor to point to ERROR_STORE
+        ErrorEntryType *_failures = reinterpret_cast<ErrorEntryType*>(_error_store);;     // Aptly named
+
+        // Pointer points to the ERROR_STORE and will move by `ErrorEntryType`
+        std::uint32_t _failure_count = 0;
+        std::uint8_t _capacity = TRACKING_CAPACITY;
+
+        /**
+         * @brief Checks if the number of failures has exceeded the specified capacity and modifies the `OverallCode`
+         * to `ERR_MULTIPLE_OPERATIONS_FAILED` if needed.
+         * @return True if the number of failures exceeds the capacity, otherwise false.
+         */
+        constexpr bool handle_overflow() noexcept {
+            // DEV NOTE: _failure_count is pre-incremented and represents the 1-based human count.
+            // We strictly use > instead of >= so the exact capacity-th item (e.g., the 8th error)
+            // evaluates to False, allowing it to be safely written to index [count - 1] (index 7).
+            // I WILL NOT TOUCH THIS CODE AGAIN. I AM DONE. PERIOD.
+            if (_failure_count > _capacity) {
+                _overall_code = StatusCode::ERR_MULTIPLE_OPERATIONS_FAILED;
+                return true;
+            }
+            return false;
+        }
+
+    public:
+        // At this point, everything should be very self-explainable.
+        /**
+         * @brief Adds a FIELD_TARGET-STATUS_CODE pair to the Response's memory blob,
+         * only if there is no overflow.
+         *
+         * @param field_target : The target of an operation or an operation itself.
+         * @param error_code : The error code concerning the operation target.
+         */
+        void addErrorEntry(F field_target, StatusCode error_code) noexcept {
+
+            // We will always increase the failure count to keep track of the number of failures
+            ++_failure_count;
+
+            if (handle_overflow()) return;
+
+            // A very neat use of `new`
+            // Basically, we are "constructing" the pair at the `failures` position (`failure_count`).
+            // Oh and yes, the memory is properly aligned and pre-allocated.
+            new(&_failures[_failure_count-1]) ErrorEntryType{field_target, error_code};
+
+            // And update the OverallCode to ERR_SOME_OPERATIONS_FAILED (406) as well.
+            _overall_code = StatusCode::ERR_SOME_OPERATIONS_FAILED;
+        }
+
+        /**
+         * @brief Checks whether the overall status code is `StatusCode::OK`.
+         * @return True if the overall status code is `StatusCode::OK`, otherwise false.
+         */
+        [[nodiscard]] constexpr bool ok() const noexcept {
+            return _overall_code == StatusCode::OK;
+        }
+
+        /**
+         * @brief Getter to return the overall status code
+         * @return _overall_code
+         */
+        [[nodiscard]] constexpr StatusCode code() const noexcept {
+            return _overall_code;
+        }
+
+        /**
+         * @brief Getter to return the total number of errors occurred, not
+         * necessarily equal to the number of entries in the response buffer.
+         * @return _failure_count
+         */
+        [[nodiscard]] constexpr std::uint32_t totalErrorCount() const noexcept {
+            return _failure_count;
+        }
+
+        /**
+         * @brief Resets the class state by clearing the failure count and
+         * setting the overall status code to `StatusCode::OK`.
+         */
+        constexpr void reset() noexcept {
+            _failure_count = 0;
+            _overall_code = StatusCode::OK;
+
+            // No destructors needed since we only hold trivially destructible types
+        }
+
+        /**
+         * @brief Provides a constant iterator pointing to the beginning of the `failures` collection.
+         * @return A pointer to the first error entry in the failure collection.
+         */
+        [[nodiscard]] constexpr auto begin() const noexcept { return _failures; }
+
+        /**
+         * @brief Provides a constant iterator pointing to the end of the `failures` collection.
+         * @return A pointer to one past the last error entry in the failure collection.
+         */
+        [[nodiscard]] constexpr auto end() const noexcept {
+            // only iterate up to the capacity or failure count; whichever is lower
+            return _failures + (_failure_count > _capacity ? _capacity : _failure_count);
+        }
+
+        // you're welcome for the iterators.
     };
 }
 
