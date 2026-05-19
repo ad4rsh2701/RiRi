@@ -229,6 +229,8 @@ namespace RiRi::Response {
          * - `key7: ERR_KEY_NOT_FOUND`
          */
         using ErrorEntryType = std::pair<F, StatusCode>;
+        static_assert(std::is_trivially_destructible_v<ErrorEntryType>, "EntryType must be trivially destructible!!!");
+        // Must be trivially destructible
 
         constexpr StatusErrorBatchWith() noexcept {
             // Pointer now points to the ERROR_STORE and will move by `ErrorEntryType`
@@ -259,7 +261,7 @@ namespace RiRi::Response {
          * @return True if the number of failures exceeds the capacity, otherwise false.
          */
         constexpr bool handle_overflow() noexcept {
-            if (_failure_count > _capacity) {
+            if (_failure_count >= _capacity) {
                 _overall_code = StatusCode::ERR_MULTIPLE_OPERATIONS_FAILED;
                 return true;
             }
@@ -366,26 +368,26 @@ namespace RiRi::Response {
          * @brief Getter to return the overall status code
          * @return _status_code
          */
-        [[nodiscard]] StatusCode code() const noexcept { return _status_code; }
+        [[nodiscard]] constexpr StatusCode code() const noexcept { return _status_code; }
 
         /**
          * @brief Checks whether the status code is `StatusCode::OK`.
          * @return True if the status code is `StatusCode::OK`, otherwise false.
          */
-        [[nodiscard]] bool ok() const noexcept { return _status_code == StatusCode::OK; }
+        [[nodiscard]] constexpr bool ok() const noexcept { return _status_code == StatusCode::OK; }
 
         /**
          * @brief Getter to return the field object
          * @return ResponseField type object
          */
-        [[nodiscard]] F field () const noexcept { return _field; }
+        [[nodiscard]] constexpr F field () const noexcept { return _field; }
 
         /**
          * @brief Common setter to set both the status code and the field values
          * @param code The status code of type StatusCode
          * @param response_field The field of type ResponseField to set
          */
-        void fill(const StatusCode code, F response_field) noexcept {
+        void constexpr fill(const StatusCode code, F response_field) noexcept {
             _field = response_field;
             _status_code = code;
         }
@@ -394,13 +396,13 @@ namespace RiRi::Response {
          * @brief Setter to set the field value of the response
          * @param response_field The field of type ResponseField
          */
-        void setField(F response_field) noexcept { _field = response_field; }
+        void constexpr setField(F response_field) noexcept { _field = response_field; }
 
         /**
          * @brief Setter to set the status code of the response
          * @param code The status code of type StatusCode
          */
-        void setCode(const StatusCode code) noexcept { _status_code = code; }
+        void constexpr setCode(const StatusCode code) noexcept { _status_code = code; }
     };
 
 
@@ -445,13 +447,8 @@ namespace RiRi::Response {
          */
         using EntryType = std::pair<F1, ResultOrStatus>;
 
-        // We don't need static assert bloat when we got concepts
-        // ESPECIALLY INSIDE A TEMPLATE.
-        // // Just in case my future self decides to make the EntryType trivially non-destructible/copyable.
-        // static_assert(std::is_trivially_destructible_v<EntryType>,
-        //   "EntryType must be trivially destructible!!!");
-        // static_assert(std::is_trivially_copyable_v<EntryType>,
-        //   "EntryType must be trivially copyable!!!");
+        // Just in case my future self decides to make the EntryType trivially non-copyable.
+        static_assert(std::is_trivially_copyable_v<EntryType>, "EntryType must be trivially copyable!!!");
         // A little reminder for him when his code doesn't compile.
 
         constexpr StatusBatchWith() noexcept
@@ -529,8 +526,12 @@ namespace RiRi::Response {
          */
         [[nodiscard]] static constexpr StatusCode determine_general_code(const StatusCode status_code) noexcept {
             const auto val = static_cast<std::uint16_t>(status_code);
-            if (val < 200) return StatusCode::OK;         // success + info
+
+            // Success and Info codes can all be under OK general code
+            if (val < 200) return StatusCode::OK;
+            // Warnings
             if (val < 400) return StatusCode::WARN_RESPONSE_CONTAINS_WARNINGS;
+            // If not success, infor or warn; has to be error
             return StatusCode::ERR_SOME_OPERATIONS_FAILED;
         }
 
