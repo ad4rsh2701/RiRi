@@ -253,7 +253,7 @@ namespace RiRi::Response {
             // A very neat use of `new`
             // Basically, we are "constructing" the pair at the `failures` position (`failure_count`).
             // Oh and yes, the memory is properly aligned and pre-allocated.
-            new(&_failures[_failure_count]) ErrorEntryType{field_target, error_code};
+            new(&_failures[_failure_count-1]) ErrorEntryType{field_target, error_code};
 
             // And update the OverallCode to ERR_SOME_OPERATIONS_FAILED (406) as well.
             _overall_code = StatusCode::ERR_SOME_OPERATIONS_FAILED;
