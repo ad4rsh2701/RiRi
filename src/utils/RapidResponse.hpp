@@ -97,6 +97,10 @@ namespace RiRi::Response {
             // More to be added as RiRi grows.
             // Pretty sure I'd need more than 100
             // It looks like it's only for PARSER, but there will be THREAD, PERSISTENCE and SERVER levels too.
+
+        // SYSTEM ERROR CODES
+        ERR_OUT_OF_MEMORY = 600             // SYSTEM LEVEL
+            // fun
     };
 
     // helper functions to check what a status code's type is
