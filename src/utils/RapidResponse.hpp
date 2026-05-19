@@ -484,30 +484,42 @@ namespace RiRi::Response {
          * This method allocates a new buffer of larger size (by a factor of 1.5x) while copying the previous
          * existing elements of the older buffer.
          *
+         * @return True if the growth was successful, else false (in the case of OOM)
+         *
          * @note This operation is noexcept and assumes that `EntryType` is trivially copyable.
          */
-        void dynamically_grow() noexcept {
+        [[nodiscard]] bool dynamically_grow() noexcept {
             // Increases capacity dynamically (RIP ns performance, hello μs)
 
             // Increasing the capacity by 1.5x (new buffer RAHH)
             const std::uint32_t new_capacity = _capacity + _capacity / 2 + 8; // The +8 helps for small initial sizes
 
-            // Allocate a new heap buffer of the new capacity.
-            auto new_dynamic_store = std::make_unique<EntryType[]>(new_capacity);
+            // pointer to new dynamic store
+            std::unique_ptr<EntryType[]> new_dynamic_store;
 
+            // TRY to allocate a new heap buffer of the new capacity.
+            try {
+                new_dynamic_store = std::make_unique<EntryType[]>(new_capacity);
+            } catch (const std::bad_alloc&) {
+                // return false in case of Out of Memory (OOM)
+                return false;
+            }
             // Copy elements from the old buffer to the new buffer (safe to do so; EntryType is trivially copyable)
             std::memcpy(new_dynamic_store.get(), _entries, _entry_count * sizeof(EntryType));
-            // Using `memcpy` for now (trivially copyable types only, enforced by static_assert above).
+            // Using `memcpy` for now.
             // Will switch to `std::uninitialized_move` if EntryType becomes non-trivial in the future.
 
             // We move the new buffer into our class's ownership.
             _dynamic_store = std::move(new_dynamic_store);
-            // If we were previously on the heap, the old _heap_store's
+            // If we were previously on the heap, the old dynamic_store's
             // destructor is called automatically when we re-assign it,
             // freeing the old memory; perks of unique_ptr
 
             _entries = _dynamic_store.get();   // Point to the new buffer
             _capacity = new_capacity;          // Update capacity
+
+            // no bad alloc
+            return true;
         }
 
         /**
@@ -587,8 +599,14 @@ namespace RiRi::Response {
             // which is the default status code.
             // OverallCode = StatusCode::ERR_SOME_OPERATIONS_FAILED;
 
+            // if OOM, we bail
+            if (_overall_code == StatusCode::ERR_OUT_OF_MEMORY) return;
+
             if (_entry_count >= _capacity) {
-                dynamically_grow();
+                if (!dynamically_grow()) {
+                    _overall_code = StatusCode::ERR_OUT_OF_MEMORY;
+                    return;
+                }
             }
 
             // Construct OPERATION_TARGET-VALUE in STORE at entry_count.
@@ -608,8 +626,14 @@ namespace RiRi::Response {
         void addStatusEntry(F1 target_field, StatusCode status_code) noexcept {
             // shrugieeee
 
+            // if OOM, we bail
+            if (_overall_code == StatusCode::ERR_OUT_OF_MEMORY) return;
+
             if (_entry_count >= _capacity) {
-                dynamically_grow();
+                if (!dynamically_grow()) {
+                    _overall_code = StatusCode::ERR_OUT_OF_MEMORY;
+                    return;
+                };
             }
 
             // Construct OPERATION_TARGET-STATUS_CODE in STORE at entry_count.
