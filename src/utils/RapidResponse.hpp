@@ -247,10 +247,10 @@ namespace RiRi::Response {
         std::byte _error_store[TRACKING_CAPACITY * sizeof(ErrorEntryType)]{};
 
         /// Pointer that will track error entries, initialized in constructor to point to ERROR_STORE
-        ErrorEntryType *_failures = nullptr;     // Aptly named
+        ErrorEntryType *_failures = reinterpret_cast<ErrorEntryType*>(_error_store);;     // Aptly named
 
         // Pointer points to the ERROR_STORE and will move by `ErrorEntryType`
-        std::uint32_t _failure_count = reinterpret_cast<ErrorEntryType*>(_error_store);
+        std::uint32_t _failure_count = 0;
         std::uint8_t _capacity = TRACKING_CAPACITY;
 
         /**
