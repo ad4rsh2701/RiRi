@@ -481,13 +481,9 @@ namespace RiRi::Response {
          * @return StatusCode
          */
         [[nodiscard]] static constexpr StatusCode determine_general_code(const StatusCode status_code) noexcept {
-            if (isSuccess(status_code) || isInfo(status_code)) {
-                return StatusCode::OK;
-            }
-            if (isWarning(status_code)) {
-                return StatusCode::WARN_RESPONSE_CONTAINS_WARNINGS;
-            }
-            // If it's not success, info, or warning, it must be an error
+            const auto val = static_cast<std::uint16_t>(status_code);
+            if (val < 200) return StatusCode::OK;         // success + info
+            if (val < 400) return StatusCode::WARN_RESPONSE_CONTAINS_WARNINGS;
             return StatusCode::ERR_SOME_OPERATIONS_FAILED;
         }
 
@@ -497,16 +493,20 @@ namespace RiRi::Response {
          */
         constexpr void escalate_overall_code(const StatusCode status_code) noexcept {
 
-            // A tiny branch for cases like OK getting passed
-            // eh never mind, replacing a full register is faster than branching
-            // No wait, we need this, so that it doesn't go to that weird branch
-            // which computes general_code and stuff, not needed for same codes
-            if (_overall_code == status_code) { return; }
-
             // 0. nuke case, do nothing since nothing can escalate this
             if (_overall_code == StatusCode::ERR_MULTIPLE_OPERATIONS_FAILED) { return; }
 
             const StatusCode general_code = determine_general_code(status_code);
+
+            // A tiny branch for cases like OK getting passed
+            // eh never mind, replacing a full register is faster than branching
+            // No wait, we need this, so that it doesn't go to other heavier branches
+            // if (_overall_code == general_code) { return; }
+            // actually really nvm two branches is better anyway, and since
+            // one of the branches is just checking overall code, the compiler
+            // will never branch wrong with just two cases, the second branch isn't
+            // that heavy, and for same general codes, it never even executes into
+            // that branch anyway. <- What being at the office does to a guy
 
             // 1. If ORPHANED, just set
             if (_overall_code == StatusCode::ORPHANED) {
