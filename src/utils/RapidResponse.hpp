@@ -232,12 +232,9 @@ namespace RiRi::Response {
         static_assert(std::is_trivially_destructible_v<ErrorEntryType>, "EntryType must be trivially destructible!!!");
         // Must be trivially destructible
 
-        constexpr StatusErrorBatchWith() noexcept {
-            // Pointer now points to the ERROR_STORE and will move by `ErrorEntryType`
-            _failures = reinterpret_cast<ErrorEntryType*>(_error_store);
-            // "Good Programming Principles," they said, "it will be less repetitive," they said.
-            _capacity = TRACKING_CAPACITY;
-        }
+        // Delete the copy constructors
+        StatusErrorBatchWith(const StatusErrorBatchWith&) = delete;
+        StatusErrorBatchWith& operator=(const StatusErrorBatchWith&) = delete;
 
 
     private:
@@ -252,8 +249,9 @@ namespace RiRi::Response {
         /// Pointer that will track error entries, initialized in constructor to point to ERROR_STORE
         ErrorEntryType *_failures = nullptr;     // Aptly named
 
-        std::uint32_t _failure_count = 0;
-        std::uint8_t _capacity = 0;
+        // Pointer points to the ERROR_STORE and will move by `ErrorEntryType`
+        std::uint32_t _failure_count = reinterpret_cast<ErrorEntryType*>(_error_store);
+        std::uint8_t _capacity = TRACKING_CAPACITY;
 
         /**
          * @brief Checks if the number of failures has exceeded the specified capacity and modifies the `OverallCode`
@@ -455,13 +453,9 @@ namespace RiRi::Response {
         static_assert(std::is_trivially_copyable_v<EntryType>, "EntryType must be trivially copyable!!!");
         // A little reminder for him when his code doesn't compile.
 
-        constexpr StatusBatchWith() noexcept
-        :_entries{reinterpret_cast<EntryType *>(_static_store)},
-        _entry_count{0},
-        _capacity{VALUE_TRACKING_CAPACITY}
-        {
-            // *insert shrug here*
-        }
+        // Delete copy constructors
+        StatusBatchWith(const StatusBatchWith&) = delete;
+        StatusBatchWith& operator=(const StatusBatchWith&) = delete;
 
     private:
         /// The initial status code `ORPHANED`
@@ -474,10 +468,10 @@ namespace RiRi::Response {
         /// A unique pointer to manage an array of type EntryType
         std::unique_ptr<EntryType[]> _dynamic_store = nullptr;
 
-        /// Pointer that will track entries, initialized in constructor to point to STORE
-        EntryType *_entries = nullptr;
-        std::uint32_t _entry_count;
-        std::uint32_t _capacity;
+        /// Pointer that will track entries, initialized to point to _static_store
+        EntryType *_entries = reinterpret_cast<EntryType *>(_static_store);
+        std::uint32_t _entry_count = 0;
+        std::uint32_t _capacity = VALUE_TRACKING_CAPACITY;
 
         /**
          * @brief Increases the dynamic storage capacity for entries when the current capacity is not enough.
