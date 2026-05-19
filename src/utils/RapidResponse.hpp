@@ -143,16 +143,13 @@ namespace RiRi::Response {
     class Status {
 
     public:
-        // The default constructor initializes `_status_code` to the most common case.
-        Status() noexcept : _status_code(StatusCode::OK) {}
-
         // Explicit constructor to initialize `_status_code` with StatusCode types.
         explicit Status(StatusCode status_code) noexcept : _status_code(status_code) {}
 
     private:
         /// Represents a single status outcome — either from a single operation
         /// or an overall result when no per-operation diagnostics are needed.
-        StatusCode _status_code;
+        StatusCode _status_code = StatusCode::ORPHANED;
 
     public:
         /**
@@ -580,7 +577,7 @@ namespace RiRi::Response {
     private:
 
         /// The overall status code defaulted to OK; if it stays OK, you are fine (probably).
-        StatusCode _overall_code = StatusCode::OK;
+        StatusCode _overall_code = StatusCode::OK; // cannot be ORPHANED, we have no fn for success cases
 
         /// A fixed blob or block of memory, which stores `ErrorEntryType` objects.
         alignas(ErrorEntryType)
