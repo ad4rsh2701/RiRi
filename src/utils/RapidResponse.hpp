@@ -100,19 +100,18 @@ namespace RiRi::Response {
 
 
     /**
-     * @brief Represents a response class within the RapidResponse framework.
+     * @brief Represents a status containing response class within the Rapid Response System.
      *
-     * The `RapidResponse` class encapsulates the response status and
-     * provides helper functions within it to evaluate the `StatusCode` state.
+     * `Status` encapsulates the response status and provides helper
+     * functions within it to evaluate the `StatusCode` state.
      *
-     * It also provides a getter function to retrieve the response status.
+     * It also provides a getter function to retrieve the status code.
      *
      * This only holds the overall status code; even in cases where multiple
      * status codes might be required, in such cases, an appropriate status
-     * code showcasing the potential errors is used.
+     * code showcasing the potential errors may be used.
      *
      * Though let's be honest, you will still most likely use this, 90% of the time.
-     *
      */
     class Status {
 
