@@ -170,6 +170,8 @@ namespace RiRi::Response {
      * @note The tracking capacity is manually set; by default, set to 8. This means only 8 errors will be
      * reported. If there are more errors than the tracking capacity, the overall status code becomes
      * ERR_MULTIPLE_OPERATIONS_FAILED and the rest of the errors are not tracked.
+     *
+     * @note This class does not own the target field's memory
      */
     template <ResponseField F>
     class StatusErrorBatchWith {
@@ -317,7 +319,7 @@ namespace RiRi::Response {
     /**
      * @brief A single status-field response class
      * This class encapsulates the response status code and a field value of the type ResponseField.
-     * @note This class does not own memory
+     * @note This class does not own field's memory
      */
     template<ResponseField F>
     class StatusWith {
@@ -361,6 +363,7 @@ namespace RiRi::Response {
      *
     * @note Regardless of the size of the static blob, the entirety of requested values (or StatusCode)
     * will be returned, nothing will be dropped.
+    * @note This class does not own the memory of the Fields.
      */
     template <ResponseField F1, ResponseField F2>
     class StatusBatchWith{
