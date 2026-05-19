@@ -151,7 +151,7 @@ namespace RiRi::Response {
     };
 
     /**
-     * @brief Represents a full response structure used to track individual error status codes
+     * @brief Represents a Batched Status-Error response, used to track individual error status codes
      * when a command operates on multiple inputs or when multiple errors need to be reported together.
      *
      * This essentially holds a list of "errors"
@@ -174,24 +174,22 @@ namespace RiRi::Response {
     template <ResponseField F>
     class StatusErrorBatchWith {
 
-        // `RapidResponseFull` does four things:
+        // `StatusErrorBatchWith` does four things:
         // 1. Captures a blob or block of memory, statically.
         // 2. Makes the compiler treat the blob as if it stores elements of type `ErrorEntryType`
-        //    (a pair of `string_view` and `StatusCode`).
-        // 3. Constructs and stores an `ErrorEntryType` when `addFailure` is called and sets the status
+        //    (a pair of `ResponseField` and `StatusCode`).
+        // 3. Constructs and stores an `ErrorEntryType` when `addErrorEntry` is called and sets the status
         //    code to `ERR_SOME_OPERATIONS_FAILED`.
-        // 4. If `addFailure` is called beyond the blob’s capacity, the status is changed to
+        // 4. If `addErrorEntry` is called beyond the blob’s capacity, the status is changed to
         //    `ERR_MULTIPLE_OPERATIONS_FAILED`, and no further entries are added to the blob.
 
     public:
 
-        /** @brief Represents each OPERATION_TARGET-STATUS_CODE pair; this is how RiRi will carry individual
+        /** @brief Represents a FIELD_TARGET-STATUS_CODE pair; this is how RiRi will carry individual
          * status codes for each operation's target.
          *
-         * Operation Target? New term?
-         * Yes, not used widely at all inside RiRi, but understand that each operation has parameters or
-         * targets; more specifically, the target is the parameter that distinguishes or makes the said
-         * operation "identifiable".
+         * FIELD_TARGET is of type `ResponseField` and is usually of the intended type `string_view`. However,
+         * since `ResponseField` can also be `RapidDataType`, it is also supported programmatically.
          *
          * For instance, the following could be how one may get the response when trying to delete multiple keys
          * which don't exist in the map:
@@ -239,7 +237,7 @@ namespace RiRi::Response {
     public:
         // At this point, everything should be very self-explainable.
         /**
-         * @brief Adds a OPERATION_TARGET-STATUS_CODE pair to the Response's memory blob,
+         * @brief Adds a FIELD_TARGET-STATUS_CODE pair to the Response's memory blob,
          * only if there is no overflow.
          *
          * @param field_target : The target of an operation or an operation itself.
@@ -278,7 +276,8 @@ namespace RiRi::Response {
         }
 
         /**
-         * @brief Getter to return the total number of failures
+         * @brief Getter to return the total number of errors occurred, not
+         * necessarily equal to the number of entries in the response buffer.
          * @return _failure_count
          */
         [[nodiscard]] constexpr std::uint32_t totalErrorCount() const noexcept {
@@ -286,7 +285,7 @@ namespace RiRi::Response {
         }
 
         /**
-         * @brief Resets the RapidResponseFull state by clearing the failure count and
+         * @brief Resets the class state by clearing the failure count and
          * setting the overall status code to `StatusCode::OK`.
          */
         constexpr void reset() noexcept {
