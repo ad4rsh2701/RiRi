@@ -387,8 +387,8 @@ namespace RiRi::Response {
      * An example of a stored response:
      * [{"key2", "val2"}, {"key3", StatusCode::KEY_NOT_FOUND}, {...}, ...]
      *
-    * @note Regardless of the size of the static blob, the entirety of requested result (or StatusCode)
-    * will be returned, nothing will be dropped.
+    * @note Regardless of the size of the static blob, the entirety of the
+    * requested result (or StatusCode) will be returned, nothing will be dropped.
     * @note This class does not own the memory of the Fields.
      */
     template <ResponseField F1, ResponseField F2>
@@ -428,8 +428,8 @@ namespace RiRi::Response {
         }
 
     private:
-        /// The overall status code defaulted to `OK`. If errors, changes to `ERR_SOME_OPERATIONS_FAILED`
-        StatusCode _overall_code = StatusCode::OK;
+        /// The initial status code `ORPHANED`
+        StatusCode _overall_code = StatusCode::ORPHANED;
 
         /// A fixed blob or block of memory, which stores `EntryType` objects.
         alignas(EntryType)
@@ -475,6 +475,52 @@ namespace RiRi::Response {
             _capacity = new_capacity;          // Update capacity
         }
 
+        /**
+         * @brief Internal helper for determining the general status code based on status code
+         * @param status_code
+         * @return StatusCode
+         */
+        [[nodiscard]] static constexpr StatusCode determine_general_code(const StatusCode status_code) noexcept {
+            if (isSuccess(status_code) || isInfo(status_code)) {
+                return StatusCode::OK;
+            }
+            if (isWarning(status_code)) {
+                return StatusCode::WARN_RESPONSE_CONTAINS_WARNINGS;
+            }
+            // If it's not success, info, or warning, it must be an error
+            return StatusCode::ERR_SOME_OPERATIONS_FAILED;
+        }
+
+        /**
+         * @brief Internal overall code modifier based on status code
+         * @param status_code
+         */
+        constexpr void escalate_overall_code(const StatusCode status_code) noexcept {
+
+            // A tiny branch for cases like OK getting passed
+            // eh never mind, replacing a full register is faster than branching
+            // No wait, we need this, so that it doesn't go to that weird branch
+            // which computes general_code and stuff, not needed for same codes
+            if (_overall_code == status_code) { return; }
+
+            // 0. nuke case, do nothing since nothing can escalate this
+            if (_overall_code == StatusCode::ERR_MULTIPLE_OPERATIONS_FAILED) { return; }
+
+            const StatusCode general_code = determine_general_code(status_code);
+
+            // 1. If ORPHANED, just set
+            if (_overall_code == StatusCode::ORPHANED) {
+                _overall_code = general_code;
+                return;
+            }
+
+            // 2. Otherwise, update based on severity ranking
+            // OK (0) < WARN_ (250) < ERR_ (406)
+            if (static_cast<std::uint16_t>(general_code) > static_cast<std::uint16_t>(_overall_code)) {
+                _overall_code = general_code;
+            }
+        }
+
     public:
 
         /**
@@ -513,6 +559,10 @@ namespace RiRi::Response {
             // Construct OPERATION_TARGET-VALUE in STORE at entry_count.
             new(&_entries[_entry_count]) EntryType{target_field, result_field};
             ++_entry_count;
+
+            // Since both fields are being added, clearly everything is okay! So, we try to
+            // escalate the overall-code with OK to overwrite the initial case
+            escalate_overall_code(StatusCode::OK);
         }
 
         /**
@@ -523,10 +573,6 @@ namespace RiRi::Response {
         void addStatusEntry(F1 target_field, StatusCode status_code) noexcept {
             // shrugieeee
 
-            // TO-be-DO: THIS IS WRONG NOW, ADD A SIMPLE ERROR CODE CHECKER
-            // TO CHECK IF IT'S ACTUALLY AN ERROR CODE OR NOT AND THEN UPDATE
-            _overall_code = StatusCode::ERR_SOME_OPERATIONS_FAILED;
-
             if (_entry_count >= _capacity) {
                 dynamically_grow();
             }
@@ -534,6 +580,8 @@ namespace RiRi::Response {
             // Construct OPERATION_TARGET-STATUS_CODE in STORE at entry_count.
             new(&_entries[_entry_count]) EntryType{target_field, status_code};
             ++_entry_count;
+
+            escalate_overall_code(status_code);
         }
 
         /**
