@@ -261,7 +261,11 @@ namespace RiRi::Response {
          * @return True if the number of failures exceeds the capacity, otherwise false.
          */
         constexpr bool handle_overflow() noexcept {
-            if (_failure_count >= _capacity) {
+            // DEV NOTE: _failure_count is pre-incremented and represents the 1-based human count.
+            // We strictly use > instead of >= so the exact capacity-th item (e.g., the 8th error)
+            // evaluates to False, allowing it to be safely written to index [count - 1] (index 7).
+            // I WILL NOT TOUCH THIS CODE AGAIN. I AM DONE. PERIOD.
+            if (_failure_count > _capacity) {
                 _overall_code = StatusCode::ERR_MULTIPLE_OPERATIONS_FAILED;
                 return true;
             }
