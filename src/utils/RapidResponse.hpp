@@ -53,7 +53,8 @@ namespace RiRi::Response {
             // Basically, the response is currently empty and pending assignment.
 
         // WARNING CODES (200-299)
-        WARN_KEY_STORE_NEARING_CAPACITY = 200,  // COMMAND LEVEL
+        WARN_KEY_STORE_NEARING_CAPACITY = 200,      // COMMAND LEVEL
+        WARN_RESPONSE_CONTAINS_WARNINGS = 250,      // RESPONSE LEVEL
             // We might need warning codes, and a lot of them.
 
         // BUFFER RANGE (300-399)
@@ -97,6 +98,28 @@ namespace RiRi::Response {
             // Pretty sure I'd need more than 100
             // It looks like it's only for PARSER, but there will be THREAD, PERSISTENCE and SERVER levels too.
     };
+
+    // helper functions to check what a status code's type is
+
+    [[nodiscard]] constexpr bool isSuccess(StatusCode code) noexcept {
+        const auto val = static_cast<std::uint16_t>(code);
+        return val < 100;
+    }
+
+    [[nodiscard]] constexpr bool isInfo(StatusCode code) noexcept {
+        const auto val = static_cast<std::uint16_t>(code);
+        return val >= 100 && val < 200;
+    }
+
+    [[nodiscard]] constexpr bool isWarning(StatusCode code) noexcept {
+        const auto val = static_cast<std::uint16_t>(code);
+        return val >= 200 && val < 400; // Includes the 300-400 buffer range for now
+    }
+
+    [[nodiscard]] constexpr bool isError(StatusCode code) noexcept {
+        const auto val = static_cast<std::uint16_t>(code);
+        return val >= 400; // Covers errors and beyond
+    }
 
 
     /**
