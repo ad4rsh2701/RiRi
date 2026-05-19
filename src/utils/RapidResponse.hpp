@@ -347,21 +347,24 @@ namespace RiRi::Response {
 
 
     /**
-     * @brief Represents a value-returning response class to track individual values and error
-     * status codes when a command operates on multiple inputs or when multiple errors/values need
-     * to be reported together.
+     * @brief Represents a Batched Target_Field-Status_Field response class to track individual Target-Result
+     * or target-status_codes when a command operates on multiple targets or when multiple results/status codes
+     * need to be reported together.
      *
-     * `RapidResponseValue`'s functionality is largely similar to `RapidResponseFull` but
+     * `StatusBatchWith`'s functionality is largely similar to `StatusErrorBatchWith` but
      * with the following changes:
-     * - `EntryType` is a pair of `string_view` and either `StatusCode` or `RapidDataType*`
-     * - The default tracking (or value-returning capacity statically) is 16.
-     * - If `addFailure` or `addValue` is called beyond the static capacity, a dynamic array is initialized
-     *   and it grows dynamically.
+     * - `EntryType` is a pair of `ResponseField` (1) and either `StatusCode` or `ResponseField` (2)
+     * - The default tracking (or value-returning capacity statically) is 8.
+     * - If `addStatusEntry` or `addResultEntry` is called beyond the static capacity, a dynamic array is
+     *   initialized and it grows dynamically.
      *
-     * An example of a stored response containing a value and StatusCode:
+     * (1): The target field <- Input Field
+     * (2): The result field <- Output Field
+     *
+     * An example of a stored response:
      * [{"key2", "val2"}, {"key3", StatusCode::KEY_NOT_FOUND}, {...}, ...]
      *
-    * @note Regardless of the size of the static blob, the entirety of requested values (or StatusCode)
+    * @note Regardless of the size of the static blob, the entirety of requested result (or StatusCode)
     * will be returned, nothing will be dropped.
     * @note This class does not own the memory of the Fields.
      */
@@ -369,12 +372,12 @@ namespace RiRi::Response {
     class StatusBatchWith{
     public:
 
-        /// Either `Value` or `StatusCode` will be returned per fetch request
+        /// Either `ResponseField` (Result Field) or `StatusCode` will be returned per request
         using ResultOrStatus = std::variant<F2, StatusCode>;
 
         /**
-         * @brief Represents each OPERATIONS_TARGET-VALUE_OR_STATUS pair; this is how RiRi will carry
-         * individual return values (or StatusCode in case of errors) for each operation target.
+         * @brief Represents each TARGET_FIELD-FIELD_OR_STATUS pair; this is how raresy
+         * will carry individual result field (or StatusCode) for each operation target.
          *
          *  For instance, the following could be how one may get the response when trying to fetch multiple
          *  keys which may or may not exist in the map:
@@ -384,11 +387,13 @@ namespace RiRi::Response {
          */
         using EntryType = std::pair<F1, ResultOrStatus>;
 
-        // Just in case my future self decides to make the EntryType trivially non-destructible/copyable.
-        static_assert(std::is_trivially_destructible_v<EntryType>,
-          "EntryType must be trivially destructible!!!");
-        static_assert(std::is_trivially_copyable_v<EntryType>,
-          "EntryType must be trivially copyable!!!");
+        // We don't need static assert bloat when we got concepts
+        // ESPECIALLY INSIDE A TEMPLATE.
+        // // Just in case my future self decides to make the EntryType trivially non-destructible/copyable.
+        // static_assert(std::is_trivially_destructible_v<EntryType>,
+        //   "EntryType must be trivially destructible!!!");
+        // static_assert(std::is_trivially_copyable_v<EntryType>,
+        //   "EntryType must be trivially copyable!!!");
         // A little reminder for him when his code doesn't compile.
 
         constexpr StatusBatchWith() noexcept
@@ -466,10 +471,10 @@ namespace RiRi::Response {
         }
 
         /**
-         * @brief Adds a OPERATION_TARGET-VALUE pair to the Response's memory blob.
+         * @brief Adds a TARGET_FIELD-RESPONSE_FIELD pair to the Response's memory blob.
          *
-         * @param operation_target : The target of an operation or an operation itself.
-         * @param entry : The value concerning the target.
+         * @param target_field: The target of an operation or an operation itself.
+         * @param result_field: The result concerning the target.
          */
         void addResultEntry(F1 target_field, F2 result_field) noexcept {
             // We are going to update the OverallCode early, since this is the only error
@@ -488,9 +493,9 @@ namespace RiRi::Response {
         }
 
         /**
-         * @brief Adds a OPERATION_TARGET-STATUS_CODE pair to the Response's memory blob.
+         * @brief Adds a TARGET_field-STATUS_CODE pair to the Response's memory blob.
          * @param target_field : The target of an operation or an operation itself
-         * @param status_code : The value concerning the target
+         * @param status_code : The status code concerning the target
          */
         void addStatusEntry(F1 target_field, StatusCode status_code) noexcept {
             // shrugieeee
