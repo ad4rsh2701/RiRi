@@ -117,37 +117,37 @@ namespace RiRi::Response {
     class Status {
 
     public:
-        // Default constructor initializes `response` to the most common case.
-        Status() noexcept : response(StatusCode::OK) {}
+        // The default constructor initializes `_status_code` to the most common case.
+        Status() noexcept : _status_code(StatusCode::OK) {}
 
-        // Explicit constructor to initialize `response` with StatusCode types.
-        explicit Status(StatusCode status_code) noexcept : response(status_code) {}
+        // Explicit constructor to initialize `_status_code` with StatusCode types.
+        explicit Status(StatusCode status_code) noexcept : _status_code(status_code) {}
 
     private:
         /// Represents a single status outcome — either from a single operation
         /// or an overall result when no per-operation diagnostics are needed.
-        StatusCode response;
+        StatusCode _status_code;
 
     public:
 
-        constexpr void setCode(StatusCode status_code) noexcept {
-            response = status_code;
+        constexpr void setCode(const StatusCode status_code) noexcept {
+            _status_code = status_code;
         }
 
         /**
-         * @brief Returns the response of the container
+         * @brief Returns the status_code of the response
          * @return StatusCode
          */
         [[nodiscard]] constexpr StatusCode code() const noexcept {
-            return response;
+            return _status_code;
         }
 
         /**
-         * @brief Checks if the response status is successful.
+         * @brief Checks if the status code is OK.
          * @return `true` if the response status is `StatusCode::OK`, otherwise false.
          */
         [[nodiscard]] constexpr bool ok() const noexcept {
-            return response == StatusCode::OK;
+            return _status_code == StatusCode::OK;
         }
     };
 
