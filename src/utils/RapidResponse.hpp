@@ -283,6 +283,10 @@ namespace RiRi::Response {
         static_assert(std::is_trivially_copyable_v<EntryType>, "EntryType must be trivially copyable!!!");
         // A little reminder for him when his code doesn't compile.
 
+        // Well, since we will be dealing with constructors, we need
+        // to manually define a default constructor too
+        constexpr StatusBatchWith() noexcept = default;
+
         // Delete copy constructors
         StatusBatchWith(const StatusBatchWith&) = delete;
         StatusBatchWith& operator=(const StatusBatchWith&) = delete;
@@ -558,6 +562,9 @@ namespace RiRi::Response {
         using ErrorEntryType = std::pair<F, StatusCode>;
         static_assert(std::is_trivially_destructible_v<ErrorEntryType>, "EntryType must be trivially destructible!!!");
         // Must be trivially destructible
+
+        // default constructor
+        constexpr StatusErrorBatchWith() noexcept = default;
 
         // Delete the copy constructors
         StatusErrorBatchWith(const StatusErrorBatchWith&) = delete;
