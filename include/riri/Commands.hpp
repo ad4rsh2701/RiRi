@@ -28,6 +28,8 @@ namespace RiRi {
          */
         namespace Commands {
 
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
                 //SET
 
                 /**
@@ -40,7 +42,7 @@ namespace RiRi {
                  * @param value a `RapidDataType` value; can be either copied to or moved into
                  * @return A `RapidResponse` object containing `StatusCode`
                  */
-                RIRI_API Response::RapidResponse SET(std::string key, RapidDataType value);
+                Response::Status SET(std::string key, RapidDataType value);
 
                 /**
                  * @brief Stores key-value pairs in the data store (best effort approach).
@@ -50,7 +52,7 @@ namespace RiRi {
                  * @note To enable verbose response and get per-key diagnostics, pass the
                  * enableFullResponse tag and switch to handling RapidResponseFull object.
                  */
-                RIRI_API Response::RapidResponse SET(std::span<RapidNode> nodes);
+                Response::Status SET (std::span<RapidNode> nodes);
 
                 /**
                  * @brief Stores key-value pairs in the data store (best effort approach).
@@ -68,9 +70,12 @@ namespace RiRi {
                  * @warning There is a hard error-tracking limit (default 8). If this limit is exceeded, this function will still
                  * attempt to insert the remaining keys, but any further errors will be dropped from the response buffer.
                  */
-                RIRI_API Response::RapidResponseFull SET(std::span<RapidNode> nodes, enableFullResponse);
+                Response::StatusErrorBatchWith<std::string_view> SET (std::span<RapidNode> nodes, enableFullResponse);
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                 //GET
+
                 /**
                  * @brief Retrieves the value(s) associated with one or more keys.
                  * @param args Parsed arguments of the type: `span` of `RapidNode`: `{ {key, ""}, {key2, ""}, ... }`
@@ -81,7 +86,10 @@ namespace RiRi {
                 RIRI_API Response::RapidResponse GET(std::span<RapidNode> args);
                 RIRI_API Response::RapidResponseFull GET(std::span<RapidNode> args, enableFullResponse);
 
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
                 //UPDATE
+
                 /**
                  * @brief Updates existing key(s) with new value(s).
                  * @param args args Parsed arguments of the type: `span` of `RapidNode`: `{ {key, newValue}, {key2, newValue2}, ... }`
@@ -93,7 +101,10 @@ namespace RiRi {
                 RIRI_API Response::RapidResponse UPDATE(std::span<RapidNode> args);
                 RIRI_API Response::RapidResponseFull UPDATE(std::span<RapidNode> args, enableFullResponse);
 
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
                 //DELETE
+
                 /**
                  * @brief Deletes one or more key-value pairs from the datastore.
                  * @param args Parsed arguments of the type: `span` of `RapidNode`: `{ {key, ""}, {key2, ""}, ... }`
@@ -105,7 +116,10 @@ namespace RiRi {
                 RIRI_API Response::RapidResponse DELETE(std::span<RapidNode> args);
                 RIRI_API Response::RapidResponseFull DELETE(std::span<RapidNode> args, enableFullResponse);
 
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
                 //GET_ALL
+
                 /**
                  * @brief Returns the entire key-value datastore as a formatted string.
                  *
@@ -119,7 +133,10 @@ namespace RiRi {
                 RIRI_API Response::RapidResponse GET_ALL(std::span<RapidNode> args);
                 RIRI_API Response::RapidResponseFull GET_ALL(std::span<RapidNode> args, enableFullResponse);
 
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
                 // CLEAR
+
                 /**
                  * @brief Clears all data from the datastore.
                  *
@@ -132,7 +149,10 @@ namespace RiRi {
                 RIRI_API Response::RapidResponse CLEAR(std::span<RapidNode> args);
                 RIRI_API Response::RapidResponseFull CLEAR(std::span<RapidNode> args, enableFullResponse);
 
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
                 // AUTOSET
+
                 /**
                  * @brief ## Note: Implementation Remaining
                  * @brief Sets values to auto-generated keys using a hash-based scheme.
@@ -147,7 +167,10 @@ namespace RiRi {
                 RIRI_API Response::RapidResponseFull AUTO_SET(std::span<RapidNode> args);
                 RIRI_API Response::RapidResponseFull AUTO_SET(std::span<RapidNode> args, enableFullResponse);
 
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
                 // SEARCH
+
                 /**
                  * @brief ## Note: Optimization Remaining
                  * @brief Searches the datastore for all keys associated with a specific value.
