@@ -10,7 +10,9 @@
 
 
 template <typename T>
-concept ResponseField = std::same_as<T, const RapidDataType*> || std::same_as<T, std::string_view>;
+concept ResponseField = std::same_as<T, const RapidDataType*>
+                        || std::same_as<T, std::string_view>
+                        || std::same_as<T, std::monostate>;
 
 /// This constant defines the number of errors to be tracked
 static constexpr size_t TRACKING_CAPACITY = 8;
@@ -186,6 +188,7 @@ namespace RiRi::Response {
      * @note This class does not own field's memory
      */
     template<ResponseField F>
+        requires (!std::is_same_v<F, std::monostate>)   // mustn't be monostate
     class StatusWith {
 
         /// The field value: initialized to default values
@@ -261,6 +264,7 @@ namespace RiRi::Response {
     * @note This class does not own the memory of the Fields.
      */
     template <ResponseField F1, ResponseField F2>
+        requires (!std::is_same_v<F1, std::monostate>)      // F1 cannot be monostate
     class StatusBatchWith{
     public:
 
@@ -271,8 +275,8 @@ namespace RiRi::Response {
          * @brief Represents each TARGET_FIELD-FIELD_OR_STATUS pair; this is how raresy
          * will carry individual result field (or StatusCode) for each operation target.
          *
-         *  For instance, the following could be how one may get the response when trying to fetch multiple
-         *  keys which may or may not exist in the map:
+         * For instance, the following could be how one may get the response when trying to fetch multiple
+         * keys which may or may not exist in the map:
          * - `Key1: Val1`
          * - `Key2: ERR_KEY_NOT_FOUND`
          * - `Key3: Val3`
@@ -445,7 +449,10 @@ namespace RiRi::Response {
          * @param target_field: The target of an operation or an operation itself.
          * @param result_field: The result concerning the target.
          */
-        void addResultEntry(F1 target_field, F2 result_field) noexcept {
+        void addResultEntry(F1 target_field, F2 result_field) noexcept
+            requires (!std::is_same_v<F2, std::monostate>) {
+            // For this function to execute, none of the fields must be a monostate
+
             // We are going to update the OverallCode early, since this is the only error
             // code this function can return.
             // Update: We don't need to update the status code at all. This is the "OK" case,
@@ -535,6 +542,7 @@ namespace RiRi::Response {
      * @note This class does not own the target field's memory
      */
     template <ResponseField F>
+        requires (!std::is_same_v<F, std::monostate>)   // mustn't be a monostate
     class StatusErrorBatchWith {
 
         // `StatusErrorBatchWith` does four things:
