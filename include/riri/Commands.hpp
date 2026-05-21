@@ -13,11 +13,18 @@
 namespace RiRi {
 
         /**
-         * @struct enableFullResponse
+         * @struct enableErrorBatched
          * @brief An empty struct used as a tag to dispatch to command function
-         * overloads that return a full diagnostic response.
+         * overloads that return a `StatusErrorBatchWith<F>` response.
          */
-        struct enableFullResponse{ };
+        struct enableErrorBatched{ };
+
+        /**
+         * @struct enableBatched
+         * @brief An empty struct used as a tag to dispatch to command function
+         * overloads that return a `StatusBatchWith<F1, F2>` response.
+         */
+        struct enableBatched{ };
 
         /**
          * @namespace RiRi::Commands
@@ -40,7 +47,7 @@ namespace RiRi {
                  *
                  * @param key a `string` value; can be either copied to or moved into
                  * @param value a `RapidDataType` value; can be either copied to or moved into
-                 * @return A `RapidResponse` object containing `StatusCode`
+                 * @return A `Status` object containing `StatusCode`
                  */
                 Response::Status SET(std::string key, RapidDataType value);
 
@@ -48,21 +55,47 @@ namespace RiRi {
                  * @brief Stores key-value pairs in the data store (best effort approach).
                  * Supports bulk key-value pairs.
                  * @param nodes a `span` of `RapidNode`: `{ node1, node2, ... }`
-                 * @return A `RapidResponse` object containing `StatusCode`
+                 * @return A `Status` object containing `StatusCode`
                  * @note To enable verbose response and get per-key diagnostics, pass the
-                 * enableFullResponse tag and switch to handling RapidResponseFull object.
+                 * `enableBatched` tag and switch to handling StatusBatchWith<F1, F2> object.
+                 * For error-only reporting, pass the `enableErrorBatched` tag and
+                 * switch to handling `StatusErrorBatchWith<F>
                  */
                 Response::Status SET (std::span<RapidNode> nodes);
+
+
+                /**
+                 * @brief Stores key-value pairs in the data store (the best effort and diagnostic response)
+                 * Supports bulk key-value pairs and provides a detailed diagnostic response.
+                 *
+                 * @param nodes a `span` of `RapidNodes`: `{ node1, node2, ... }`
+                 *
+                 * @return A `StatusBatchWith<F1, F2>` object containing `StatusCode` for overall status code, and a
+                 * buffer containing `KEY-STATUS_CODE` pair responses, accessible via the iterators of the returning
+                 * class. E.g. `{ {Key1, ERR_}, {Key2, OK}, ... }`.
+                 *
+                 * @note This function explicitly returns an object containing ALL the responses per key, regardless
+                 * of the size of the bulk input. However, for inputs larger than 8, the execution will be slower.
+                 *
+                 * @warning This function is NOT RECOMMENDED for VERY LARGE BULK cases (unless you have unlimited RAM
+                 * and time), or getting per key diagnostics is more important than speed. You can modify the tracking
+                 * limit to be larger than 8 if you really need both speed and a HUGE response. Prefer the overloaded
+                 * function accessible by passing the `enableBatched` tag (return type: `StatusErrorBatchWith<F>`)
+                 */
+                Response::StatusBatchWith <std::string_view, std::monostate> SET (std::span<RapidNode> nodes, enableBatched);
+                // For SET, we really only need string_view and status code pairs, so there's no need of result_field,
+                // so we set it to std::monostate, and we only call `addStatusEntry` and never `addResultEntry` (because
+                // my API won't let you do so, the function is constrained).
 
                 /**
                  * @brief Stores key-value pairs in the data store (best effort approach).
                  * Supports bulk key-value pairs and provides a verbose response.
                  * @param nodes a `span` of `RapidNode`: `{ node1, node2, ... }`
-                 * @return A `RapidResponseFull` object containing `StatusCode` for overall status code, and a buffer
-                 * containing ERROR responses as a key-error_code pair: `{ {key1, ERR_}, {key2, ERR_} }`.
+                 * @return A `StatusErrorBatchWith<std::string>` object containing `StatusCode` for overall status code,
+                 * and a buffer containing ERROR responses as a key-error_code pair: `{ {key1, ERR_}, {key2, ERR_} }`.
                  *
-                 * @note RapidResponseFull essentially returns a list of keys that "failed" to get inserted into the map
-                 * along with why the specific key failed to insert (per key diagnostics).
+                 * @note `StatusErrorBatchWith` essentially returns a list of keys that "failed" to get inserted into
+                 * the map along with why the specific key failed to insert (per failed key diagnostics).
                  *
                  * If the overall code is ERR_SOME_OPERATIONS_FAILED, all errors are in the response. However, if the
                  * overall code is ERR_MULTIPLE_OPERATIONS_FAILED, there are more errors than what the response is showing.
@@ -70,7 +103,7 @@ namespace RiRi {
                  * @warning There is a hard error-tracking limit (default 8). If this limit is exceeded, this function will still
                  * attempt to insert the remaining keys, but any further errors will be dropped from the response buffer.
                  */
-                Response::StatusErrorBatchWith<std::string_view> SET (std::span<RapidNode> nodes, enableFullResponse);
+                Response::StatusErrorBatchWith<std::string_view> SET (std::span<RapidNode> nodes, enableErrorBatched);
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
