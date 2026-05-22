@@ -44,6 +44,7 @@ namespace RiRi::Response {
      * - BUFFER RANGE (300-399): Reserved for potential expansion of warnings or other ranges.
      * - CORE ERROR CODES (400-499): Represent errors related to core functionalities, such as missing keys or invalid arguments.
      * - GENERAL ERROR CODES (500-599): Represent parser, persistence, thread or other level issues, such as invalid input or argument counts.
+     * - SYSTEM ERROR CODES (600+): Literally anything else
      */
     enum class StatusCode : std::uint16_t {
         // SUCCESS CODES (0-99)
@@ -57,7 +58,8 @@ namespace RiRi::Response {
         // WARNING CODES (200-299)
         WARN_KEY_STORE_NEARING_CAPACITY = 200,      // COMMAND LEVEL
         WARN_RESPONSE_CONTAINS_WARNINGS = 250,      // RESPONSE LEVEL
-            // We might need warning codes, and a lot of them.
+
+            // We might need warning codes and a lot of them.
 
         // BUFFER RANGE (300-399)
             // In case warning codes or anything else from above needs more codes, though I doubt it, but still.
@@ -69,12 +71,14 @@ namespace RiRi::Response {
         ERR_KEY_ALREADY_EXISTS = 403,           // COMMAND LEVEL
         ERR_KEY_NOT_FOUND = 404,                // COMMAND LEVEL // Also, mission complete: +5 xp
         ERR_VALUE_NOT_FOUND = 405,              // COMMAND LEVEL
+        // leaving a little gap for basic ones
+        ERR_SINGLE_NODE_EXPECTED = 420,         // COMMAND LEVEL
 
         // Do I really need these? Overkill much?
         // ERR_SOME_KEYS_NOT_SET = 406,
         // ERR_MANY_KEYS_NOT_SET = 407,
         // ERR_SOME_KEYS_NOT_FOUND = 408,
-        // ERR_MANY_KEYS_NOT_FOUND = 409,
+        // ERR_MANY_KEYS_NOT_FOUND = 409
 
         // Instead, what if I do this:
         ERR_SOME_OPERATIONS_FAILED = 406,        // COMMAND LEVEL
@@ -84,7 +88,7 @@ namespace RiRi::Response {
         // over multiple types of commands, because the user already knows what command
         // they triggered. So, yes, it was very likely overkill before.
 
-            // BILLION_DOLLAR_MISTAKE = 401: CLion's autocomplete is wild
+            // BILLION_DOLLAR_MISTAKE = 401: CLion's autocomplete is wild.
             // These are enough for now, will add more as needed.
 
         // GENERAL ERROR CODES (500-599)
@@ -97,7 +101,7 @@ namespace RiRi::Response {
         ERR_INVALID_DELIMITER = 507,        // PARSER LEVEL // Last fallback error code, if none of the above.
             // This looks overkill, but parser is yet to be implemented, so let's see.
             // More to be added as RiRi grows.
-            // Pretty sure I'd need more than 100
+            // Pretty sure I'd need more than 100.
             // It looks like it's only for PARSER, but there will be THREAD, PERSISTENCE and SERVER levels too.
 
         // SYSTEM ERROR CODES
@@ -184,6 +188,7 @@ namespace RiRi::Response {
 
     /**
      * @brief A single status-field response class
+
      * This class encapsulates the response status code and a field value of the type ResponseField.
      * @note This class does not own field's memory
      */
@@ -451,7 +456,7 @@ namespace RiRi::Response {
          */
         void addResultEntry(F1 target_field, F2 result_field) noexcept
             requires (!std::is_same_v<F2, std::monostate>) {
-            // For this function to execute, none of the fields must be a monostate
+            // For this function to execute, none of the fields must be monostate
 
             // We are going to update the OverallCode early, since this is the only error
             // code this function can return.
