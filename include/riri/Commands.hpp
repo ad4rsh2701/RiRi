@@ -65,34 +65,16 @@ namespace RiRi {
 
 
                 /**
-                 * @brief Stores key-value pairs in the data store (the best effort and diagnostic response)
-                 * Supports bulk key-value pairs and provides a detailed diagnostic response.
+                 * @brief Stores key-value pairs in the data store (best effort approach and limited diagnostics).
+                 * Supports bulk key-value pairs and provides a capped diagnostic response.
                  *
-                 * @param nodes a `span` of `RapidNodes`: `{ node1, node2, ... }`
-                 *
-                 * @return A `StatusBatchWith<F1, F2>` object containing `StatusCode` for overall status code, and a
-                 * buffer containing `KEY-STATUS_CODE` pair responses, accessible via the iterators of the returning
-                 * class. E.g. `{ {Key1, ERR_}, {Key2, OK}, ... }`.
-                 *
-                 * @note This function explicitly returns an object containing ALL the responses per key, regardless
-                 * of the size of the bulk input. However, for inputs larger than 8, the execution will be slower.
-                 *
-                 * @warning This function is NOT RECOMMENDED for VERY LARGE BULK cases (unless you have unlimited RAM
-                 * and time), or getting per key diagnostics is more important than speed. You can modify the tracking
-                 * limit to be larger than 8 if you really need both speed and a HUGE response. Prefer the overloaded
-                 * function accessible by passing the `enableBatched` tag (return type: `StatusErrorBatchWith<F>`)
-                 */
-                Response::StatusBatchWith <std::string_view, std::monostate> SET (std::span<RapidNode> nodes, enableBatched);
-                // For SET, we really only need string_view and status code pairs, so there's no need of result_field,
-                // so we set it to std::monostate, and we only call `addStatusEntry` and never `addResultEntry` (because
-                // my API won't let you do so, the function is constrained).
-
-                /**
-                 * @brief Stores key-value pairs in the data store (best effort approach).
-                 * Supports bulk key-value pairs and provides a verbose response.
                  * @param nodes a `span` of `RapidNode`: `{ node1, node2, ... }`
+                 *
                  * @return A `StatusErrorBatchWith<std::string>` object containing `StatusCode` for overall status code,
-                 * and a buffer containing ERROR responses as a key-error_code pair: `{ {key1, ERR_}, {key2, ERR_} }`.
+                 * and a capped buffer containing ERROR responses as a key-error_code pair
+                 * E.g. `{ {key1, ERR_}, {key2, ERR_}, ... }`
+                 *
+                 * The maximum number of errors tracked is defined at compile time by the TRACKING_CAPACITY.
                  *
                  * @note `StatusErrorBatchWith` essentially returns a list of keys that "failed" to get inserted into
                  * the map along with why the specific key failed to insert (per failed key diagnostics).
@@ -104,6 +86,33 @@ namespace RiRi {
                  * attempt to insert the remaining keys, but any further errors will be dropped from the response buffer.
                  */
                 Response::StatusErrorBatchWith<std::string_view> SET (std::span<RapidNode> nodes, enableErrorBatched);
+
+
+                /**
+                 * @brief Stores key-value pairs in the data store (the best effort and full diagnostic)
+                 * Supports bulk key-value pairs and provides a detailed diagnostic response.
+                 *
+                 * @param nodes a `span` of `RapidNodes`: `{ node1, node2, ... }`
+                 *
+                 * @return A `StatusBatchWith<F1, F2>` object containing `StatusCode` for overall status code,
+                 * and a buffer containing ERROR responses as a key-error_code pair
+                 * E.g. `{ {key1, ERR_}, {key2, ERR_}, ... }`.
+                 *
+                 * There is no limit to the number of errors tracked.
+                 *
+                 * @note This function explicitly returns an object containing ALL the ERROR responses, regardless
+                 * of the size of the bulk input. It's basically an uncapped version of SET's `StatusErrorBatchWith<F>`
+                 * overload.
+                 *
+                 * @warning This function is NOT RECOMMENDED for VERY LARGE BULK cases (unless you have unlimited RAM
+                 * and time), or getting per key diagnostics is more important than speed. Prefer the overloaded
+                 * function accessible by passing the `enableErrorBatched` tag (return type: `StatusErrorBatchWith<F>`)
+                 * for a lighter response object.
+                 */
+                Response::StatusBatchWith <std::string_view, std::monostate> SET (std::span<RapidNode> nodes, enableBatched);
+                // For SET, we really only need string_view and status code pairs, so there's no need of result_field,
+                // so we set it to std::monostate, and we only call `addStatusEntry` and never `addResultEntry` (because
+                // my API won't let you do so, the function is constrained).
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
