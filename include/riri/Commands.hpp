@@ -119,14 +119,32 @@ namespace RiRi {
                 //GET
 
                 /**
-                 * @brief Retrieves the value(s) associated with one or more keys.
-                 * @param args Parsed arguments of the type: `span` of `RapidNode`: `{ {key, ""}, {key2, ""}, ... }`
-                 * @return The value(s) associated with the key(s), or error messages for missing keys.
-                 * @note The command name (`GET`) is already removed before this function is called.
-                 *       The args vector only contains the remaining arguments.
+                 * @brief Retrieves the value associated with one key from the data store
+                 *
+                 * @param key of the type: std::string
+                 *
+                 * @return A single value associated with the key and appropriate status code; inside a
+                 * `StatusWith` response object
                  */
-                RIRI_API Response::RapidResponse GET(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull GET(std::span<RapidNode> args, enableFullResponse);
+                Response::StatusWith<const RapidDataType*> GET(std::string key);
+
+                /**
+                 * @brief Retrieves the value associated with one key from the data store
+                 *
+                 * @param node of type: `span` of a single `RapidNode`: `{ {key, ''} }`
+                 *
+                 * @return A single value associated with the key and appropriate status code; inside a
+                 * `StatusWith` response object.
+                 */
+                Response::StatusWith<const RapidDataType*> GET(std::span<RapidNode> node);
+
+                /**
+                 * @brief Retrieves values for multiple keys from the data stores
+                 * @param nodes of tpe: `span` of `RapidNode`s: `{ {key, ''}, {key, ''}, ... }`
+                 * @return A `StatusBatchWith<string_viw, const RapidDataType*>` object containing either values
+                 * for each key or status code. Additonally provides an overall status code.
+                 */
+                Response::StatusBatchWith<std::string_view, const RapidDataType*> GET(std::span<RapidNode> nodes, enableBatched);
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
