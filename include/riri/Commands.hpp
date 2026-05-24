@@ -177,74 +177,64 @@ namespace RiRi {
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                //GET_ALL
-
-                /**
-                 * @brief Returns the entire key-value datastore as a formatted string.
-                 *
-                 * @param args Should be empty and of type: `span` of `RapidNode`: `{{<empty>, ""}, ...}`.
-                 * @return A formatted list of key-value pairs, or "EMPTY" if the store is empty.
-                 *
-                 * @note - Any unexpected arguments will result in an error.
-                 * @note - The command name (`GET_ALL` or `DUMP`) is already removed before this function is called.
-                 *         The args vector should be empty.
-                 */
-                RIRI_API Response::RapidResponse GET_ALL(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull GET_ALL(std::span<RapidNode> args, enableFullResponse);
-
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
                 // CLEAR
 
-                /**
-                 * @brief Clears all data from the datastore.
-                 *
-                 * @param args Should be empty and of the type: `span` of `RapidNode`: `{{<empty>, ""}, ...}`.
-                 * @return "OK (cleared)" on success, or an error if arguments are passed.
-                 * @note - Any unexpected arguments will result in an error.
-                 * @note - The command name (`CLEAR` or `CLR`) is already removed before this function is called.
-                 *         The args vector should be empty.
-                 */
-                RIRI_API Response::RapidResponse CLEAR(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull CLEAR(std::span<RapidNode> args, enableFullResponse);
+                Response::Status CLEAR();
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                // AUTOSET
-
-                /**
-                 * @brief ## Note: Implementation Remaining
-                 * @brief Sets values to auto-generated keys using a hash-based scheme.
-                 *
-                 * @param args Parsed arguments of the type: `span` of `RapidNode`: `{ {<empty>, value}, {<empty>, value2}, ... }`
-                 * @return "OK (N auto-keys set)" where N is the number of values processed (expected).
-                 *
-                 * @note - Ideal for quick data dumps or logging without naming keys manually.
-                 * @note - The command name (`AUTOSET` or `HASH_SET`) is already removed before this function is called.
-                 *       The args vector only contains the remaining arguments (values).
-                 */
-                RIRI_API Response::RapidResponseFull AUTO_SET(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull AUTO_SET(std::span<RapidNode> args, enableFullResponse);
+                // //GET_ALL
+                //
+                // /**
+                //  * @brief Returns the entire key-value datastore as a formatted string.
+                //  *
+                //  * @param args Should be empty and of type: `span` of `RapidNode`: `{{<empty>, ""}, ...}`.
+                //  * @return A formatted list of key-value pairs, or "EMPTY" if the store is empty.
+                //  *
+                //  * @note - Any unexpected arguments will result in an error.
+                //  * @note - The command name (`GET_ALL` or `DUMP`) is already removed before this function is called.
+                //  *         The args vector should be empty.
+                //  */
+                // RIRI_API Response::RapidResponse GET_ALL(std::span<RapidNode> args);
+                // RIRI_API Response::RapidResponseFull GET_ALL(std::span<RapidNode> args, enableFullResponse);
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                // SEARCH
+                // // AUTOSET
+                //
+                // /**
+                //  * @brief ## Note: Implementation Remaining
+                //  * @brief Sets values to auto-generated keys using a hash-based scheme.
+                //  *
+                //  * @param args Parsed arguments of the type: `span` of `RapidNode`: `{ {<empty>, value}, {<empty>, value2}, ... }`
+                //  * @return "OK (N auto-keys set)" where N is the number of values processed (expected).
+                //  *
+                //  * @note - Ideal for quick data dumps or logging without naming keys manually.
+                //  * @note - The command name (`AUTOSET` or `HASH_SET`) is already removed before this function is called.
+                //  *       The args vector only contains the remaining arguments (values).
+                //  */
+                // RIRI_API Response::RapidResponseFull AUTO_SET(std::span<RapidNode> args);
+                // RIRI_API Response::RapidResponseFull AUTO_SET(std::span<RapidNode> args, enableFullResponse);
 
-                /**
-                 * @brief ## Note: Optimization Remaining
-                 * @brief Searches the datastore for all keys associated with a specific value.
-                 *
-                 * @param args Parsed arguments of the type: `span` of `RapidNode`: `{ {<empty>, value}, {<empty>, value2}, ... }`
-                 * @return A list of matching keys, or "key: (not found)".
-                 *
-                 * @note - This operation performs a full scan of the datastore (O(N)).
-                 *         It may be slow with large datasets.
-                 * @note - The command name (`SEARCH` or `FIND_BY_VALUE`) is already removed before this function is called.
-                 *         The args vector only contains the remaining arguments (values).
-                 */
-                RIRI_API Response::RapidResponse SEARCH(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull SEARCH(std::span<RapidNode> args, enableFullResponse);
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        }// namespace Commands
+                // // SEARCH
+                //
+                // /**
+                //  * @brief ## Note: Optimization Remaining
+                //  * @brief Searches the datastore for all keys associated with a specific value.
+                //  *
+                //  * @param args Parsed arguments of the type: `span` of `RapidNode`: `{ {<empty>, value}, {<empty>, value2}, ... }`
+                //  * @return A list of matching keys, or "key: (not found)".
+                //  *
+                //  * @note - This operation performs a full scan of the datastore (O(N)).
+                //  *         It may be slow with large datasets.
+                //  * @note - The command name (`SEARCH` or `FIND_BY_VALUE`) is already removed before this function is called.
+                //  *         The args vector only contains the remaining arguments (values).
+                //  */
+                // RIRI_API Response::RapidResponse SEARCH(std::span<RapidNode> args);
+                // RIRI_API Response::RapidResponseFull SEARCH(std::span<RapidNode> args, enableFullResponse);
+
+        } // namespace Commands
 
 } // namespace RiRi
