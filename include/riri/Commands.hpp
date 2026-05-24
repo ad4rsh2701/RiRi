@@ -155,16 +155,13 @@ namespace RiRi {
 
                 //UPDATE
 
-                /**
-                 * @brief Updates existing key(s) with new value(s).
-                 * @param args args Parsed arguments of the type: `span` of `RapidNode`: `{ {key, newValue}, {key2, newValue2}, ... }`
-                 * @return "OK (N keys updated)" where N is the number of keys successfully updated, or an error message.
-                 * @note - Keys must already exist; this does not create new ones.
-                 * @note - The command name (`UPDATE`) is already removed before this function is called.
-                 *       The args vector only contains the remaining arguments.
-                 */
-                RIRI_API Response::RapidResponse UPDATE(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull UPDATE(std::span<RapidNode> args, enableFullResponse);
+                Response::Status UPDATE(std::string key, RapidDataType value);
+
+                Response::Status UPDATE(std::span<RapidNode> nodes);
+
+                Response::StatusErrorBatchWith<std::string_view> UPDATE (std::span<RapidNode> nodes, enableErrorBatched);
+
+                Response::StatusBatchWith<std::string_view, std::monostate> UPDATE (std::span<RapidNode> nodes, enableBatched);
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
