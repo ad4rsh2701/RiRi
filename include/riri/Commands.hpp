@@ -167,16 +167,13 @@ namespace RiRi {
 
                 //DELETE
 
-                /**
-                 * @brief Deletes one or more key-value pairs from the datastore.
-                 * @param args Parsed arguments of the type: `span` of `RapidNode`: `{ {key, ""}, {key2, ""}, ... }`
-                 * @return "OK (N keys deleted)" where N is the number of keys successfully removed.
-                 * @note - Keys must already exist; there is no blackmagic that deletes non-existing keys.
-                 * @note - The command name (`DELETE` or `DEL`) is already removed before this function is called.
-                 *         The args vector only contains the remaining arguments.
-                 */
-                RIRI_API Response::RapidResponse DELETE(std::span<RapidNode> args);
-                RIRI_API Response::RapidResponseFull DELETE(std::span<RapidNode> args, enableFullResponse);
+                Response::Status DELETE(std::string_view key);
+
+                Response::Status DELETE(std::span<RapidNode> nodes);
+
+                Response::StatusErrorBatchWith<std::string_view> DELETE (std::span<RapidNode> nodes, enableErrorBatched);
+
+                Response::StatusBatchWith<std::string_view, std::monostate> DELETE (std::span<RapidNode> nodes, enableBatched);
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -247,5 +244,7 @@ namespace RiRi {
                  */
                 RIRI_API Response::RapidResponse SEARCH(std::span<RapidNode> args);
                 RIRI_API Response::RapidResponseFull SEARCH(std::span<RapidNode> args, enableFullResponse);
-        }
-} // namespace RiRi::Internal
+
+        }// namespace Commands
+
+} // namespace RiRi
