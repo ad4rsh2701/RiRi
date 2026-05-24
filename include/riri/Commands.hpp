@@ -135,6 +135,11 @@ namespace RiRi {
                  *
                  * @return A single value associated with the key and appropriate status code; inside a
                  * `StatusWith` response object.
+                 *
+                 * @warning Only works for spans containing single nodes!
+                 * If multiple nodes are passed, no values are ever fetched; instead,
+                 * a response object, containing a status code (`ERR_SINGLE_NODE_EXPECTED`)
+                 * and an empty field value (`nullptr`), is returned.
                  */
                 Response::StatusWith<const RapidDataType*> GET(std::span<RapidNode> node);
 
