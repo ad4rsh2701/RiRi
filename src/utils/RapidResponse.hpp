@@ -204,6 +204,15 @@ namespace RiRi::Response {
 
     public:
 
+        // thou shall use default
+        constexpr StatusWith() noexcept = default;
+
+        // thou shall... idk
+        // Explicit constructor to initialize the class object
+        // with custom _field and _status_code values.
+        explicit StatusWith(F field, const StatusCode status_code) noexcept
+        : _field(field), _status_code(status_code) {}
+
         /**
          * @brief Getter to return the overall status code
          * @return _status_code
@@ -222,27 +231,34 @@ namespace RiRi::Response {
          */
         [[nodiscard]] constexpr F field () const noexcept { return _field; }
 
+
+        // with the explicit constructor, I know these won't be used 99% of the times
+        // but oh well, it's a nice to have.
+
         /**
          * @brief Common setter to set both the status code and the field values
          * @param code The status code of type StatusCode
          * @param response_field The field of type ResponseField to set
          */
-        void constexpr fill(const StatusCode code, F response_field) noexcept {
+        constexpr void fill(const StatusCode code, F response_field) noexcept {
             _field = response_field;
             _status_code = code;
         }
+
+
+        // especially these two
 
         /**
          * @brief Setter to set the field value of the response
          * @param response_field The field of type ResponseField
          */
-        void constexpr setField(F response_field) noexcept { _field = response_field; }
+        constexpr void setField(F response_field) noexcept { _field = response_field; }
 
         /**
          * @brief Setter to set the status code of the response
          * @param code The status code of type StatusCode
          */
-        void constexpr setCode(const StatusCode code) noexcept { _status_code = code; }
+        constexpr void setCode(const StatusCode code) noexcept { _status_code = code; }
     };
 
 
