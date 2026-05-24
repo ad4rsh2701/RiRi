@@ -7,7 +7,7 @@ namespace RiRi::Commands {
 
     // GET
 
-    Response::StatusWith<const RapidDataType*> GET (std::string key) {
+    Response::StatusWith<const RapidDataType*> GET (std::string_view key) {
         auto value = Internal::getValue(key);
         return Response::StatusWith (
             value,

@@ -126,7 +126,7 @@ namespace RiRi {
                  * @return A single value associated with the key and appropriate status code; inside a
                  * `StatusWith` response object
                  */
-                Response::StatusWith<const RapidDataType*> GET(std::string key);
+                Response::StatusWith<const RapidDataType*> GET(std::string_view key);
 
                 /**
                  * @brief Retrieves the value associated with one key from the data store
@@ -147,7 +147,7 @@ namespace RiRi {
                  * @brief Retrieves values for multiple keys from the data stores
                  * @param nodes of tpe: `span` of `RapidNode`s: `{ {key, ''}, {key, ''}, ... }`
                  * @return A `StatusBatchWith<string_viw, const RapidDataType*>` object containing either values
-                 * for each key or status code. Additonally provides an overall status code.
+                 * for each key or status code. Additionally, provides an overall status code.
                  */
                 Response::StatusBatchWith<std::string_view, const RapidDataType*> GET(std::span<RapidNode> nodes, enableBatched);
 
@@ -155,7 +155,7 @@ namespace RiRi {
 
                 //UPDATE
 
-                Response::Status UPDATE(std::string key, RapidDataType value);
+                Response::Status UPDATE(std::string_view key, RapidDataType value);
 
                 Response::Status UPDATE(std::span<RapidNode> nodes);
 
