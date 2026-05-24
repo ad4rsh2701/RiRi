@@ -26,7 +26,7 @@ namespace RiRi::Commands {
         return response;
     }
 
-    Response::StatusErrorBatchWith<std::string_view> SET ( std::span<RapidNode> nodes, enableErrorBatched) {
+    Response::StatusErrorBatchWith<std::string_view> SET (std::span<RapidNode> nodes, enableErrorBatched) {
         Response::StatusErrorBatchWith<std::string_view> response;
         for (auto& [key, value]: nodes) {
             if (const bool success = Internal::setValue(std::move(key),std::move(value)); !success) {
