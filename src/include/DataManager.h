@@ -1,4 +1,8 @@
-#pragma once
+#pragma once    // DATAMANAGER.H
+
+// A light wrapper around ankerl::unordered_dense::map
+// We are doing this to avoid exposing our map to the
+// command layers (the public API for RiRi).
 
 #include <string_view>
 #include <RapidTypes.h>
@@ -6,19 +10,15 @@
 
 
 /**
- * @brief ### WARNING: INTERNAL ZONE
- * 
+ * @brief ### WARNING: INTERNAL ZONE.
+ *
  * If you are reading this, then you are in the internal zone of RiRi.
  * And you are 100% going to get an error or break something.
  * 
- * PLEASE DO NOT use internal functions, files, classes, or structs — they're NOT part of the public API.
+ * Please DO NOT use internal functions, files, classes, or structs; they're NOT part of the public API.
  * 
- * If you really want to break something, go ahead.
- * But don't say I didn't warn you.
- * 
- * Or you can use the public API, which is much safer and more stable.
- * 
- * Or you can create a fork of RiRi (here: https://github.com/ad4rsh2701/riri) and modify it as you wish.
+ * If you are really interested in tinkering along in the internal zone of riri, the source
+ * code of RiRi is always available on GitHub, here: https://github.com/ad4rsh2701/riri
  */
 namespace RiRi::Internal {
     
@@ -91,4 +91,5 @@ namespace RiRi::Internal {
      * @return `size_t` representing the number of key-value pairs.
      */
     GO_AWAY size_t size() noexcept;
-}
+
+} // namespace RiRi::Internal
