@@ -240,7 +240,7 @@ namespace RiRi::Response {
          * @param code The status code of type StatusCode
          * @param response_field The field of type ResponseField to set
          */
-        constexpr void fill(const StatusCode code, F response_field) noexcept {
+        constexpr void fill(F response_field, StatusCode code) noexcept {
             _field = response_field;
             _status_code = code;
         }
