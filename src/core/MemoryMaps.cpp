@@ -1,28 +1,30 @@
+#include <MemoryMaps.h>
+
 constexpr size_t DEFAULT_MEMORY_CAPACITY = 100;
 // constexpr size_t DEFAULT_COMMAND_CAPACITY = 16;
 
-#include <MemoryMaps.h>
+namespace RiRi::Internal {
 
-using namespace RiRi;
-
-ankerl::unordered_dense::map<
-    std::string,
-    RapidDataType,
-    Internal::RapidHash,
-    std::equal_to<>
-> Internal::MemoryMap = [] {
     ankerl::unordered_dense::map<
         std::string,
         RapidDataType,
         RapidHash,
         std::equal_to<>
-    > map;
-    map.reserve(DEFAULT_MEMORY_CAPACITY);
-    // NOTE: The size is reserved to avoid rehashing during runtime.
-    // This is a small size, for development purposes.
-    // Adjust the size based on the expected number of entries
-    return map;
-}();
+    > MemoryMap = [] {
+        ankerl::unordered_dense::map<
+            std::string,
+            RapidDataType,
+            RapidHash,
+            std::equal_to<>
+        > map;
+        map.reserve(DEFAULT_MEMORY_CAPACITY);
+        // NOTE: The size is reserved to avoid rehashing during runtime.
+        // This is a small size, for development purposes.
+        // Adjust the size based on the expected number of entries
+        return map;
+    } ();
+
+} // namespace RiRi::Internal
 
 
 // buried in comments

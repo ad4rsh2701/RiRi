@@ -2,6 +2,7 @@
 
 #include <concepts>
 #include <cstdint>
+#include <cstring>
 #include <memory>
 #include <new>
 #include <string_view>
@@ -333,6 +334,7 @@ namespace RiRi::Response {
             // resetting our obj
             obj._entries = reinterpret_cast<EntryType*>(obj._static_store);
             obj._entry_count = 0;
+            obj._capacity = VALUE_TRACKING_CAPACITY;    // gotcha
             obj._overall_code = StatusCode::ORPHANED;
         }
 
