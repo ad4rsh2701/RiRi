@@ -1,7 +1,6 @@
 #pragma once
 
 #include <span>
-#include <RiRiMacros.h>
 #include <RapidTypes.h>
 #include <RapidResponse.hpp>    // That one HEINOUS header file
 
@@ -40,7 +39,7 @@ namespace RiRi {
                 //SET
 
                 /**
-                 * @brief Stores a single key-value pair in the data store without the need for RapidNode creation.
+                 * @brief Stores a single key-value pair in the data store without the need for `RapidNode` creation.
                  *
                  * @note This is a user-friendly implementation requiring no creation of RapidNode prior.
                  * @note This overload of the SET function DOES NOT support key-value pairs.
@@ -102,7 +101,7 @@ namespace RiRi {
                  *
                  * @note This function explicitly returns an object containing ALL the ERROR responses, regardless
                  * of the size of the bulk input. It's basically an uncapped version of SET's `StatusErrorBatchWith<F>`
-                 * overload.
+                 * overload. Error responses in the response represent which keys failed to get inserted and why.
                  *
                  * @warning This function is NOT RECOMMENDED for VERY LARGE BULK cases (unless you have unlimited RAM
                  * and time), or getting per key diagnostics is more important than speed. Prefer the overloaded
@@ -120,6 +119,7 @@ namespace RiRi {
 
                 /**
                  * @brief Retrieves the value associated with one key from the data store
+                 * Doesn't require prior construction of `RapidNode`.
                  *
                  * @param key of the type: std::string
                  *
@@ -144,8 +144,10 @@ namespace RiRi {
                 Response::StatusWith<const RapidDataType*> GET(std::span<RapidNode> node);
 
                 /**
-                 * @brief Retrieves values for multiple keys from the data stores
+                 * @brief Retrieves values for multiple keys from the data stores; Best Effort approach
+                 *
                  * @param nodes of tpe: `span` of `RapidNode`s: `{ {key, ''}, {key, ''}, ... }`
+                 *
                  * @return A `StatusBatchWith<string_viw, const RapidDataType*>` object containing either values
                  * for each key or status code. Additionally, provides an overall status code.
                  */
@@ -155,30 +157,151 @@ namespace RiRi {
 
                 //UPDATE
 
+                /**
+                 * @brief Updates/replaces existing value, associated with a key, with a new provided value without the
+                 * need for `RapidNode` creation. Only for a single key update.
+                 *
+                 * @param key a `string` value; can be either copied to or moved into
+                 * @param value a `RapidDataType` value; can be either copied to or moved into
+                 *
+                 * @return A `Status` object containing `StatusCode`
+                 */
                 Response::Status UPDATE(std::string_view key, RapidDataType value);
 
+                /**
+                 * @brief Updates/replaces existing values, each associated with a key, with new provided values
+                 * Best effort approach and supports bulk updates.
+                 *
+                 * @param nodes a `span` of `RapidNode`: `{ node1, node2, ... }`
+                 *
+                 * @return A `Status` object containing `StatusCode`
+                 */
                 Response::Status UPDATE(std::span<RapidNode> nodes);
 
+                /**
+                 * @brief Updates/replaces existing values, each associated with a key, with new values
+                 * Best effort approach and supports bulk updates. c
+                 *
+                 * @param nodes a `span` of `RapidNode`: `{ node1, node2, ... }`
+                 *
+                 * @return A `StatusErrorBatchWith<std::string>` object containing `StatusCode` for overall
+                 * status code, and a capped buffer containing ERROR responses as a key-error_code pair
+                 * E.g. `{ {key1, ERR_}, {key2, ERR_}, ... }`
+                 *
+                 * The maximum number of errors tracked is defined at compile time by the TRACKING_CAPACITY.
+                 *
+                 * @note `StatusErrorBatchWith` essentially returns a list of keys that "failed" to get updated in
+                 * the map along with why the specific key failed to insert (per failed key diagnostics).
+                 *
+                 * If the overall code is ERR_SOME_OPERATIONS_FAILED, all errors are in the response. However, if the
+                 * overall code is ERR_MULTIPLE_OPERATIONS_FAILED, there are more errors than what the response is showing.
+                 *
+                 * @warning There is a hard error-tracking limit (default 8). If this limit is exceeded, this function will still
+                 * attempt to update the remaining keys, but any further errors will be dropped from the response buffer.
+                 */
                 Response::StatusErrorBatchWith<std::string_view> UPDATE (std::span<RapidNode> nodes, enableErrorBatched);
 
+                /**
+                 * @brief Updates/replaces existing values, each associated with a key, with new values
+                 * Best effort approach and supports bulk updates. Provides a detailed diagnostic response.
+                 *
+                 * @param nodes a `span` of `RapidNode`: `{ node1, node2, ... }`
+                 *
+                 * @return A `StatusBatchWith<F1, F2>` object containing `StatusCode` for overall status code,
+                 * and a buffer containing ERROR responses as a key-error_code pair
+                 * E.g. `{ {key1, ERR_}, {key2, ERR_}, ... }`.
+                 *
+                 * There is no limit to the number of errors tracked.
+                 *
+                 * @note This function explicitly returns an object containing ALL the ERROR responses, regardless
+                 * of the size of the bulk input. It's an uncapped version of UPDATE's `StatusErrorBatchWith<F>`
+                 * overload. Error responses in the response represent which keys failed to get updated and why.
+                 *
+                 * @warning This function is NOT RECOMMENDED for VERY LARGE BULK cases (unless you have unlimited RAM
+                 * and time), or getting per key diagnostics is more important than speed. Prefer the overloaded
+                 * function accessible by passing the `enableErrorBatched` tag (return type: `StatusErrorBatchWith<F>`)
+                 * for a lighter response object.
+                 */
                 Response::StatusBatchWith<std::string_view, std::monostate> UPDATE (std::span<RapidNode> nodes, enableBatched);
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                 //DELETE
 
+                /**
+                 * @brief Deletes/removes a key-value pair from the data store without the
+                 * need for `RapidNode` creation. Only for single key-value pair deletion
+                 *
+                 * @param key a `string` value; can be either copied to or moved into
+                 *
+                 * @return A `Status` object containing `StatusCode`
+                 */
                 Response::Status DELETE(std::string_view key);
 
+                /**
+                 * @brief Deletes/removes key-value pairs from the data store
+                 * Best effort approach and supports bulk deletion.
+                 *
+                 * @param nodes a `span` of `RapidNode`: `{ node1, node2, ... }`
+                 *
+                 * @return A `Status` object containing `StatusCode`
+                 */
                 Response::Status DELETE(std::span<RapidNode> nodes);
 
+                /**
+                 * @brief Deletes/removes key-value pairs from the data store
+                 * Best effort approach and supports bulk deletion. Provides a capped diagnostic response.
+                 *
+                 * @param nodes a `span` of `RapidNode`: `{ node1, node2, ... }`
+                 *
+                 * @return  A `StatusErrorBatchWith<std::string>` object containing `StatusCode` for overall
+                 * status code, and a capped buffer containing ERROR responses as a key-error_code pair
+                 * E.g. `{ {key1, ERR_}, {key2, ERR_}, ... }`
+                 *
+                 * The maximum number of errors tracked is defined at compile time by the TRACKING_CAPACITY.
+                 *
+                 * @note `StatusErrorBatchWith` essentially returns a list of keys that "failed" to get deleted from
+                 * the map along with why the specific key failed to get deleted (per failed key diagnostics).
+                 *
+                 * If the overall code is ERR_SOME_OPERATIONS_FAILED, all errors are in the response. However, if the
+                 * overall code is ERR_MULTIPLE_OPERATIONS_FAILED, there are more errors than what the response is showing.
+                 *
+                 * @warning There is a hard error-tracking limit (default 8). If this limit is exceeded, this function will still
+                 * attempt to delete the remaining keys, but any further errors will be dropped from the response buffer.
+                 */
                 Response::StatusErrorBatchWith<std::string_view> DELETE (std::span<RapidNode> nodes, enableErrorBatched);
 
+                /**
+                 * @brief Deletes/removes key-value pairs from the data store
+                 * Best effort approach and supports bulk deletion. Provides a detailed diagnostic response.
+                 *
+                 * @param nodes a `span` of `RapidNode`: `{ node1, node2, ... }`
+                 *
+                 * @return A `StatusBatchWith<F1, F2>` object containing `StatusCode` for overall status code,
+                 * and a buffer containing ERROR responses as a key-error_code pair
+                 * E.g. `{ {key1, ERR_}, {key2, ERR_}, ... }`.
+                 *
+                 * There is no limit to the number of errors tracked.
+                 *
+                 * @note This function explicitly returns an object containing ALL the ERROR responses, regardless
+                 * of the size of the bulk input. It's an uncapped version of DELETE's `StatusErrorBatchWith<F>`
+                 * overload. Error responses in the response represent which keys failed to get deleted and why.
+                 *
+                 * @warning This function is NOT RECOMMENDED for VERY LARGE BULK cases (unless you have unlimited RAM
+                 * and time), or getting per key diagnostics is more important than speed. Prefer the overloaded
+                 * function accessible by passing the `enableErrorBatched` tag (return type: `StatusErrorBatchWith<F>`)
+                 * for a lighter response object.
+                 */
                 Response::StatusBatchWith<std::string_view, std::monostate> DELETE (std::span<RapidNode> nodes, enableBatched);
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                 // CLEAR
 
+                /**
+                 * @brief Clears the entire data store (drops all stored key-values).
+                 * @return A `Status` object containing `StatusCode`
+                 */
                 Response::Status CLEAR();
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////
