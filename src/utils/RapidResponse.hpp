@@ -726,7 +726,7 @@ namespace RiRi::Response {
 } // namespace RiRi::Response
 
 
-// And we can shrink the minimum size of the RapidResponseValue class to be even less by using a union instead of
-// two stores.
-// Though I will not make this change yet, cuz this class's objects will definitely not be of the "minimum size" most of
-// the time. Just writing here so I don't forget.
+// And we can shrink the minimum size of the `StatusBatchedWith<F1, F2>` class to be even less by using a union
+// instead of two stores.
+// Though I will not make this change yet, cuz this class's objects will definitely not be of the "minimum size"
+// most of the time. Just writing here so I don't forget.

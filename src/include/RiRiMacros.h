@@ -1,20 +1,10 @@
 // Compiler: The project is built with Clang C++ ONLY.
 
-// Feel free to try compiling with other compilers (if you are a masochist).
+// Feel free to try compiling with other compilers.
 
 // This header defines macros used throughout RiRi.
-// Must be included before any use of RIRI_API or GO_AWAY.
 
 #pragma once
-
-// =======================
-// Symbol export for shared libs
-// =======================
-#ifdef RIRI_BUILD_DLL
-  #define RIRI_API __attribute__((visibility("default")))
-#else
-  #define RIRI_API
-#endif
 
 // =======================
 // Internal-use-only warning
@@ -35,15 +25,6 @@
   #define RIRI_ASSERT(x)
 #endif
 
-// =======================
-// Dev-only logging
-// =======================
-#ifdef RIRI_DEV_MODE
-  #include <iostream>
-  #define RIRI_DEV_LOG(...) std::cout << "[RiRi Dev] " << __VA_ARGS__ << '\n'
-#else
-  #define RIRI_DEV_LOG(...)
-#endif
 
 // =======================
 // Force Inlining
