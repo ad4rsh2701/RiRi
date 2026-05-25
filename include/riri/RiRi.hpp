@@ -1,7 +1,4 @@
-#pragma once
+#pragma once    // RIRI.HPP
 
-#include "Commands.hpp"
-#include "Parser.hpp"
-#include "Persistence.hpp"
-
-#include "src/include/RiRiMacros.h"
+#include <Commands.hpp>
+#include <RapidResponse.hpp>

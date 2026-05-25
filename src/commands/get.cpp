@@ -1,5 +1,3 @@
-// GET
-
 #include <Commands.hpp>
 #include <DataManager.h>
 
@@ -38,4 +36,5 @@ namespace RiRi::Commands {
         }
         return response;
     }
-}
+
+} // namespace RiRi::Commands

@@ -723,16 +723,10 @@ namespace RiRi::Response {
 
         // you're welcome for the iterators.
     };
-}
+} // namespace RiRi::Response
 
-// DEV NOTE: inside the `RapidResponseFull` struct, under the `addFailure()` functions, I think it should modify the
-// overall code to `ERR_SOME_OPERATIONS_FAILED` if no overflow too, but I am not too sure how this will work out yet,
-// but implementing command layers next should give a better idea (oh wait the reader helpers remain too, F).
-// Update: Yes, it should, let's not introduce complexity over at other layers, let this layer handle the 90% responses.
-// Yes, this reduces customizability, but RiRi is open source... modify and compile it yourself???
 
-// And we can shrink the minimum size of the RapidResponseValue class to less than 544 bits by using a union instead of
-// two stores. Which will save us around... I think 16-24 bits? I am not sure, but essentially, making it all fit under
-// 64 bytes (that's 512 bits) will make it fit under one CPU cache lane, which is a "nice to have" (it sounds good).
+// And we can shrink the minimum size of the RapidResponseValue class to be even less by using a union instead of
+// two stores.
 // Though I will not make this change yet, cuz this class's objects will definitely not be of the "minimum size" most of
 // the time. Just writing here so I don't forget.

@@ -1,9 +1,8 @@
-#pragma once
+#pragma once    // RAPIDTYPES.H
 
 #include <cstdint>
 #include <string>
 #include <variant>
-#include <ankerl/unordered_dense.h>
 
 // I initially thought that creating this file would just be a bloat. But I guess with great structs comes great responsibility.
 
@@ -22,7 +21,6 @@
  * 
  * - `bool` for boolean values
  * @note This type is defined in the `src/include/MemoryMaps.h` for storing rapid data.
- *
  */
 using RapidDataType = std::variant<std::string, int_fast64_t, double, bool>;
 

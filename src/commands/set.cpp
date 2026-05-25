@@ -1,9 +1,9 @@
-// SET
-
 #include <Commands.hpp>
 #include <DataManager.h>
 
 namespace RiRi::Commands {
+
+    // SET
 
     Response::Status SET (std::string key, RapidDataType value) {
         return Response::Status(Internal::setValue(std::move(key), std::move(value))
@@ -50,4 +50,5 @@ namespace RiRi::Commands {
         }
         return response;
     }
-}
+
+} // namespace RiRi::Commands

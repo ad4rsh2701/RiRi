@@ -1,9 +1,9 @@
-// UPDATE
-
 #include <Commands.hpp>
 #include <DataManager.h>
 
 namespace RiRi::Commands {
+
+    // UPDATE
 
     Response::Status UPDATE (std::string_view key, RapidDataType value) {
         return Response::Status(Internal::updateValue(key, std::move(value))

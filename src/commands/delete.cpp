@@ -3,6 +3,8 @@
 
 namespace RiRi::Commands {
 
+    // DELETE
+
     Response::Status DELETE (std::string_view key) {
         return Response::Status(Internal::deleteKey(key)
             ? Response::StatusCode::OK

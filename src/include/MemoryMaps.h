@@ -1,4 +1,4 @@
-#pragma once
+#pragma once    // MEMORYMAPS.H
 
 #include <variant>
 #include <string>
@@ -9,7 +9,7 @@
 
 
 /**
- * @brief ### WARNING: INTERNAL ZONE
+ * @brief ### WARNING: INTERNAL ZONE!
  * 
  * If you are reading this, then you are in the internal zone of RiRi.
  * And you are 100% going to get an error or break something.
@@ -62,8 +62,8 @@ namespace RiRi::Internal {
 
 
     /**
-     * @brief ### Main Memory Map for Rapid Data Access
-     * 
+     * @brief ### Main Memory Map for Rapid Data Access.
+     *
      * This map uses `std::string` as keys and `RapidDataType` as values.
      * It is designed for fast lookups and efficient memory usage.
      * 
@@ -79,16 +79,13 @@ namespace RiRi::Internal {
         RapidHash,
         std::equal_to<>
     > MemoryMap;
-    // Yes, I leveled up, and I am using ankerl::unordered_dense::map with hash and equality
-    // functions for std::string, as intended. This allows us for fast lookups using std::string_view keys.
-    // Previously, I just used ankerl::unordered_dense::map<std::string, std::string>, which was definitely not optimal.
 
-    // Leveled up AGAIN:
-    // Now using ankerl::unordered_dense::map<std::string, RapidDataType> with a custom hash.
+    // We are using ankerl::unordered_dense::map<std::string, RapidDataType> with a custom hash.
     // This allows us to store various types of data in the map, including strings, integers, doubles, and booleans.
     // Why a custom hash?
     // Because ankerl::unordered_dense::map does not support transparent hash "by default". You'd need to define a custom
-    // struct to enable heterogeneous lookup. More details here: https://github.com/martinus/unordered_dense/tree/main?tab=readme-ov-file#324-heterogeneous-overloads-using-is_transparent
+    // struct to enable heterogeneous lookup.
+    // More details here: https://github.com/martinus/unordered_dense/tree/main?tab=readme-ov-file#324-heterogeneous-overloads-using-is_transparent
 
 
 
@@ -115,4 +112,4 @@ namespace RiRi::Internal {
     //     std::equal_to<>
     // > AuxCommandMap;
 
-}
+} // namespace RiRi::Internal

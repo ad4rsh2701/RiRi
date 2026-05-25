@@ -1,5 +1,5 @@
 constexpr size_t DEFAULT_MEMORY_CAPACITY = 100;
-constexpr size_t DEFAULT_COMMAND_CAPACITY = 16;
+// constexpr size_t DEFAULT_COMMAND_CAPACITY = 16;
 
 #include <MemoryMaps.h>
 
@@ -21,7 +21,6 @@ ankerl::unordered_dense::map<
     // NOTE: The size is reserved to avoid rehashing during runtime.
     // This is a small size, for development purposes.
     // Adjust the size based on the expected number of entries
-    // which you can set in `riri.config` (TODO: Implement this).
     return map;
 }();
 
