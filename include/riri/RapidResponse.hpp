@@ -206,7 +206,7 @@ namespace RiRi::Response {
         // thou shall use default
         constexpr StatusWith() noexcept = default;
 
-        // thou shall... idk
+        // thou shall... IDK
         // Explicit constructor to initialize the class object
         // with custom _field and _status_code values.
         explicit StatusWith(F field, const StatusCode status_code) noexcept
@@ -622,7 +622,7 @@ namespace RiRi::Response {
         std::byte _error_store[TRACKING_CAPACITY * sizeof(ErrorEntryType)]{};
 
         /// Pointer that will track error entries, initialized in constructor to point to ERROR_STORE
-        ErrorEntryType *_failures = reinterpret_cast<ErrorEntryType*>(_error_store);;     // Aptly named
+        ErrorEntryType *_failures = reinterpret_cast<ErrorEntryType*>(_error_store);     // Aptly named
 
         // Pointer points to the ERROR_STORE and will move by `ErrorEntryType`
         std::uint32_t _failure_count = 0;
