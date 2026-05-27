@@ -1,66 +1,41 @@
 cmake_minimum_required(VERSION 3.20)
-project(RiRiCore LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(RiRi VERSION 0.0.0 LANGUAGES CXX)
 
-# Force clang++ as the compiler
-set(CMAKE_CXX_COMPILER "clang++")
+add_library(RiRi STATIC
+        src/commands/clear.cpp
+        src/commands/delete.cpp
+        src/commands/get.cpp
+        src/commands/set.cpp
+        src/commands/update.cpp
+        src/core/DataManager.cpp
+        src/core/MemoryMaps.cpp
+)
 
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -flto -march=native -fuse-ld=lld ")
+target_compile_features(RiRi PUBLIC cxx_std_23)
 
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug)
+# Define RIRI_INTERNAL, because we will be using the internal files to build obv
+target_compile_definitions(RiRi PRIVATE RIRI_INTERNAL)
+
+target_include_directories(RiRi
+        # PUBLIC: Visible to RiRi and anyone who links against it (FetchContent users)
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+
+        # PRIVATE: Visible ONLY internally to RiRi's own source files
+        PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/include>
+)
+
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(RiRi PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(RiRi PRIVATE $<$<CONFIG:Release>:-O3>)
 endif()
 
-set(PUBLIC_HEADERS
-        include/riri/Commands.hpp    # Public API
-        include/riri/RiRi.hpp        # Public API
-)
-
-set(PRIVATE_HEADERS
-        src/include/DataManager.h    # Internal implementation
-        src/include/MemoryMaps.h     # Internal implementation
-        src/include/RapidTypes.h     # Internal implementation
-        src/include/RiRiMacros.h     # Internal implementation
-        src/include/ankerl/unordered_dense.h   # Internal dependency
-)
-
-set(SEMI_PRIVATE_HEADERS
-        src/utils/RapidResponse.hpp
-        src/utils/helpers/status_to_string.hpp
-)
-
-# Install structure
-install(FILES ${PUBLIC_HEADERS}
-        DESTINATION include/riri
-)
-
-install(FILES ${SEMI_PRIVATE_HEADERS}
-        DESTINATION include/riri/utils
-)
-
-install(FILES ${PRIVATE_HEADERS}
-        DESTINATION include/riri/internal   # GO_AWAY zone
-)
-
-add_executable(riri
-        src/cli/Main.cpp
-        src/core/MemoryMaps.cpp
-        src/core/DataManager.cpp
-)
-
-# Define preprocessor macros
-target_compile_definitions(riri PRIVATE
-        RIRI_DEV_MODE
-        RIRI_BUILD_DLL
-)
-
-target_include_directories(riri PRIVATE
-        ${CMAKE_SOURCE_DIR}/src/include
-        ${CMAKE_SOURCE_DIR}/src/utils
-        ${CMAKE_SOURCE_DIR}/include/riri/
-        ${CMAKE_SOURCE_DIR}/src/include/ankerl/
-)
-
-target_compile_options(riri PRIVATE ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}})
+# Apply LTO if supported
+include(CheckIPOSupported)
+check_ipo_supported(RESULT lto_supported)
+if(lto_supported)
+    set_property(TARGET RiRi PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
