@@ -1,4 +1,4 @@
-#pragma once
+#pragma once    // RAPIDRESPONSE.HPP
 
 #include <concepts>
 #include <cstdint>
@@ -30,8 +30,6 @@ static constexpr size_t VALUE_TRACKING_CAPACITY = 8;
  * - Response may either signify success or failure or their derivatives.
  * - This file can be used independently in other systems if you know how to (and are desperate).
  *
- * @warning DO NOT use this header file unless you know what you are doing.
- * @note If you know what you are doing, then you may use this file to build on top RiRi's internals, go wild.
  */
 namespace RiRi::Response {
     /**
