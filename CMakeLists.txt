@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(RiRi VERSION 0.0.0 LANGUAGES CXX)
+project(RiRi VERSION 0.0.1 LANGUAGES CXX)
 
 add_library(RiRi STATIC
         src/commands/clear.cpp
