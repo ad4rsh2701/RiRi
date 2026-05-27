@@ -7,7 +7,7 @@
 #include <new>
 #include <string_view>
 #include <utility>
-#include <RapidTypes.h>
+#include "RapidTypes.hpp"
 
 
 template <typename T>
