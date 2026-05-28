@@ -1,5 +1,5 @@
-#include <riri/Commands.hpp>
-#include <DataManager.h>
+#include "riri/Commands.hpp"
+#include "DataManager.h"
 
 namespace RiRi::Commands {
 
