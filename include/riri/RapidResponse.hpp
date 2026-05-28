@@ -1,4 +1,4 @@
-#pragma once
+#pragma once    // RAPIDRESPONSE.HPP
 
 #include <concepts>
 #include <cstdint>
@@ -7,7 +7,8 @@
 #include <new>
 #include <string_view>
 #include <utility>
-#include <RapidTypes.h>
+
+#include "RapidTypes.hpp"
 
 
 template <typename T>
@@ -30,8 +31,6 @@ static constexpr size_t VALUE_TRACKING_CAPACITY = 8;
  * - Response may either signify success or failure or their derivatives.
  * - This file can be used independently in other systems if you know how to (and are desperate).
  *
- * @warning DO NOT use this header file unless you know what you are doing.
- * @note If you know what you are doing, then you may use this file to build on top RiRi's internals, go wild.
  */
 namespace RiRi::Response {
     /**
@@ -208,7 +207,7 @@ namespace RiRi::Response {
         // thou shall use default
         constexpr StatusWith() noexcept = default;
 
-        // thou shall... idk
+        // thou shall... IDK
         // Explicit constructor to initialize the class object
         // with custom _field and _status_code values.
         explicit StatusWith(F field, const StatusCode status_code) noexcept
@@ -624,7 +623,7 @@ namespace RiRi::Response {
         std::byte _error_store[TRACKING_CAPACITY * sizeof(ErrorEntryType)]{};
 
         /// Pointer that will track error entries, initialized in constructor to point to ERROR_STORE
-        ErrorEntryType *_failures = reinterpret_cast<ErrorEntryType*>(_error_store);;     // Aptly named
+        ErrorEntryType *_failures = reinterpret_cast<ErrorEntryType*>(_error_store);     // Aptly named
 
         // Pointer points to the ERROR_STORE and will move by `ErrorEntryType`
         std::uint32_t _failure_count = 0;

@@ -1,5 +1,5 @@
-#include <Commands.hpp>
-#include <DataManager.h>
+#include "riri/Commands.hpp"
+#include "DataManager.h"
 
 namespace RiRi::Commands {
 
@@ -30,7 +30,7 @@ namespace RiRi::Commands {
         Response::StatusErrorBatchWith<std::string_view> response;
         for (auto& [key, value]: nodes) {
             if (const bool success = Internal::setValue(std::move(key),std::move(value)); !success) {
-                // try_implace allows me to do this directly if things go wrong, heh
+                // try_emplace allows me to do this directly if things go wrong, heh
                 response.addErrorEntry(key, Response::StatusCode::ERR_KEY_ALREADY_EXISTS);
             }
         }

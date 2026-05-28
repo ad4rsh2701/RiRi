@@ -1,8 +1,8 @@
 #pragma once    // COMMANDS.HPP
 
 #include <span>
-#include <RapidTypes.h>
-#include <RapidResponse.hpp>    // That one HEINOUS header file
+#include "RapidTypes.hpp"
+#include "RapidResponse.hpp"    // That one HEINOUS header file
 
 
 /**

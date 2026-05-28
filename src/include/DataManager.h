@@ -5,8 +5,8 @@
 // command layers (the public API for RiRi).
 
 #include <string_view>
-#include <RapidTypes.h>
-#include <RiRiMacros.h>
+#include "RiRiMacros.h"
+#include "riri/RapidTypes.hpp"
 
 
 /**

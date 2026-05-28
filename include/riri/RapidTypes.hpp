@@ -1,4 +1,4 @@
-#pragma once    // RAPIDTYPES.H
+#pragma once    // RAPIDTYPES.HPP
 
 #include <cstdint>
 #include <string>

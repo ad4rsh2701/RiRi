@@ -1,5 +1,5 @@
-#include <DataManager.h>
-#include <MemoryMaps.h>
+#include "DataManager.h"
+#include "MemoryMaps.h"
 
 
 namespace RiRi::Internal {
