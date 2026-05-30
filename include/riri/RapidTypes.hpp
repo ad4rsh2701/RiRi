@@ -15,14 +15,14 @@
  * 
  * - `std::string` for text data
  * 
- * - `int_fast64_t` for large integers
+ * - `int64_t` for large integers
  * 
  * - `double` for floating-point numbers
  * 
  * - `bool` for boolean values
  * @note This type is defined in the `src/include/MemoryMaps.h` for storing rapid data.
  */
-using RapidDataType = std::variant<std::string, int_fast64_t, double, bool>;
+using RapidDataType = std::variant<std::string, int64_t, double, bool>;
 
 
 /**
