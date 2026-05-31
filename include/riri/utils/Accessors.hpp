@@ -4,22 +4,32 @@
 #include <string>
 #include <format>
 
-#include "riri/RapidResponse.hpp"
 #include "riri/RapidTypes.hpp"
 
 namespace RiRi::Utils {
 
+
+    // Constraining the type to be the same as the types of `RapidDataType` variant
     template <typename T>
     concept Accessible = std::same_as<T, std::string>
                       || std::same_as<T, int64_t>
                       || std::same_as<T, bool>
                       || std::same_as<T, double>;
+    // I wonder if we can static_assert the types in RapidDataType
+    // to be the same as the types of Accessible... probably no.
+
 
     /**
+     * @brief Helper to unpack the variant and attempt to access the data as the specified type.
      *
-     * @tparam T
-     * @param data
-     * @return
+     * Returns a pointer to the value held by the provided `RapidDataType` only if
+     * it currently contains a value of type `T`.
+     *
+     * If `data` is `nullptr`, or if the stored value has a different type, `nullptr` is returned.
+     *
+     * @tparam T The type to retrieve from the variant. Must satisfy the `Accessible` concept.
+     * @param data Pointer to the `RapidDataType` variant to unpack
+     * @return Pointer to the contained value of type `T`, or `nullptr` if unavailable
      */
     template <Accessible T>
     const T* unpack_as(const RapidDataType* data) {
@@ -29,9 +39,15 @@ namespace RiRi::Utils {
 
 
     /**
+     * @brief Converts a `RapidDataType` value to its string representation
      *
-     * @param data
-     * @return
+     * If `data` is `nullptr`, returns `"null"`. Otherwise, visits the contained
+     * variant value and formats it as a string.
+     *
+     * Boolean values are converted to `"true"` or `"false"`.
+     *
+     * @param data Pointer to the `RapidDataType` variant to convert to string.
+     * @return String representation of the contained value, or `"null"` if `data` is `nullptr`.
      */
     inline std::string to_string(const RapidDataType* data) {
         if (!data) return std::format("null");   // if nullptr
@@ -46,13 +62,17 @@ namespace RiRi::Utils {
     }
 
     /**
+     * @brief Converts a status code to its string representation.
      *
-     * @param code
-     * @return
+     * Returns the symbolic name of a known `StatusCode` enum. If the status code is
+     * not recognized, returns a fallback string in the form `"UNKNOWN-CODE-<code>"`
+     *
+     * @param code The `StatusCode` value to convert.
+     * @return String representation of the status code.
      */
-    inline std::string to_string(const Response::StatusCode code) {
+    inline std::string to_string(const StatusCode code) {
         // Macro taking one argument of type StatusCode and stringify-ing it
-        #define CASE(x) case Response::StatusCode::x: return #x     // purely done so it's easier to insert cases
+        #define CASE(x) case StatusCode::x: return #x     // purely done so it's easier to insert cases
         switch (code) {
             CASE(OK);
             CASE(ORPHANED);
@@ -75,8 +95,9 @@ namespace RiRi::Utils {
             CASE(ERR_NO_ARGUMENTS_GIVEN);
             CASE(ERR_INVALID_DELIMITER);
             CASE(ERR_OUT_OF_MEMORY);
-            default: return std::format("UNKNOWN({})", static_cast<uint16_t>(code));
+            default: return std::format("UNKNOWN-CODE-{}", static_cast<uint16_t>(code));
         }
         #undef CASE
     }
-}
+
+} // namespace RiRi::Utils
