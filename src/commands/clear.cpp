@@ -7,7 +7,7 @@ namespace RiRi::Commands {
 
     Response::Status CLEAR () {
         Internal::clearMap();
-        return Response::Status(Response::StatusCode::OK);
+        return Response::Status(StatusCode::OK);
     }
 
 } // namespace RiRi::Commands

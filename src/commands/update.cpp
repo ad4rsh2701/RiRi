@@ -7,15 +7,15 @@ namespace RiRi::Commands {
 
     Response::Status UPDATE (std::string_view key, RapidDataType value) {
         return Response::Status(Internal::updateValue(key, std::move(value))
-            ? Response::StatusCode::OK
-            : Response::StatusCode::ERR_KEY_NOT_FOUND);
+            ? StatusCode::OK
+            : StatusCode::ERR_KEY_NOT_FOUND);
     }
 
     Response::Status UPDATE (std::span<RapidNode> nodes) {
         Response::Status response;
         for (auto& [key, value]: nodes) {
             if (const bool success = Internal::updateValue(key, std::move(value)); !success) {
-                response.setCode(Response::StatusCode::ERR_SOME_OPERATIONS_FAILED);
+                response.setCode(StatusCode::ERR_SOME_OPERATIONS_FAILED);
             }
         }
         return response;
@@ -26,7 +26,7 @@ namespace RiRi::Commands {
         for (auto& [key, value]: nodes) {
             if (const bool success = Internal::updateValue(key, std::move(value)); !success) {
                 // we never move or get rid of the provided key, so we just use it
-                response.addErrorEntry(key, Response::StatusCode::ERR_KEY_NOT_FOUND);
+                response.addErrorEntry(key, StatusCode::ERR_KEY_NOT_FOUND);
             }
         }
         return response;
@@ -36,7 +36,7 @@ namespace RiRi::Commands {
         Response::StatusBatchWith<std::string_view, std::monostate> response;
         for (auto& [key, value]: nodes) {
             if (const bool success = Internal::updateValue(key, std::move(value)); !success) {
-                response.addStatusEntry(key, Response::StatusCode::ERR_KEY_NOT_FOUND);
+                response.addStatusEntry(key, StatusCode::ERR_KEY_NOT_FOUND);
             }
             // we don't need to track success cases, so no need to call `addResultEntry()`
             // though the compiler won't let me do that anyway; the function is constrained

@@ -7,8 +7,8 @@ namespace RiRi::Commands {
 
     Response::Status SET (std::string key, RapidDataType value) {
         return Response::Status(Internal::setValue(std::move(key), std::move(value))
-            ? Response::StatusCode::OK
-            : Response::StatusCode::ERR_KEY_ALREADY_EXISTS);
+            ? StatusCode::OK
+            : StatusCode::ERR_KEY_ALREADY_EXISTS);
         // this is why I added an explicit constructor in RapidResponse class.
         // and no, I am not making it pretty with if-else
     }
@@ -20,7 +20,7 @@ namespace RiRi::Commands {
         Response::Status response;
         for (auto&[key, value]: nodes) {
             if (const bool success = Internal::setValue(std::move(key),std::move(value)); !success) {
-                response.setCode(Response::StatusCode::ERR_SOME_OPERATIONS_FAILED);
+                response.setCode(StatusCode::ERR_SOME_OPERATIONS_FAILED);
             }
         }
         return response;
@@ -31,7 +31,7 @@ namespace RiRi::Commands {
         for (auto& [key, value]: nodes) {
             if (const bool success = Internal::setValue(std::move(key),std::move(value)); !success) {
                 // try_emplace allows me to do this directly if things go wrong, heh
-                response.addErrorEntry(key, Response::StatusCode::ERR_KEY_ALREADY_EXISTS);
+                response.addErrorEntry(key, StatusCode::ERR_KEY_ALREADY_EXISTS);
             }
         }
         return response;
@@ -41,7 +41,7 @@ namespace RiRi::Commands {
         Response::StatusBatchWith<std::string_view, std::monostate> response;
         for (auto& [key, value]: nodes) {
             if (const bool success = Internal::setValue(std::move(key),std::move(value)); !success) {
-                response.addStatusEntry(key, Response::StatusCode::ERR_KEY_ALREADY_EXISTS);
+                response.addStatusEntry(key, StatusCode::ERR_KEY_ALREADY_EXISTS);
             }
             // we don't need to track success cases, so no need to call `addResultEntry()`
             // though the compiler won't let me do that anyway; the function is constrained
