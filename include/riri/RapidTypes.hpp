@@ -4,52 +4,54 @@
 #include <string>
 #include <variant>
 
-// I initially thought that creating this file would just be a bloat. But I guess with great structs comes great responsibility.
 
-/**
- * @brief Represents a rapid data type that can hold various types of values.
- * 
- * - This type is used for fast data access and manipulation within the RiRi framework.
- *
- * The `RapidDataType` can hold:
- * 
- * - `std::string` for text data
- * 
- * - `int64_t` for large integers
- * 
- * - `double` for floating-point numbers
- * 
- * - `bool` for boolean values
- * @note This type is defined in the `src/include/MemoryMaps.h` for storing rapid data.
- */
-using RapidDataType = std::variant<std::string, int64_t, double, bool>;
+namespace RiRi {
 
 
-/**
- * @brief Represents a key-value pair in the map.
- * 
- * This struct is used to store a key and its associated value.
- * Used majorly during command parsing and command functions to represent a key-value pair.
- *
- * @var RapidNode::key The key as a `std::string`.
- * @var RapidNode::value The value as a `RapidDataType`, which can be a string, integer, double, or boolean.
- *
- * You can either pass the values normally enforcing a copy, i.e., one allocation during node creation OR
- * move the values entirely via std::move, zero allocation during node creation
- * NOTE: moving steals the buffer, the original variable's value is lost, do not rely on its value post-move
- * (and apparently this post-move-accessing isn't UB).
- */
-struct RapidNode {
-    std::string key;
-    RapidDataType value;
-};
-// Rule of 0 states that...
-// "If you can, write none of the special members. Let the compiler generate all of them."
-// So, one can either move values directly to RapidNode if they know what they are doing
-// Or pass the values (enforcing a copy once) normally.
+    /**
+     * @brief Represents a rapid data type that can hold various types of values.
+     *
+     * - This type is used for fast data access and manipulation within the RiRi framework.
+     *
+     * The `RapidDataType` can hold:
+     *
+     * - `std::string` for text data
+     *
+     * - `int64_t` for large integers
+     *
+     * - `double` for floating-point numbers
+     *
+     * - `bool` for boolean values
+     * @note This type is defined in the `src/include/MemoryMaps.h` for storing rapid data.
+     */
+    using RapidDataType = std::variant<std::string, std::int64_t, double, bool>;
 
 
-/**
+    /**
+     * @brief Represents a key-value pair in the map.
+     *
+     * This struct is used to store a key and its associated value.
+     * Used majorly during command parsing and command functions to represent a key-value pair.
+     *
+     * @var RapidNode::key The key as a `std::string`.
+     * @var RapidNode::value The value as a `RapidDataType`, which can be a string, integer, double, or boolean.
+     *
+     * You can either pass the values normally enforcing a copy, i.e., one allocation during node creation OR
+     * move the values entirely via std::move, zero allocation during node creation
+     * NOTE: moving steals the buffer, the original variable's value is lost, do not rely on its value post-move
+     * (and apparently this post-move-accessing isn't UB).
+     */
+    struct RapidNode {
+        std::string key;
+        RapidDataType value;
+    };
+    // Rule of 0 states that...
+    // "If you can, write none of the special members. Let the compiler generate all of them."
+    // So, one can either move values directly to RapidNode if they know what they are doing
+    // Or pass the values (enforcing a copy once) normally.
+
+
+    /**
      * @brief Represents various status codes for responses within the RapidResponse framework.
      *
      * Status codes are categorized into multiple ranges based on their meanings:
@@ -65,7 +67,7 @@ struct RapidNode {
     enum class StatusCode : std::uint16_t {
         // SUCCESS CODES (0-99)
         OK = 0, // Covers 90% of the use case, I guess?
-            // Will add more as I see fit.
+        // Will add more as I see fit.
 
         // INFO CODES (100-199)
         ORPHANED = 100,                         // Default uninitialized state (equivalent to UNSET in other similar systems).
@@ -75,10 +77,10 @@ struct RapidNode {
         WARN_KEY_STORE_NEARING_CAPACITY = 200,      // COMMAND LEVEL
         WARN_RESPONSE_CONTAINS_WARNINGS = 250,      // RESPONSE LEVEL
 
-            // We might need warning codes and a lot of them.
+        // We might need warning codes and a lot of them.
 
         // BUFFER RANGE (300-399)
-            // In case warning codes or anything else from above needs more codes, though I doubt it, but still.
+        // In case warning codes or anything else from above needs more codes, though I doubt it, but still.
 
         // CORE ERROR CODES (400-499)
         ERR_KEY_STORE_FULL = 400,               // COMMAND LEVEL
@@ -87,7 +89,7 @@ struct RapidNode {
         ERR_KEY_ALREADY_EXISTS = 403,           // COMMAND LEVEL
         ERR_KEY_NOT_FOUND = 404,                // COMMAND LEVEL // Also, mission complete: +5 xp
         ERR_VALUE_NOT_FOUND = 405,              // COMMAND LEVEL
-        // leaving a little gap for basic ones
+            // leaving a little gap for basic ones
         ERR_SINGLE_NODE_EXPECTED = 420,         // COMMAND LEVEL
 
         // Do I really need these? Overkill much?
@@ -105,7 +107,8 @@ struct RapidNode {
         // they triggered. So, yes, it was very likely overkill before.
 
             // BILLION_DOLLAR_MISTAKE = 401: CLion's autocomplete is wild.
-            // These are enough for now, will add more as needed.
+
+        // These are enough for now, will add more as needed.
 
         // GENERAL ERROR CODES (500-599)
         ERR_INVALID_KEY = 501,              // PARSER LEVEL
@@ -115,7 +118,7 @@ struct RapidNode {
         ERR_DOES_NOT_TAKE_ARGUMENTS = 505,  // PARSER LEVEL
         ERR_NO_ARGUMENTS_GIVEN = 506,       // PARSER LEVEL
         ERR_INVALID_DELIMITER = 507,        // PARSER LEVEL // Last fallback error code, if none of the above.
-            // This looks overkill, but parser is yet to be implemented, so let's see.
+            // This looks overkill, but the parser is yet to be implemented, so let's see.
             // More to be added as RiRi grows.
             // Pretty sure I'd need more than 100.
             // It looks like it's only for PARSER, but there will be THREAD, PERSISTENCE and SERVER levels too.
@@ -124,6 +127,8 @@ struct RapidNode {
         ERR_OUT_OF_MEMORY = 600             // SYSTEM LEVEL
             // fun
     };
+
+} // namespace riri
 
 
 // Maybe I would need this for command dispatch? who knows? archiving in file

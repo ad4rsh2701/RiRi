@@ -11,17 +11,6 @@
 #include "RapidTypes.hpp"
 
 
-template <typename T>
-concept ResponseField = std::same_as<T, const RapidDataType*>
-                        || std::same_as<T, std::string_view>
-                        || std::same_as<T, std::monostate>;
-
-/// This constant defines the number of errors to be tracked
-static constexpr size_t TRACKING_CAPACITY = 8;
-
-/// This constant defines the number of ValueOrStatus entries to be tracked
-static constexpr size_t VALUE_TRACKING_CAPACITY = 8;
-
 /**
  * @brief RiRi's custom response system
  *
@@ -33,6 +22,18 @@ static constexpr size_t VALUE_TRACKING_CAPACITY = 8;
  *
  */
 namespace RiRi::Response {
+
+    template <typename T>
+    concept ResponseField = std::same_as<T, const RapidDataType*>
+                        || std::same_as<T, std::string_view>
+                        || std::same_as<T, std::monostate>;
+
+    /// This constant defines the number of errors to be tracked
+    static constexpr size_t TRACKING_CAPACITY = 8;
+
+    /// This constant defines the number of ValueOrStatus entries to be tracked
+    static constexpr size_t VALUE_TRACKING_CAPACITY = 8;
+
 
     /**
      * @brief Represents a status containing response class within the Rapid Response System.

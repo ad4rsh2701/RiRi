@@ -12,7 +12,7 @@ namespace RiRi::Utils {
     // Constraining the type to be the same as the types of `RapidDataType` variant
     template <typename T>
     concept Accessible = std::same_as<T, std::string>
-                      || std::same_as<T, int64_t>
+                      || std::same_as<T, std::int64_t>
                       || std::same_as<T, bool>
                       || std::same_as<T, double>;
     // I wonder if we can static_assert the types in RapidDataType
@@ -95,7 +95,7 @@ namespace RiRi::Utils {
             CASE(ERR_NO_ARGUMENTS_GIVEN);
             CASE(ERR_INVALID_DELIMITER);
             CASE(ERR_OUT_OF_MEMORY);
-            default: return std::format("UNKNOWN-CODE-{}", static_cast<uint16_t>(code));
+            default: return std::format("UNKNOWN-CODE-{}", static_cast<std::uint16_t>(code));
         }
         #undef CASE
     }
