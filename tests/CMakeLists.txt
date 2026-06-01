@@ -3,8 +3,16 @@
 add_executable(RiRi_tests
         test_main.cpp
         units/test_core.cpp
+        units/commands/test_set.cpp
+        units/commands/test_get.cpp
+        units/commands/test_update.cpp
+        units/commands/test_delete.cpp
+        units/commands/test_clear.cpp
+        units/response/test_status.cpp
+        units/response/test_status_with.cpp
+        units/response/test_status_batch_with.cpp
+        units/response/test_status_error_batch_with.cpp
 )
-
 target_compile_definitions(RiRi_tests PRIVATE RIRI_INTERNAL)
 
 # any headers in the current directory is our lib (doctest.h)
