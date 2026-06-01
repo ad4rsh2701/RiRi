@@ -1,11 +1,11 @@
 #include <ostream>   // Required by doctest to print values
 #include <string_view>
+
 #include "doctest.h"
 #include "riri/RapidResponse.hpp"
-#include "riri/utils/Accessors.hpp"
+#include "riri/RapidTypes.hpp"
 
 using namespace RiRi::Response;
-using namespace RiRi::Utils;
 
 TEST_SUITE("Rapid Response System") {
 
@@ -18,6 +18,7 @@ TEST_SUITE("Rapid Response System") {
         }
 
         SUBCASE("Explicit constructor sets '_field' and '_code'") {
+            // <const RapidDataType*>
             RiRi::RapidDataType val = "riri";
             StatusWith<const RiRi::RapidDataType*> response{&val, RiRi::StatusCode::OK};
 
@@ -25,9 +26,10 @@ TEST_SUITE("Rapid Response System") {
             CHECK(*response.field() == val);
             CHECK(response.code() == RiRi::StatusCode::OK);
 
+            // <std::string_view>
             StatusWith<std::string_view> response_alt{"_key", RiRi::StatusCode::OK};
 
-            // no UB possible here; string_view comparison does not dereference memory
+                // no UB possible here; string_view comparison does not dereference memory
             CHECK(response_alt.field() == "_key");
             CHECK(response_alt.code() == RiRi::StatusCode::OK);
         }

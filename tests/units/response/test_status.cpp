@@ -1,5 +1,6 @@
 #include "doctest.h"
 #include "riri/RapidResponse.hpp"
+#include "riri/RapidTypes.hpp"
 
 using namespace RiRi::Response;
 
