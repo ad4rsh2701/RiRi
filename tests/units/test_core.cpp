@@ -2,6 +2,8 @@
 #include "DataManager.h"
 #include "riri/utils/Accessors.hpp"
 #include "riri/RapidTypes.hpp"
+#include <cstdint>
+#include <string>
 
 using namespace RiRi::Internal;
 using namespace RiRi::Utils;
@@ -27,7 +29,7 @@ TEST_CASE("(INTERNAL) Data Manager") {
     }
 
     SUBCASE("setValue with other types") {
-        CHECK(setValue("_key-int", int64_t{67}) == true);
+        CHECK(setValue("_key-int", std::int64_t{67}) == true);
         CHECK(setValue("_key-double", 3.14) == true);
         CHECK(setValue("_key-bool", false) == true);
         CHECK(size() == 3);
