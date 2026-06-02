@@ -428,6 +428,8 @@ namespace RiRi::Response {
             escalate_overall_code(status_code);
         }
 
+        [[nodiscard]] std::uint32_t totalEntryCount() const noexcept { return _entry_count; }
+
         /**
         * @brief Provides a constant iterator pointing to the beginning of the `entries` collection.
         * @return A pointer to the first error entry in the `entries` collection.
