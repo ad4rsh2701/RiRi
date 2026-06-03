@@ -22,6 +22,8 @@ RiRi::RapidNode node {
 RiRi::Commands::SET(node);
 ```
 
+Benchmarks coming soon ^-^
+
 ---
 
 ## Features:
@@ -44,6 +46,8 @@ cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++
 cmake --build build
 ```
 > Clang++ is the officially supported compiler. GCC/MSVC may work but is untested.
+
+> To build tests, add `-DRIRI_BUILD_TESTS=ON` to the CMake command.
 
 ---
 
@@ -150,7 +154,7 @@ auto get_response = GET(many_nodes, RiRi::enableBatched{});
 - [x] User level functions/commands for inserting/fetching the data (ref: [#32](https://github.com/ad4rsh2701/RiRi/pull/32))
 - [x] First library build (ref: [#33](https://github.com/ad4rsh2701/RiRi/pull/35))
 - [x] Unit Testing and Benchmarking
-- [ ] Pre-Release 0.0.1
+- [x] Pre-Release 0.0.1
 - [ ] Thread Safety and Multi-threading
 - [ ] Data Persistence and Recovery
 
