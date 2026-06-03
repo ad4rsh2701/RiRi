@@ -39,3 +39,14 @@ check_ipo_supported(RESULT lto_supported)
 if(lto_supported)
     set_property(TARGET RiRi PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
+
+
+# UNIT TESTS
+option(RIRI_BUILD_TESTS "Build tests for RiRi" OFF)
+if(RIRI_BUILD_TESTS)
+    message(STATUS "RiRi: Building tests...")
+    enable_testing()
+    add_subdirectory(tests)
+else()
+    message(STATUS "RiRi: Skipped building tests!")
+endif()

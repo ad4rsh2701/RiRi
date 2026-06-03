@@ -3,7 +3,8 @@
 #include <concepts>
 #include <string>
 #include <format>
-
+#include <variant>
+#include <string_view>
 #include "riri/RapidTypes.hpp"
 
 namespace RiRi::Utils {
@@ -18,6 +19,11 @@ namespace RiRi::Utils {
     // I wonder if we can static_assert the types in RapidDataType
     // to be the same as the types of Accessible... probably no.
 
+    namespace detail {
+        using VariantLike_rdt = std::variant<const RapidDataType*, StatusCode>;
+        using VariantLike_strv = std::variant<std::string_view, StatusCode>;
+        using VariantLike_mono = std::variant<std::monostate, StatusCode>;
+    } // namespace detail
 
     /**
      * @brief Helper to unpack the variant and attempt to access the data as the specified type.
@@ -35,6 +41,39 @@ namespace RiRi::Utils {
     const T* unpack_as(const RapidDataType* data) {
         if (!data) return nullptr;
         return std::get_if<T>(data);
+    }
+
+
+    inline const RapidDataType* unpack_field(const detail::VariantLike_rdt* F2) {
+        if (!F2) return nullptr;
+        if (auto* ptr = std::get_if<const RapidDataType*>(F2)) {
+            return *ptr;
+        }
+        return nullptr;
+    }
+    inline const StatusCode* unpack_field_code(const detail::VariantLike_rdt* F2) {
+        if (!F2) return nullptr;
+        return std::get_if<StatusCode>(F2);
+    }
+
+
+    inline const std::string_view* unpack_field(const detail::VariantLike_strv* F2) {
+        if (!F2) return nullptr;
+        return std::get_if<std::string_view>(F2);
+    }
+    inline const StatusCode* unpack_field_code(const detail::VariantLike_strv* F2) {
+        if (!F2) return nullptr;
+        return std::get_if<StatusCode>(F2);
+    }
+
+    
+    inline const std::monostate* unpack_field(const detail::VariantLike_mono* F2) {
+        if (!F2) return nullptr;
+        return std::get_if<std::monostate>(F2);
+    }
+    inline const StatusCode* unpack_field_code(const detail::VariantLike_mono* F2) {
+        if (!F2) return nullptr;
+        return std::get_if<StatusCode>(F2);
     }
 
 

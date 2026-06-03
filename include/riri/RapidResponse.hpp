@@ -32,7 +32,7 @@ namespace RiRi::Response {
     static constexpr size_t TRACKING_CAPACITY = 8;
 
     /// This constant defines the number of ValueOrStatus entries to be tracked
-    static constexpr size_t VALUE_TRACKING_CAPACITY = 8;
+    static constexpr size_t TARGET_FIELD_TRACKING_CAPACITY = 8;
 
 
     /**
@@ -236,7 +236,7 @@ namespace RiRi::Response {
             // resetting our obj
             obj._entries = reinterpret_cast<EntryType*>(obj._static_store);
             obj._entry_count = 0;
-            obj._capacity = VALUE_TRACKING_CAPACITY;    // gotcha
+            obj._capacity = TARGET_FIELD_TRACKING_CAPACITY;    // gotcha
             obj._overall_code = StatusCode::ORPHANED;
         }
 
@@ -246,7 +246,7 @@ namespace RiRi::Response {
 
         /// A fixed blob or block of memory, which stores `EntryType` objects.
         alignas(EntryType)
-        std::byte _static_store[sizeof(EntryType)*VALUE_TRACKING_CAPACITY]{};
+        std::byte _static_store[sizeof(EntryType)*TARGET_FIELD_TRACKING_CAPACITY]{};
 
         /// A unique pointer to manage an array of type EntryType
         std::unique_ptr<EntryType[]> _dynamic_store = nullptr;
@@ -254,7 +254,7 @@ namespace RiRi::Response {
         /// Pointer that will track entries, initialized to point to _static_store
         EntryType *_entries = reinterpret_cast<EntryType *>(_static_store);
         std::uint32_t _entry_count = 0;
-        std::uint32_t _capacity = VALUE_TRACKING_CAPACITY;
+        std::uint32_t _capacity = TARGET_FIELD_TRACKING_CAPACITY;
 
         /**
          * @brief Increases the dynamic storage capacity for entries when the current capacity is not enough.
@@ -435,6 +435,8 @@ namespace RiRi::Response {
 
             escalate_overall_code(status_code);
         }
+
+        [[nodiscard]] std::uint32_t totalEntryCount() const noexcept { return _entry_count; }
 
         /**
         * @brief Provides a constant iterator pointing to the beginning of the `entries` collection.
