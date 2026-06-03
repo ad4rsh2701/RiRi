@@ -18,6 +18,7 @@ namespace RiRi::Commands {
 
     Response::Status SET (std::span<RapidNode> nodes) {
         Response::Status response;
+        response.setCode(StatusCode::OK);   // set default code
         for (auto&[key, value]: nodes) {
             if (const bool success = Internal::setValue(std::move(key),std::move(value)); !success) {
                 response.setCode(StatusCode::ERR_SOME_OPERATIONS_FAILED);
@@ -27,6 +28,7 @@ namespace RiRi::Commands {
     }
 
     Response::StatusErrorBatchWith<std::string_view> SET (std::span<RapidNode> nodes, enableErrorBatched) {
+        // the default code is OK (internal implementation)
         Response::StatusErrorBatchWith<std::string_view> response;
         for (auto& [key, value]: nodes) {
             if (const bool success = Internal::setValue(std::move(key),std::move(value)); !success) {
@@ -39,6 +41,7 @@ namespace RiRi::Commands {
 
     Response::StatusBatchWith<std::string_view, std::monostate> SET (std::span<RapidNode> nodes, enableBatched) {
         Response::StatusBatchWith<std::string_view, std::monostate> response;
+        response.setCode(StatusCode::OK);   // set default overall code
         for (auto& [key, value]: nodes) {
             if (const bool success = Internal::setValue(std::move(key),std::move(value)); !success) {
                 response.addStatusEntry(key, StatusCode::ERR_KEY_ALREADY_EXISTS);

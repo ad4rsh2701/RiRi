@@ -13,6 +13,7 @@ namespace RiRi::Commands {
 
     Response::Status DELETE (std::span<RapidNode> nodes) {
         Response::Status response;
+        response.setCode(StatusCode::OK);   // set default code
         for (auto& [key, _]: nodes) {
             if (const bool success = Internal::deleteKey(key); !success) {
                 response.setCode(StatusCode::ERR_SOME_OPERATIONS_FAILED);
@@ -22,6 +23,7 @@ namespace RiRi::Commands {
     }
 
     Response::StatusErrorBatchWith<std::string_view> DELETE (std::span<RapidNode> nodes, enableErrorBatched) {
+        // the default code is OK (internal implementation)
         Response::StatusErrorBatchWith<std::string_view> response;
         for (auto& [key, _]: nodes) {
             if (const bool success = Internal::deleteKey(key); !success) {
@@ -33,6 +35,7 @@ namespace RiRi::Commands {
 
     Response::StatusBatchWith<std::string_view, std::monostate> DELETE (std::span<RapidNode> nodes, enableBatched) {
         Response::StatusBatchWith<std::string_view, std::monostate> response;
+        response.setCode(StatusCode::OK);   // set default overall code
         for (auto& [key, _]: nodes) {
             if (const bool success = Internal::deleteKey(key); !success) {
                 response.addStatusEntry(key, StatusCode::ERR_KEY_NOT_FOUND);

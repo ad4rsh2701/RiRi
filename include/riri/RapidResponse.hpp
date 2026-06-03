@@ -369,6 +369,14 @@ namespace RiRi::Response {
         }
 
         /**
+         * @brief Setter to set the overall status code of the response
+         * @param code The status code of type StatusCode
+         */
+        constexpr void setCode(const StatusCode code) noexcept {
+            _overall_code = code;
+        }
+
+        /**
          * @brief Adds a TARGET_FIELD-RESPONSE_FIELD pair to the Response's memory blob.
          *
          * @param target_field: The target of an operation or an operation itself.
@@ -597,6 +605,14 @@ namespace RiRi::Response {
          */
         [[nodiscard]] constexpr std::uint32_t totalErrorCount() const noexcept {
             return _failure_count;
+        }
+
+        /**
+         * @brief Setter to set the overall status code of the response
+         * @param code The status code of type StatusCode
+         */
+        constexpr void setCode(const StatusCode code) noexcept {
+            _overall_code = code;
         }
 
         /**
