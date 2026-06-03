@@ -14,9 +14,9 @@ RiRi is a fast, lightweight, in-process key-value static library built in C++23.
 ```cpp
 #include <RiRi.hpp>
 
-RiRi::RapidNode node {
-    "riri_key",
-    RiRi::RapidDataType(3.14159265359) 
+RiRi::RapidNode node[] {
+    {"riri_key", RiRi::RapidDataType(3.14159265359)},
+    {"your_key", RiRi::RapidDataType("exposed")} 
 };
 
 RiRi::Commands::SET(node);
@@ -72,11 +72,11 @@ target_link_libraries(your_target PRIVATE RiRi)
 > For now, reference the doc-strings of commands at `src/include/RiRi/Commands.hpp`.
 
 
-1.**Data Preparation**
+1. Data Preparation
 ```cpp
 #include <RiRi.hpp>
 
-// 1. Standard Method (Recommeneded)
+// 1. Standard Method (Recommended)
 // Create an array of nodes of types `RapidNode` with values to insert/fetch
 RiRi::RapidNode nodes[] {
     {"riri_key", RiRi::RapidDataType(3.14159265359)}
@@ -89,7 +89,7 @@ RiRi::RapidNode nodes[] {
 ```
 > `RapidNode`: is a simple struct that contains a `string` key and a `RapidDataType` value.
 
-> `RapidDataType`: is a varaint over the types `string`, `int64`, `double` and `boo`.
+> `RapidDataType`: is a variant over the types `string`, `int64`, `double` and `bool`.
 
 2. Inserting single key-value pairs
 ```cpp
@@ -101,7 +101,7 @@ auto response = SET(nodes);
 auto response_lazy = SET("_key", 3.14159265359);
 
 // you can use the response it returned!
-if (response.status == RiRi::Status::OK) {
+if (response.ok()) {
     // do something
 }
 ```
@@ -113,7 +113,7 @@ auto get_response = GET(nodes); // this is ALLOWED!!
 // Lazy Method
 auto get_response_lazy = GET("_key");
 
-if (get_response.status == RiRi::Status::OK) {
+if (get_response.ok()) {
     auto data = get_response.field();   // data is of type `RapidDataType`
     // do something with the data
 }
@@ -167,4 +167,4 @@ This project is licensed under the [Apache License 2.0](https://www.apache.org/l
 stated, all files are licensed under the Apache License, Version 2.0. See the [LICENSE.txt](LICENSE.txt) file for details.
 
 > Note: The `src/include/ankerl/` directory contains code licensed under the MIT License, see [here](src/include/ankerl/LICENSE).
-> And the `doctest.h` file is licensed under their respective MIT License, see [here](tests/doctest.h).
+> And the `doctest.h` file is licensed under its respective MIT License, see [here](tests/doctest.h).
