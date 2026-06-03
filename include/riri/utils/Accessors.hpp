@@ -4,8 +4,7 @@
 #include <string>
 #include <format>
 #include <variant>
-
-#include "RiRiMacros.h"
+#include <string_view>
 #include "riri/RapidTypes.hpp"
 
 namespace RiRi::Utils {
@@ -21,9 +20,9 @@ namespace RiRi::Utils {
     // to be the same as the types of Accessible... probably no.
 
     namespace detail {
-        GO_AWAY using VariantLike_rdt = std::variant<const RapidDataType*, StatusCode>;
-        GO_AWAY using VariantLike_strv = std::variant<std::string_view, StatusCode>;
-        GO_AWAY using VariantLike_mono = std::variant<std::monostate, StatusCode>;
+        using VariantLike_rdt = std::variant<const RapidDataType*, StatusCode>;
+        using VariantLike_strv = std::variant<std::string_view, StatusCode>;
+        using VariantLike_mono = std::variant<std::monostate, StatusCode>;
     } // namespace detail
 
     /**

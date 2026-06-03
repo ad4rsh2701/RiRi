@@ -1,10 +1,12 @@
 #include <ostream>
+#include <cstdlib>
 #include <string_view>
 #include <variant>
 
 #include "doctest.h"
 #include "riri/RapidResponse.hpp"
 #include "riri/RapidTypes.hpp"
+#include "RiRiMacros.h"
 #include "riri/utils/Accessors.hpp"
 
 using namespace RiRi::Response;
