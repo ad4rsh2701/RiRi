@@ -167,3 +167,4 @@ This project is licensed under the [Apache License 2.0](https://www.apache.org/l
 stated, all files are licensed under the Apache License, Version 2.0. See the [LICENSE.txt](LICENSE.txt) file for details.
 
 > Note: The `src/include/ankerl/` directory contains code licensed under the MIT License, see [here](src/include/ankerl/LICENSE).
+> And the `doctest.h` file is licensed under their respective MIT License, see [here](tests/doctest.h).
