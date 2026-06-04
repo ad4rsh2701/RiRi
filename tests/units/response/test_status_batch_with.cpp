@@ -196,8 +196,8 @@ TEST_SUITE("Rapid Response System") {
             CHECK(response_strv_rdt.totalEntryCount() == 1);
             auto it = response_strv_rdt.begin();
             REQUIRE(it != response_strv_rdt.end());
-            CHECK(it->first == node.key);
-            auto result_strv_rdt = unpack_field(&it->second);
+            CHECK(it->target == node.key);
+            auto result_strv_rdt = unpack_field(&it->result);
             REQUIRE(result_strv_rdt != nullptr);    // IMP
             CHECK(*result_strv_rdt == node.value);
 
@@ -210,10 +210,10 @@ TEST_SUITE("Rapid Response System") {
             CHECK(response_rdt_rdt.totalEntryCount() == 1);
             auto it2 = response_rdt_rdt.begin();
             REQUIRE(it2 != response_rdt_rdt.end());
-            auto target_rdt_rdt = it2->first;
+            auto target_rdt_rdt = it2->target;
             REQUIRE(target_rdt_rdt != nullptr);     // IMP
             CHECK(*target_rdt_rdt == node.value);
-            auto field_rdt_rdt = unpack_field(&it2->second);
+            auto field_rdt_rdt = unpack_field(&it2->result);
             REQUIRE(field_rdt_rdt != nullptr);      // IMP
             CHECK(*field_rdt_rdt == node.value);
         }
@@ -228,8 +228,8 @@ TEST_SUITE("Rapid Response System") {
             CHECK(response_strv_rdt.totalEntryCount() == 1);
             auto it = response_strv_rdt.begin();
             REQUIRE(it != response_strv_rdt.end());
-            CHECK(it->first == node.key);
-            auto code_strv_rdt = unpack_field_code(&it->second);
+            CHECK(it->target == node.key);
+            auto code_strv_rdt = unpack_field_code(&it->result);
             REQUIRE(code_strv_rdt != nullptr);      // IMP
             CHECK(*code_strv_rdt == RiRi::StatusCode::ERR_UNKNOWN);
 
@@ -239,8 +239,8 @@ TEST_SUITE("Rapid Response System") {
             CHECK(response_strv_mono.totalEntryCount() == 1);
             auto it2 = response_strv_mono.begin();
             REQUIRE(it2 != response_strv_mono.end());
-            CHECK(it2->first == node.key);
-            auto code_strv_mono = unpack_field_code(&it2->second);
+            CHECK(it2->target == node.key);
+            auto code_strv_mono = unpack_field_code(&it2->result);
             REQUIRE(code_strv_mono != nullptr);     // IMP
             CHECK(*code_strv_mono == RiRi::StatusCode::ERR_UNKNOWN);
 
@@ -250,10 +250,10 @@ TEST_SUITE("Rapid Response System") {
             CHECK(response_rdt_rdt.totalEntryCount() == 1);
             auto it3 = response_rdt_rdt.begin();
             REQUIRE(it3 != response_rdt_rdt.end());
-            auto target_rdt_rdt = it3->first;
+            auto target_rdt_rdt = it3->target;
             REQUIRE(target_rdt_rdt != nullptr);     // IMP
             CHECK(*target_rdt_rdt == node.value);
-            auto code_rdt_rdt = unpack_field_code(&it3->second);
+            auto code_rdt_rdt = unpack_field_code(&it3->result);
             REQUIRE(code_rdt_rdt != nullptr);       // IMP
             CHECK(*code_rdt_rdt == RiRi::StatusCode::ERR_UNKNOWN);
         }

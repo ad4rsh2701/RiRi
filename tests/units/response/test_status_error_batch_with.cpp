@@ -104,13 +104,13 @@ TEST_SUITE("Rapid Response System") {
             auto it = response.begin(); // this can't be nullptr, unless the
                 // object is somehow corrupted; then you DO deserve getting seg-faulted
 
-            REQUIRE(it->first != nullptr);  // IMP
-            CHECK(*it->first == val_one);
-            CHECK(it->second == RiRi::StatusCode::ERR_UNKNOWN);
+            REQUIRE(it->target != nullptr);  // IMP
+            CHECK(*it->target == val_one);
+            CHECK(it->code == RiRi::StatusCode::ERR_UNKNOWN);
             ++it;
-            REQUIRE(it->first != nullptr);  // IMP
-            CHECK(*it->first == val_two);
-            CHECK(it->second == RiRi::StatusCode::ERR_KEY_ALREADY_EXISTS);
+            REQUIRE(it->target != nullptr);  // IMP
+            CHECK(*it->target == val_two);
+            CHECK(it->code == RiRi::StatusCode::ERR_KEY_ALREADY_EXISTS);
 
             // <std::string_view>
             StatusErrorBatchWith<std::string_view> response_alt;
@@ -119,12 +119,12 @@ TEST_SUITE("Rapid Response System") {
 
             auto it_alt = response_alt.begin();
                 // Again, string_view comparison does not dereference memory
-            CHECK(it_alt->first == "_key1");
-            CHECK(it_alt->second == RiRi::StatusCode::ERR_UNKNOWN);
+            CHECK(it_alt->target == "_key1");
+            CHECK(it_alt->code == RiRi::StatusCode::ERR_UNKNOWN);
             ++it_alt;
                 // same idea here
-            CHECK(it_alt->first == "_key2");
-            CHECK(it_alt->second == RiRi::StatusCode::ERR_KEY_ALREADY_EXISTS);
+            CHECK(it_alt->target == "_key2");
+            CHECK(it_alt->code == RiRi::StatusCode::ERR_KEY_ALREADY_EXISTS);
         }
 
 
