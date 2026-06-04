@@ -505,7 +505,10 @@ namespace RiRi::Response {
          * - `key3: ERR_KEY_NOT_FOUND`
          * - `key7: ERR_KEY_NOT_FOUND`
          */
-        using ErrorEntryType = std::pair<F, StatusCode>;
+        struct ErrorEntryType {
+            F target;
+            StatusCode code;
+        };
         static_assert(std::is_trivially_destructible_v<ErrorEntryType>, "EntryType must be trivially destructible!!!");
         // Must be trivially destructible
 
