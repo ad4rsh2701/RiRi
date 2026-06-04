@@ -205,7 +205,10 @@ namespace RiRi::Response {
          * - `Key2: ERR_KEY_NOT_FOUND`
          * - `Key3: Val3`
          */
-        using EntryType = std::pair<F1, ResultOrStatus>;
+        struct EntryType {
+            F1 target;
+            ResultOrStatus result;
+        };
 
         // Just in case my future self decides to make the EntryType trivially non-copyable.
         static_assert(std::is_trivially_copyable_v<EntryType>, "EntryType must be trivially copyable!!!");
