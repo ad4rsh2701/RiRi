@@ -1,5 +1,4 @@
-# UNIT TESTS
-
+################################################# UNIT TESTS ###########################################################
 add_executable(RiRi_tests
         test_main.cpp
         units/test_core.cpp
@@ -24,6 +23,5 @@ target_include_directories(RiRi_tests PRIVATE
 
 target_link_libraries(RiRi_tests PRIVATE RiRi)
 
-add_test(
-        NAME RiRiTests COMMAND RiRi_tests
-)
+add_test(NAME RiRiTests COMMAND RiRi_tests)
+########################################################################################################################
