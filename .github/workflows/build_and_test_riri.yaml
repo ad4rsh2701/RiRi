@@ -12,11 +12,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        compiler: [clang++]
+        compiler: [clang++, g++]
         lto-config:
           - { lto: OFF, lto-for-tests: ON  }   # default (LTO on Test only)
           - { lto: ON,  lto-for-tests: ON  }   # RIRI_LTO=ON (LTO on Test and Library)
           - { lto: OFF, lto-for-tests: OFF }   # RIRI_LTO_FOR_TESTS=OFF (LTO off)
+        exclude:
+          - os: windows-latest
+            compiler: g++       # not checking g++ on Windows
         include:
           - os: windows-latest
             compiler: clang-cl
@@ -40,6 +43,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           clang++ --version
+          g++ --version
 
       - name: Sanity check (Windows)
         if: runner.os == 'Windows'
@@ -52,7 +56,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           cmake -B build \
-            -DCMAKE_CXX_COMPILER=clang++ \
+            -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} \
             -DCMAKE_CXX_STANDARD=23 \
             -DCMAKE_BUILD_TYPE=Release \
             -DRIRI_BUILD_TESTS=ON \
@@ -70,8 +74,8 @@ jobs:
             -DRIRI_LTO=${{ matrix.lto-config.lto }} `
             -DRIRI_LTO_FOR_TESTS=${{ matrix.lto-config.lto-for-tests }}
 
-      - name: Build
+      - name: Build RiRi
         run: cmake --build build --config Release
 
-      - name: Run tests
+      - name: Run tests for RiRi
         run: ctest --test-dir build --config Release --output-on-failure
