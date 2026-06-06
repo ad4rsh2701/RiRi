@@ -25,3 +25,20 @@ target_link_libraries(RiRi_tests PRIVATE RiRi)
 
 add_test(NAME RiRiTests COMMAND RiRi_tests)
 ########################################################################################################################
+
+option(RIRI_LTO_FOR_TESTS "Use LTO for building tests" ON)
+
+##################################################### LTO ##############################################################
+if (RIRI_LTO OR RIRI_LTO_FOR_TESTS)
+    include(CheckIPOSupported)
+
+    # check for IPO
+    check_ipo_supported(RESULT lto_supported)
+    if (lto_supported)
+        set_property(TARGET RiRi_tests PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+        message(STATUS "RiRi: LTO Enabled for RiRi_tests")
+    else()
+        message(STATUS "RiRi: LTO not supported")
+    endif ()
+endif ()
+########################################################################################################################
