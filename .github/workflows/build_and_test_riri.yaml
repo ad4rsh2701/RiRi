@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-test:
-    name: ${{ matrix.os }} / ${{ matrix.compiler }} / LTO(RiRi)=${{ matrix.lto-config.lto }} / ${{ matrix.lto-config.lto-for-tests }}
+    name: ${{ matrix.os }} / ${{ matrix.compiler }} / LTO(RiRi)=${{ matrix.lto-config.lto }} / LTO(Tests)=${{ matrix.lto-config.lto-for-tests }}
     strategy:
       fail-fast: false
       matrix:
