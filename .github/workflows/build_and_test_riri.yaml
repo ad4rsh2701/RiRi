@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-test:
-    name: On ${{ matrix.os }} using ${{ matrix.compiler }} with RIRI_LTO=${{ matrix.lto-config.lto }}, RIRI_LTO_FOR_TESTS=${{ matrix.lto-config.lto-for-tests }}
+    name: ${{ matrix.os }} / ${{ matrix.compiler }} with LTO(RiRi)=${{ matrix.lto-config.lto }}, LTO(Tests)=${{ matrix.lto-config.lto-for-tests }}
     strategy:
       fail-fast: false
       matrix:
@@ -22,7 +22,7 @@ jobs:
           - os: windows-latest
             compiler: g++        # not checking g++ on Windows
           - os: ubuntu-latest
-            compiler: clang-cl  # not checking clang-cl on Linux
+            compiler: clang-cl   # not checking clang-cl on Linux
 
     runs-on: ${{ matrix.os }}
 
