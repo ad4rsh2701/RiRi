@@ -22,7 +22,7 @@ jobs:
           - os: windows-latest
             compiler: g++        # not checking g++ on Windows
           - os: ubuntu-latest
-            ccompiler: clang-cl  # not checking clang-cl on Linux
+            compiler: clang-cl  # not checking clang-cl on Linux
 
     runs-on: ${{ matrix.os }}
 
