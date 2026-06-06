@@ -8,26 +8,26 @@ on:
 
 jobs:
   build-and-test:
+    name: ${{ matrix.os }} / ${{ matrix.compiler }} / LTO(RiRi)=${{ matrix.lto-config.lto }} / LTO(Tests)=${{ matrix.lto-config.lto-for-tests }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        compiler: [clang++, g++]
+        compiler: [clang++, g++, clang-cl]
         lto-config:
           - { lto: OFF, lto-for-tests: ON  }   # default (LTO on Test only)
           - { lto: ON,  lto-for-tests: ON  }   # RIRI_LTO=ON (LTO on Test and Library)
           - { lto: OFF, lto-for-tests: OFF }   # RIRI_LTO_FOR_TESTS=OFF (LTO off)
         exclude:
           - os: windows-latest
-            compiler: g++       # not checking g++ on Windows
-        include:
-          - os: windows-latest
-            compiler: clang-cl
+            compiler: g++        # not checking g++ on Windows
+          - os: ubuntu-latest
+            compiler: clang-cl   # not checking clang-cl on Linux
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install LLVM (Ubuntu)
         if: runner.os == 'Linux'
