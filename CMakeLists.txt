@@ -1,6 +1,10 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.25)
 
+# RiRi
+###################################################### RiRi ############################################################
 project(RiRi VERSION 0.0.1 LANGUAGES CXX)
+
+message(STATUS "RiRi: Configuring RiRi")
 
 add_library(RiRi STATIC
         src/commands/clear.cpp
@@ -27,26 +31,39 @@ target_include_directories(RiRi
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/include>
 )
 
-
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(RiRi PRIVATE -Wall -Wextra -Wpedantic)
     target_compile_options(RiRi PRIVATE $<$<CONFIG:Release>:-O3>)
 endif()
+########################################################################################################################
 
-# Apply LTO if supported
-include(CheckIPOSupported)
-check_ipo_supported(RESULT lto_supported)
-if(lto_supported)
-    set_property(TARGET RiRi PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-endif()
+# Use of LTO is OFF by default
+option(RIRI_LTO "Use LTO for building RiRi" OFF)
 
+##################################################### LTO ##############################################################
+if (RIRI_LTO)
+    include(CheckIPOSupported)
 
-# UNIT TESTS
+    # check for IPO
+    check_ipo_supported(RESULT lto_supported)
+    if (lto_supported)
+        set_property(TARGET RiRi PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+        message(STATUS "RiRi: LTO Enabled for RiRi")
+    else()
+        message(STATUS "RiRi: LTO not supported")
+    endif ()
+endif ()
+########################################################################################################################
+
+# Building tests are OFF by default
 option(RIRI_BUILD_TESTS "Build tests for RiRi" OFF)
+
+################################################# UNIT TESTS ###########################################################
 if(RIRI_BUILD_TESTS)
-    message(STATUS "RiRi: Building tests...")
+    message(STATUS "RiRi: Configuring tests")
     enable_testing()
     add_subdirectory(tests)
 else()
-    message(STATUS "RiRi: Skipped building tests!")
+    message(STATUS "RiRi: Tests skipped!")
 endif()
+########################################################################################################################

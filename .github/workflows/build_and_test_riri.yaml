@@ -1,0 +1,81 @@
+name: Build and Test RiRi
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        compiler: [clang++, g++]
+        lto-config:
+          - { lto: OFF, lto-for-tests: ON  }   # default (LTO on Test only)
+          - { lto: ON,  lto-for-tests: ON  }   # RIRI_LTO=ON (LTO on Test and Library)
+          - { lto: OFF, lto-for-tests: OFF }   # RIRI_LTO_FOR_TESTS=OFF (LTO off)
+        exclude:
+          - os: windows-latest
+            compiler: g++       # not checking g++ on Windows
+        include:
+          - os: windows-latest
+            compiler: clang-cl
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LLVM (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang
+
+      - name: Install LLVM (Windows)
+        if: runner.os == 'Windows'
+        run: choco install llvm --yes
+
+      - name: Sanity check (Unix)
+        if: runner.os == 'Linux'
+        run: |
+          clang++ --version
+          g++ --version
+
+      - name: Sanity check (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          clang++ --version
+          clang-cl --version
+          lld-link --version
+
+      - name: Configure (Unix)
+        if: runner.os == 'Linux'
+        run: |
+          cmake -B build \
+            -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} \
+            -DCMAKE_CXX_STANDARD=23 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DRIRI_BUILD_TESTS=ON \
+            -DRIRI_LTO=${{ matrix.lto-config.lto }} \
+            -DRIRI_LTO_FOR_TESTS=${{ matrix.lto-config.lto-for-tests }}
+
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          cmake -B build `
+            -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} `
+            -DCMAKE_CXX_STANDARD=23 `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DRIRI_BUILD_TESTS=ON `
+            -DRIRI_LTO=${{ matrix.lto-config.lto }} `
+            -DRIRI_LTO_FOR_TESTS=${{ matrix.lto-config.lto-for-tests }}
+
+      - name: Build RiRi
+        run: cmake --build build --config Release
+
+      - name: Run tests for RiRi
+        run: ctest --test-dir build -C Release --output-on-failure
