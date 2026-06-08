@@ -13,9 +13,22 @@ namespace RiRi::Commands {
 
     Response::Status UPDATE (std::span<RapidNode> nodes) {
         Response::Status response;
+
+        // I am so sorry.
+        if (nodes.size() == 1) {
+            if (!Internal::updateValue(nodes[0].key, std::move(nodes[0].value))) {
+                // if update failed
+                response.setCode(StatusCode::ERR_KEY_NOT_FOUND);
+                return response;
+            }
+            response.setCode(StatusCode::OK);
+            return response;
+        }
+
         response.setCode(StatusCode::OK);   // set default code
         for (auto& [key, value]: nodes) {
-            if (const bool success = Internal::updateValue(key, std::move(value)); !success) {
+            if (!Internal::updateValue(key, std::move(value))) {
+                // if update failed
                 response.setCode(StatusCode::ERR_SOME_OPERATIONS_FAILED);
             }
         }
@@ -26,9 +39,10 @@ namespace RiRi::Commands {
         // the default code is OK (internal implementation)
         Response::StatusErrorBatchWith<std::string_view> response;
         for (auto& [key, value]: nodes) {
-            if (const bool success = Internal::updateValue(key, std::move(value)); !success) {
-                // we never move or get rid of the provided key, so we just use it
+            if (!Internal::updateValue(key, std::move(value))) {
+                // if update failed
                 response.addErrorEntry(key, StatusCode::ERR_KEY_NOT_FOUND);
+                // we never move or get rid of the provided key, so we just use it
             }
         }
         return response;
@@ -38,7 +52,8 @@ namespace RiRi::Commands {
         Response::StatusBatchWith<std::string_view, std::monostate> response;
         response.setCode(StatusCode::OK);   // set default overall code
         for (auto& [key, value]: nodes) {
-            if (const bool success = Internal::updateValue(key, std::move(value)); !success) {
+            if (!Internal::updateValue(key, std::move(value))) {
+                // if update failed
                 response.addStatusEntry(key, StatusCode::ERR_KEY_NOT_FOUND);
             }
             // we don't need to track success cases, so no need to call `addResultEntry()`
