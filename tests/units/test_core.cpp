@@ -77,6 +77,17 @@ TEST_CASE("(INTERNAL) Data Manager") {
         CHECK(updateValue("_key", "shadowslure") == false);
     }
 
+    SUBCASE("updateValue of of existing key with same value") {
+        RiRi::RapidNode node{"_key", "RiRi"};
+        setValue(std::move(node.key), std::move(node.value));
+
+        REQUIRE(updateValue("_key", "RiRi") == true);
+
+        CHECK(*unpack_as<std::string>(getValue("_key")) == "RiRi");
+        CHECK(size() == 1);
+
+    }
+
     SUBCASE("clearMap") {
         setValue("_main_key", RiRi::RapidDataType{"ad4rsh2701"});
         setValue("_alt_key", RiRi::RapidDataType{"ShadowsLure"});
