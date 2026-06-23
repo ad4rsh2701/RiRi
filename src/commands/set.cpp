@@ -20,6 +20,10 @@ namespace RiRi::Commands {
         Response::Status response;
 
         // I am so sorry.
+        if (nodes.empty()) {
+            response.setCode(StatusCode::WARN_ZERO_NODES_PROVIDED);
+            return response;
+        }
         if (nodes.size() == 1) {
             if (!Internal::setValue(std::move(nodes[0].key),std::move(nodes[0].value))) {
                 // if insertion failed
@@ -43,6 +47,10 @@ namespace RiRi::Commands {
     Response::StatusErrorBatchWith<std::string_view> SET (std::span<RapidNode> nodes, enableErrorBatched) {
         // the default code is OK (internal implementation)
         Response::StatusErrorBatchWith<std::string_view> response;
+        if (nodes.empty()) {
+            response.setCode(StatusCode::WARN_ZERO_NODES_PROVIDED);
+            return response;
+        }     // exit early if nodes are empty
         for (auto& [key, value]: nodes) {
             if (!Internal::setValue(std::move(key),std::move(value))) {
                 // if insertion failed
@@ -56,6 +64,10 @@ namespace RiRi::Commands {
 
     Response::StatusBatchWith<std::string_view, std::monostate> SET (std::span<RapidNode> nodes, enableBatched) {
         Response::StatusBatchWith<std::string_view, std::monostate> response;
+        if (nodes.empty()) {
+            response.setCode(StatusCode::WARN_ZERO_NODES_PROVIDED);
+            return response;
+        }
         response.setCode(StatusCode::OK);   // set default overall code
         for (auto& [key, value]: nodes) {
             if (!Internal::setValue(std::move(key),std::move(value))) {

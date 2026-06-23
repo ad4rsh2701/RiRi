@@ -15,6 +15,10 @@ namespace RiRi::Commands {
         Response::Status response;
 
         // I am so sorry.
+        if (nodes.empty()) {
+            response.setCode(StatusCode::WARN_ZERO_NODES_PROVIDED);
+            return response;
+        }
         if (nodes.size() == 1) {
             if (!Internal::updateValue(nodes[0].key, std::move(nodes[0].value))) {
                 // if update failed
@@ -38,6 +42,10 @@ namespace RiRi::Commands {
     Response::StatusErrorBatchWith<std::string_view> UPDATE (std::span<RapidNode> nodes, enableErrorBatched) {
         // the default code is OK (internal implementation)
         Response::StatusErrorBatchWith<std::string_view> response;
+        if (nodes.empty()) {
+            response.setCode(StatusCode::WARN_ZERO_NODES_PROVIDED);
+            return response;
+        } // exit early if empty
         for (auto& [key, value]: nodes) {
             if (!Internal::updateValue(key, std::move(value))) {
                 // if update failed
@@ -50,6 +58,10 @@ namespace RiRi::Commands {
 
     Response::StatusBatchWith<std::string_view, std::monostate> UPDATE (std::span<RapidNode> nodes, enableBatched) {
         Response::StatusBatchWith<std::string_view, std::monostate> response;
+        if (nodes.empty()) {
+            response.setCode(StatusCode::WARN_ZERO_NODES_PROVIDED);
+            return response;
+        }
         response.setCode(StatusCode::OK);   // set default overall code
         for (auto& [key, value]: nodes) {
             if (!Internal::updateValue(key, std::move(value))) {

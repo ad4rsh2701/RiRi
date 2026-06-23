@@ -75,6 +75,7 @@ namespace RiRi {
 
         // WARNING CODES (200-299)
         WARN_KEY_STORE_NEARING_CAPACITY = 200,      // COMMAND LEVEL
+        WARN_ZERO_NODES_PROVIDED = 201,             // COMMAND LEVEL
         WARN_RESPONSE_CONTAINS_WARNINGS = 250,      // RESPONSE LEVEL
 
         // We might need warning codes and a lot of them.
