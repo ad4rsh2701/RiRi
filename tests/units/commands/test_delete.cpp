@@ -15,18 +15,18 @@ using namespace RiRi::Commands;
 // |                                                             | :: (span, enableBatched)                            |
 // | 2.  DELETE single key; key does not exist                   | (key) :: (span) :: (span, enableErrorBatched)       |
 // |                                                             | :: (span, enableBatched)                            |
-// | 3.  DELETE multiple keys; all keys exist                    | UPDATE(span)                                        |
-// | 4.  DELETE multiple keys; no keys exist                     | UPDATE(span)                                        |
-// | 5.  DELETE multiple keys; some exist                        | UPDATE(span)                                        |
-// | 6.  DELETE multiple keys; empty span                        | UPDATE(span)                                        |
-// | 7.  DELETE multiple keys; all keys exist (ErrorBatched)     | UPDATE(span, enableErrorBatched)                    |
-// | 8.  DELETE multiple keys; no keys exist (ErrorBatched)      | UPDATE(span, enableErrorBatched)                    |
-// | 9.  DELETE multiple keys; some exist (ErrorBatched)         | UPDATE(span, enableErrorBatched)                    |
-// | 10. DELETE multiple keys; empty span (Error Batched)        | UPDATE(span, enableErrorBatched)                    |
-// | 11. DELETE multiple keys; all keys exist (batched)          | UPDATE(span, enableBatched)                         |
-// | 12. DELETE multiple keys; no keys exist (batched)           | UPDATE(span, enableBatched)                         |
-// | 13. DELETE multiple keys; some exist (batched)              | UPDATE(span, enableBatched)                         |
-// | 14. DELETE multiple keys; empty span (batched)              | UPDATE(span, enableBatched)                         |
+// | 3.  DELETE multiple keys; all keys exist                    | DELETE(span)                                        |
+// | 4.  DELETE multiple keys; no keys exist                     | DELETE(span)                                        |
+// | 5.  DELETE multiple keys; some exist                        | DELETE(span)                                        |
+// | 6.  DELETE multiple keys; empty span                        | DELETE(span)                                        |
+// | 7.  DELETE multiple keys; all keys exist (ErrorBatched)     | DELETE(span, enableErrorBatched)                    |
+// | 8.  DELETE multiple keys; no keys exist (ErrorBatched)      | DELETE(span, enableErrorBatched)                    |
+// | 9.  DELETE multiple keys; some exist (ErrorBatched)         | DELETE(span, enableErrorBatched)                    |
+// | 10. DELETE multiple keys; empty span (Error Batched)        | DELETE(span, enableErrorBatched)                    |
+// | 11. DELETE multiple keys; all keys exist (batched)          | DELETE(span, enableBatched)                         |
+// | 12. DELETE multiple keys; no keys exist (batched)           | DELETE(span, enableBatched)                         |
+// | 13. DELETE multiple keys; some exist (batched)              | DELETE(span, enableBatched)                         |
+// | 14. DELETE multiple keys; empty span (batched)              | DELETE(span, enableBatched)                         |
 // +-------------------------------------------------------------+-----------------------------------------------------+
 
 

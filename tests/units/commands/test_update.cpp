@@ -211,7 +211,6 @@ TEST_SUITE("Commands") {
             CHECK(response.ok() == false);
             CHECK(response.code() == RiRi::StatusCode::WARN_ZERO_NODES_PROVIDED);
             CHECK(response.errorCount() == 0);
-            // OKAY PAUSE. This shouldn't be like this.
         }
 
         // 7
