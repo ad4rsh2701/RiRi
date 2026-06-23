@@ -116,6 +116,7 @@ namespace RiRi::Utils {
             CASE(OK);
             CASE(ORPHANED);
             CASE(WARN_KEY_STORE_NEARING_CAPACITY);
+            CASE(WARN_ZERO_NODES_PROVIDED);
             CASE(WARN_RESPONSE_CONTAINS_WARNINGS);
             CASE(ERR_KEY_STORE_FULL);
             CASE(ERR_UNKNOWN);
