@@ -55,6 +55,7 @@ TEST_SUITE ("Commands") {
             // (key, value)
             auto response_f = SET("key100", "raresy");
             CHECK(response_f.ok() == true);
+            CHECK(response_f.errorCount() == 0);
             CHECK(RiRi::Internal::size() == 101);
             REQUIRE(RiRi::Internal::getValue("key100") != nullptr);
             CHECK(*RiRi::Internal::getValue("key100") == RiRi::RapidDataType("raresy"));
@@ -63,6 +64,7 @@ TEST_SUITE ("Commands") {
             RiRi::RapidNode nodes[] {{"key101", "raresy"}};
             auto response_n = SET(nodes);
             CHECK(response_n.ok() == true);
+            CHECK(response_n.errorCount() == 0);
             CHECK(RiRi::Internal::size() == 102);
             REQUIRE(RiRi::Internal::getValue("key101") != nullptr);
             CHECK(*RiRi::Internal::getValue("key101") == RiRi::RapidDataType("raresy"));
@@ -93,6 +95,7 @@ TEST_SUITE ("Commands") {
             auto response_f = SET("key1", "raresy");
             CHECK(response_f.ok() == false);
             CHECK(response_f.code() == RiRi::StatusCode::ERR_KEY_ALREADY_EXISTS);
+            CHECK(response_f.errorCount() == 1);
             CHECK(RiRi::Internal::size() == 100);
             REQUIRE(RiRi::Internal::getValue("key1") != nullptr);
             CHECK(*RiRi::Internal::getValue("key1") != RiRi::RapidDataType("raresy"));
@@ -102,6 +105,7 @@ TEST_SUITE ("Commands") {
             RiRi::RapidNode nodes[] {{"key1", "raresy"}};
             auto response_n = SET(nodes);
             CHECK(response_n.ok() == false);
+            CHECK(response_n.errorCount() == 1);
             CHECK(response_n.code() == RiRi::StatusCode::ERR_KEY_ALREADY_EXISTS);
             CHECK(RiRi::Internal::size() == 100);
             REQUIRE(RiRi::Internal::getValue("key1") != nullptr);
@@ -154,6 +158,7 @@ TEST_SUITE ("Commands") {
             // (span)
             auto response = SET(unique);
             CHECK(response.ok() == true);
+            CHECK(response.errorCount() == 0);
             CHECK(RiRi::Internal::size() == 200);
             for (auto &[key, _] : unique_ref) {
                     // using unique_ref instead of unique (unique is now empty)
@@ -168,6 +173,7 @@ TEST_SUITE ("Commands") {
             auto response = SET(duplicate);
             CHECK(response.ok() == false);
             CHECK(response.code() == RiRi::StatusCode::ERR_SOME_OPERATIONS_FAILED);
+            CHECK(response.errorCount() == 100);
             CHECK(RiRi::Internal::size() == 100);
             for (auto &[key, _] : duplicate_ref) {
                 REQUIRE(RiRi::Internal::getValue(key) != nullptr);
@@ -181,6 +187,7 @@ TEST_SUITE ("Commands") {
             // (span)
             auto response = SET(mixed);
             CHECK(response.ok() == false);
+            CHECK(response.errorCount() == 100);
             CHECK(response.code() == RiRi::StatusCode::ERR_SOME_OPERATIONS_FAILED);
             CHECK(RiRi::Internal::size() == 200);
             for (auto &[key, _] : unique_ref) {
@@ -200,6 +207,7 @@ TEST_SUITE ("Commands") {
             // (span)
             auto response = SET({});
             CHECK(response.ok() == false);
+            CHECK(response.errorCount() == 0);
             CHECK(response.code() == RiRi::StatusCode::WARN_ZERO_NODES_PROVIDED);
             CHECK(RiRi::Internal::size() == 100);
             for (auto &[key, _] : duplicate_ref) {

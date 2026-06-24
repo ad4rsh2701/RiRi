@@ -60,6 +60,7 @@ TEST_SUITE("Commands") {
             // (key, value)
             auto response_f = UPDATE("key1", 3.14);
             CHECK(response_f.ok() == true);
+            CHECK(response_f.errorCount() == 0);
             auto updated_val = RiRi::Internal::getValue("key1");
             REQUIRE(updated_val != nullptr);
             CHECK(*updated_val == RiRi::RapidDataType(3.14));
@@ -67,6 +68,7 @@ TEST_SUITE("Commands") {
             // (span)
             auto response_n = UPDATE(nodes_1);
             CHECK(response_n.ok() == true);
+            CHECK(response_n.errorCount() == 0);
             auto updated_val2 = RiRi::Internal::getValue("key2");
             REQUIRE(updated_val2 != nullptr);
             CHECK(*updated_val2 == RiRi::RapidDataType("raresy"));
@@ -101,6 +103,7 @@ TEST_SUITE("Commands") {
             // (key, value)
             auto response_f = UPDATE("key101", 3.14);
             CHECK(response_f.ok() == false);
+            CHECK(response_f.errorCount() == 1);
             auto updated_val = RiRi::Internal::getValue("key101");
             CHECK(updated_val == nullptr);
             CHECK(response_f.code() == RiRi::StatusCode::ERR_KEY_NOT_FOUND);
@@ -108,6 +111,7 @@ TEST_SUITE("Commands") {
             // (span)
             auto response_n = UPDATE(nodes);
             CHECK(response_n.ok() == false);
+            CHECK(response_n.errorCount() == 1);
             auto updated_val2 = RiRi::Internal::getValue("key101");
             CHECK(response_n.errorCount() == 1);
             CHECK(updated_val2 == nullptr);

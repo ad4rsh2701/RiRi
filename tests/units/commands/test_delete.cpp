@@ -59,11 +59,13 @@ TEST_SUITE("Commands") {
             // (key)
             auto response_f = DELETE("key0");
             CHECK(response_f.code() == RiRi::StatusCode::OK);
+            CHECK(response_f.errorCount() == 0);
             CHECK(RiRi::Internal::size() == 99);
 
             // (span)
             auto response_n = DELETE(nodes_1);
             CHECK(response_n.code() == RiRi::StatusCode::OK);
+            CHECK(response_f.errorCount() == 0);
             CHECK(RiRi::Internal::size() == 98);
 
             // (span, ErrorBatched)
@@ -89,11 +91,13 @@ TEST_SUITE("Commands") {
             // (key)
             auto response_f = DELETE("key101");
             CHECK(response_f.code() == RiRi::StatusCode::ERR_KEY_NOT_FOUND);
+            CHECK(response_f.errorCount() == 1);
             CHECK(RiRi::Internal::size() == 100);
 
             // (span)
             auto response_n = DELETE(nodes);
             CHECK(response_n.code() == RiRi::StatusCode::ERR_KEY_NOT_FOUND);
+            CHECK(response_n.errorCount() == 1);
             CHECK(RiRi::Internal::size() == 100);
 
             // (span, ErrorBatched)
@@ -143,6 +147,7 @@ TEST_SUITE("Commands") {
         SUBCASE("DELETE multiple keys; all keys exist") {
             auto response = DELETE(existing_nodes);
             CHECK(response.code() == RiRi::StatusCode::OK);
+            CHECK(response.errorCount() == 0);
             REQUIRE(RiRi::Internal::size() == 0);
             CHECK(RiRi::Internal::getValue("key0") == nullptr);
         }
@@ -151,6 +156,7 @@ TEST_SUITE("Commands") {
         SUBCASE("DELETE multiple keys; no keys exist") {
             auto response = DELETE(new_nodes);
             CHECK(response.code() == RiRi::StatusCode::ERR_SOME_OPERATIONS_FAILED);
+            CHECK(response.errorCount() == 100);
             REQUIRE(RiRi::Internal::size() == 100);
             CHECK(RiRi::Internal::getValue("key0") != nullptr);
         }
@@ -159,6 +165,7 @@ TEST_SUITE("Commands") {
         SUBCASE("DELETE multiple keys; some exist") {
             auto response = DELETE(mixed_nodes);
             CHECK(response.code() == RiRi::StatusCode::ERR_SOME_OPERATIONS_FAILED);
+            CHECK(response.errorCount() == 100);
             REQUIRE(RiRi::Internal::size() == 0);
             CHECK(RiRi::Internal::getValue("key0") == nullptr);
         }
@@ -167,6 +174,7 @@ TEST_SUITE("Commands") {
         SUBCASE("DELETE multiple keys; empty span") {
             auto response = DELETE(std::span<RiRi::RapidNode>{}); // NOTE: {} alone is ambiguous
             CHECK(response.code() == RiRi::StatusCode::WARN_ZERO_NODES_PROVIDED);
+            CHECK(response.errorCount() == 0);
             CHECK(RiRi::Internal::size() == 100);
             CHECK(RiRi::Internal::getValue("key0") != nullptr);
         }

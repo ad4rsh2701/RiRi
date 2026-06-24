@@ -26,10 +26,12 @@ TEST_SUITE("COMMANDS") {
         auto resp = CLEAR();
         REQUIRE(RiRi::Internal::size() == 0);
         CHECK(resp.ok() == true);
+        CHECK(resp.errorCount() == 0);
 
         auto resp_again = CLEAR();    // on empty map, clear does nothing
         REQUIRE(RiRi::Internal::size() == 0);
         CHECK(resp_again.ok() == true);
+        CHECK(resp_again.errorCount() == 0);
     }
 
 }
