@@ -1,8 +1,8 @@
 # RiRi: A high-performance C++ in-memory key-value library
 
-![Version](https://img.shields.io/badge/Version-0.0.1-white?style=flat-square)
+[![Version](https://img.shields.io/github/v/release/ad4rsh2701/RiRi?include_prereleases&style=flat-square&label=Version)](https://github.com/ad4rsh2701/RiRi/releases)
 ![Status](https://img.shields.io/badge/Status-Miden-success?style=flat-square)
-![Build](https://img.shields.io/badge/Build-passing-success?style=flat-square)
+[![Build](https://img.shields.io/github/actions/workflow/status/ad4rsh2701/RiRi/build_and_test_riri.yaml?branch=main&style=flat-square&label=Build)](https://github.com/ad4rsh2701/RiRi/actions/workflows/build_and_test_riri.yaml)
 ![C++23](https://img.shields.io/badge/C++-23-00599C?style=flat-square&logo=c%2B%2B&logoColor=white)
 ![Compiler](https://img.shields.io/badge/Compiler-Clang++-blueviolet?style=flat-square)
 ![Last Commit](https://img.shields.io/github/last-commit/ad4rsh2701/RiRi?style=flat-square&logo=github)
