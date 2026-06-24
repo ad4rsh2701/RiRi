@@ -22,7 +22,7 @@ RiRi::RapidNode node[] {
 RiRi::Commands::SET(node);
 ```
 
-Benchmarks are currently getting formalized. For premature numbers refer: [#30](https://github.com/ad4rsh2701/RiRi/pull/30).
+Benchmarks are currently getting formalized. For preliminary numbers refer: [#30](https://github.com/ad4rsh2701/RiRi/pull/30).
 
 
 
@@ -62,7 +62,7 @@ FetchContent_Declare(RiRi
 FetchContent_MakeAvailable(RiRi)
 target_link_libraries(your_target PRIVATE RiRi)
 ```
-> Replace `0.0.1` with the [latest release](https://github.com/ad4rsh2701/RiRi/releases).
+> Replace `v0.0.1-miden` with the [latest release](https://github.com/ad4rsh2701/RiRi/releases).
 
 
 
@@ -174,10 +174,13 @@ Here, a table labeling the phases and the version semantics:
 |  beta  | `v0.2.0` to `v0.x.x` | Persistence, API freeze and more (no major features) |
 | stable |       `v1.0.0`       | First actual release                                 |
 
-> "miden" is inspired from the Ancient Greek term "_midén_" (see [here](https://en.wiktionary.org/wiki/%CE%BC%CE%B7%CE%B4%CE%AD%CE%BD)), which literally translates to "not even one".
+The actual version tag will follow the format `v[version number]-[phase]`.
+For instance, `v0.0.1` in `miden` phase will be tagged as `v0.0.1-miden`.
+
+> "miden" is inspired by the Ancient Greek term "_midén_" (see [here](https://en.wiktionary.org/wiki/%CE%BC%CE%B7%CE%B4%CE%AD%CE%BD)), which literally translates to "not even one".
 >
 > Why _miden_? Because it symbolizes "zero" or the starting point.
-Usually Alpha comes first, but I needed something for the pre-alpha phase ("pre-alpha" is a bit too long),
+Usually, Alpha comes first, but I needed something for the pre-alpha phase ("pre-alpha" is a bit too long),
 and miden fits while keeping the greek symbolism intact.
 
 
