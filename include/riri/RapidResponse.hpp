@@ -55,7 +55,11 @@ namespace RiRi::Response {
         // default formality constructor
         constexpr Status() noexcept = default;
         // Explicit constructor to initialize `_status_code` with StatusCode types.
-        explicit Status(StatusCode status_code) noexcept : _status_code(status_code) {}
+        explicit Status(StatusCode status_code) noexcept : _status_code(status_code) {
+            if (static_cast<int16_t>(status_code) >= 400) {  // 400+ is the range of errors
+                ++_failure_count;
+            }
+        }
 
     private:
         /// Represents a single status outcome; either from a single operation
@@ -73,7 +77,7 @@ namespace RiRi::Response {
          */
         constexpr void setCode(const StatusCode status_code) noexcept {
             _status_code = status_code;
-            if (static_cast<int16_t>(status_code) > 400) {  // 400+ is the range of errors
+            if (static_cast<int16_t>(status_code) >= 400) {  // 400+ is the range of errors
                 ++_failure_count;
             }
         }
