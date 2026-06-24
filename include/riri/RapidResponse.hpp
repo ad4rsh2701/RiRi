@@ -55,20 +55,39 @@ namespace RiRi::Response {
         // default formality constructor
         constexpr Status() noexcept = default;
         // Explicit constructor to initialize `_status_code` with StatusCode types.
-        explicit Status(StatusCode status_code) noexcept : _status_code(status_code) {}
+        explicit Status(StatusCode status_code) noexcept : _status_code(status_code) {
+            if (static_cast<int16_t>(status_code) >= 400) {  // 400+ is the range of errors
+                ++_failure_count;
+            }
+        }
 
     private:
         /// Represents a single status outcome; either from a single operation
         /// or is the overall result when no per-operation diagnostics are needed.
         StatusCode _status_code = StatusCode::ORPHANED;
 
+        /// Total failure count
+        int16_t _failure_count = 0;
+
     public:
         /**
          * @brief Setter to set the status code of the response
+         * @note Also updates the count of errors if the status code is an error.
          * @param status_code The status code to be set
          */
         constexpr void setCode(const StatusCode status_code) noexcept {
             _status_code = status_code;
+            if (static_cast<int16_t>(status_code) >= 400) {  // 400+ is the range of errors
+                ++_failure_count;
+            }
+        }
+
+        /**
+         * @brief Returns the error count of the response
+         * @return _failure_count
+         */
+        [[nodiscard]] constexpr int16_t errorCount() const noexcept {
+            return _failure_count;
         }
 
         /**
