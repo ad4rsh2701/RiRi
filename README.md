@@ -22,11 +22,11 @@ RiRi::RapidNode node[] {
 RiRi::Commands::SET(node);
 ```
 
-Benchmarks coming soon ^-^
+Benchmarks are currently getting formalized. For premature numbers refer: [#30](https://github.com/ad4rsh2701/RiRi/pull/30).
 
 
 
-## Features:
+## Features
 
 - CRUD operations on typed key-value pairs
 - Native support for strings, integers, booleans, and doubles
