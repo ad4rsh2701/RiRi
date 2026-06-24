@@ -2,6 +2,7 @@
 add_executable(RiRi_tests
         test_main.cpp
         units/test_core.cpp
+        units/test_utils.cpp
         units/commands/test_set.cpp
         units/commands/test_get.cpp
         units/commands/test_update.cpp
