@@ -77,7 +77,7 @@ TEST_CASE("(INTERNAL) Data Manager") {
         CHECK(updateValue("_key", "shadowslure") == false);
     }
 
-    SUBCASE("updateValue of of existing key with same value") {
+    SUBCASE("updateValue of existing key with same value") {
         RiRi::RapidNode node{"_key", "RiRi"};
         setValue(std::move(node.key), std::move(node.value));
 

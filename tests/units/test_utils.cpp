@@ -125,7 +125,7 @@ TEST_SUITE("UTILS") {
         // 7
         SUBCASE ("to_string") {
 
-            // (RapidDataTpye*)
+            // (RapidDataType*)
             CHECK(to_string(&node_str.value) == std::string("value"));
             CHECK(to_string(&node_int.value) == std::string("37"));
             CHECK(to_string(&node_double.value) == std::string("3.14"));

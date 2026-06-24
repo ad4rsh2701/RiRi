@@ -1,8 +1,8 @@
 #include "DataManager.h"
 #include "doctest.h"
-#include "ostream"
 #include "riri/Commands.hpp"
 #include "riri/RapidTypes.hpp"
+#include <ostream>
 
 using namespace RiRi::Commands;
 
