@@ -1,8 +1,8 @@
 # RiRi: A high-performance C++ in-memory key-value library
 
-![Version](https://img.shields.io/badge/Version-0.0.1-white?style=flat-square)
+[![Version](https://img.shields.io/github/v/release/ad4rsh2701/RiRi?include_prereleases&style=flat-square&label=Version)](https://github.com/ad4rsh2701/RiRi/releases)
 ![Status](https://img.shields.io/badge/Status-Miden-success?style=flat-square)
-![Build](https://img.shields.io/badge/Build-passing-success?style=flat-square)
+[![Build](https://img.shields.io/github/actions/workflow/status/ad4rsh2701/RiRi/build_and_test_riri.yaml?branch=main&style=flat-square&label=Build)](https://github.com/ad4rsh2701/RiRi/actions/workflows/build_and_test_riri.yaml)
 ![C++23](https://img.shields.io/badge/C++-23-00599C?style=flat-square&logo=c%2B%2B&logoColor=white)
 ![Compiler](https://img.shields.io/badge/Compiler-Clang++-blueviolet?style=flat-square)
 ![Last Commit](https://img.shields.io/github/last-commit/ad4rsh2701/RiRi?style=flat-square&logo=github)
@@ -22,11 +22,11 @@ RiRi::RapidNode node[] {
 RiRi::Commands::SET(node);
 ```
 
-Benchmarks coming soon ^-^
+Benchmarks are currently getting formalized. For preliminary numbers refer: [#30](https://github.com/ad4rsh2701/RiRi/pull/30).
 
----
 
-## Features:
+
+## Features
 
 - CRUD operations on typed key-value pairs
 - Native support for strings, integers, booleans, and doubles
@@ -35,7 +35,7 @@ Benchmarks coming soon ^-^
 
 For usage examples, see the [examples](#Examples).
 
----
+
 
 ## Building RiRi
 Requires CMake 3.20+ and Clang++ (C++23).
@@ -45,11 +45,11 @@ cd RiRi
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++
 cmake --build build
 ```
-> Clang++ is the officially supported compiler. GCC/MSVC may work but is untested.
+> Clang++ is the supported compiler. GCC/MSVC may work but is untested.
 
 > To build tests, add `-DRIRI_BUILD_TESTS=ON` to the CMake command.
 
----
+
 
 ## Using RiRi via CMake
 Add the following to your `CMakeLists.txt`
@@ -57,14 +57,14 @@ Add the following to your `CMakeLists.txt`
 include(FetchContent)
 FetchContent_Declare(RiRi
     GIT_REPOSITORY https://github.com/ad4rsh2701/RiRi.git
-    GIT_TAG        0.0.1
+    GIT_TAG        v0.0.1-miden
 )
 FetchContent_MakeAvailable(RiRi)
 target_link_libraries(your_target PRIVATE RiRi)
 ```
-> Replace `0.0.1` with the [latest release](https://github.com/ad4rsh2701/RiRi/releases).
+> Replace `v0.0.1-miden` with the [latest release](https://github.com/ad4rsh2701/RiRi/releases).
 
----
+
 
 ## Examples
 > NOTE: This section is a work in progress.
@@ -144,7 +144,7 @@ auto get_response = GET(many_nodes, RiRi::enableBatched{});
 // { {"key": value}, {"key2": ERROR_CODE}, ... }
 ```
 
----
+
 
 ## Development
 
@@ -153,13 +153,38 @@ auto get_response = GET(many_nodes, RiRi::enableBatched{});
 - [x] Custom Response System for handling requests, error, and validation (ref: [#30](https://github.com/ad4rsh2701/RiRi/pull/30))
 - [x] User level functions/commands for inserting/fetching the data (ref: [#32](https://github.com/ad4rsh2701/RiRi/pull/32))
 - [x] First library build (ref: [#33](https://github.com/ad4rsh2701/RiRi/pull/35))
-- [x] Unit Testing and Benchmarking
+- [x] Unit Testing (ref: [#52](https://github.com/ad4rsh2701/RiRi/pull/52), [#41](https://github.com/ad4rsh2701/RiRi/pull/41))
 - [x] Pre-Release 0.0.1
+- [ ] Benchmarking
 - [ ] Thread Safety and Multi-threading
 - [ ] Data Persistence and Recovery
 
 
----
+
+
+## Versioning
+
+RiRi will follow standard and relatively easy to follow version semantics (with slight changes).
+Here, a table labeling the phases and the version semantics:
+
+| Phase  |       Versions       | Achieved Scope (can change obv)                      |
+|:------:|:--------------------:|:-----------------------------------------------------|
+| miden  | `v0.0.1` to `v0.0.x` | Core Architecture and API improvement                |
+| alpha  | `v0.1.0` to `v0.1.x` | Multi-Threading and handling asynchronous calls      |
+|  beta  | `v0.2.0` to `v0.x.x` | Persistence, API freeze and more (no major features) |
+| stable |       `v1.0.0`       | First actual release                                 |
+
+The actual version tag will follow the format `v[version number]-[phase]`.
+For instance, `v0.0.1` in `miden` phase will be tagged as `v0.0.1-miden`.
+
+> "miden" is inspired by the Ancient Greek term "_midén_" (see [here](https://en.wiktionary.org/wiki/%CE%BC%CE%B7%CE%B4%CE%AD%CE%BD)), which literally translates to "not even one".
+>
+> Why _miden_? Because it symbolizes "zero" or the starting point.
+Usually, Alpha comes first, but I needed something for the pre-alpha phase ("pre-alpha" is a bit too long),
+and miden fits while keeping the greek symbolism intact.
+
+
+
 
 ## License
 
