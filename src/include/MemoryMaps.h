@@ -5,7 +5,7 @@
 #include <string_view>
 
 #include "riri/RapidTypes.hpp"
-#include "RiRiMacros.h"
+#include "Macros.h"
 #include "ankerl/unordered_dense.h"
 
 

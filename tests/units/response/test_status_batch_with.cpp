@@ -6,7 +6,7 @@
 #include "doctest.h"
 #include "riri/RapidResponse.hpp"
 #include "riri/RapidTypes.hpp"
-#include "RiRiMacros.h"
+#include "Macros.h"
 #include "riri/utils/Accessors.hpp"
 
 using namespace RiRi::Response;
