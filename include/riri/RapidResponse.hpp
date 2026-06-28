@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "RapidTypes.hpp"
+#include "version.hpp"
 
 
 /**
@@ -21,7 +22,7 @@
  * - This file can be used independently in other systems if you know how to (and are desperate).
  *
  */
-namespace RiRi::Response {
+namespace RiRi::inline RIRI_VERSION::Response {
 
     template <typename T>
     concept ResponseField = std::same_as<T, const RapidDataType*>
@@ -670,7 +671,7 @@ namespace RiRi::Response {
 
         // you're welcome for the iterators.
     };
-} // namespace RiRi::Response
+} // namespace RiRi::RIRI_VERSION::Response
 
 
 // And we can shrink the minimum size of the `StatusBatchedWith<F1, F2>` class to be even less by using a union

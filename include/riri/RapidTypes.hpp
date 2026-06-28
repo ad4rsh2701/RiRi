@@ -3,9 +3,10 @@
 #include <cstdint>
 #include <string>
 #include <variant>
+#include "version.hpp"
 
 
-namespace RiRi {
+namespace RiRi::inline RIRI_VERSION {
 
 
     /**
@@ -129,7 +130,7 @@ namespace RiRi {
             // fun
     };
 
-} // namespace riri
+} // namespace RiRi::RIRI_VERSION
 
 
 // Maybe I would need this for command dispatch? who knows? archiving in file

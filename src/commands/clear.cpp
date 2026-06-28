@@ -1,7 +1,7 @@
 #include "riri/Commands.hpp"
 #include "DataManager.h"
 
-namespace RiRi::Commands {
+namespace RiRi::inline RIRI_VERSION::Commands {
 
     // CLEAR
 
@@ -10,4 +10,4 @@ namespace RiRi::Commands {
         return Response::Status(StatusCode::OK);
     }
 
-} // namespace RiRi::Commands
+} // namespace RiRi::RIRI_VERSION::Commands

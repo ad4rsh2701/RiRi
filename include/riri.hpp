@@ -19,7 +19,7 @@
 #include "riri/utils/Accessors.hpp"
 
     // VERSION
-#include "version.hpp"
+#include "riri/version.hpp"
 
 // ################################################################################################################## //
 

@@ -3,14 +3,13 @@
 #include <span>
 #include "RapidTypes.hpp"
 #include "RapidResponse.hpp"    // That one HEINOUS header file
-
+#include "version.hpp"
 
 /**
  * @namespace RiRi
  * @brief The public API namespace, holding all RiRi functionalities.
  */
-namespace RiRi {
-
+namespace RiRi::inline RIRI_VERSION {
         /**
          * @struct enableErrorBatched
          * @brief An empty struct used as a tag to dispatch to command function
@@ -360,4 +359,4 @@ namespace RiRi {
 
         } // namespace Commands
 
-} // namespace RiRi
+} // namespace RiRi::RIRI_VERSION
