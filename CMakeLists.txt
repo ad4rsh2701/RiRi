@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 
 # RiRi
 ###################################################### RiRi ############################################################
-project(RiRi VERSION 0.0.1 LANGUAGES CXX)
+project(RiRi VERSION 0.0.2 LANGUAGES CXX)
 
 message(STATUS "RiRi: Configuring RiRi")
 

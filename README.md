@@ -57,12 +57,12 @@ Add the following to your `CMakeLists.txt`
 include(FetchContent)
 FetchContent_Declare(RiRi
     GIT_REPOSITORY https://github.com/ad4rsh2701/RiRi.git
-    GIT_TAG        v0.0.1-miden
+    GIT_TAG        v0.0.2-miden
 )
 FetchContent_MakeAvailable(RiRi)
 target_link_libraries(your_target PRIVATE RiRi)
 ```
-> Replace `v0.0.1-miden` with the [latest release](https://github.com/ad4rsh2701/RiRi/releases).
+> Replace `v0.0.2-miden` with the [latest release](https://github.com/ad4rsh2701/RiRi/releases).
 
 
 
@@ -154,9 +154,9 @@ auto get_response = GET(many_nodes, RiRi::enableBatched{});
 - [x] User level functions/commands for inserting/fetching the data (ref: [#32](https://github.com/ad4rsh2701/RiRi/pull/32))
 - [x] First library build (ref: [#33](https://github.com/ad4rsh2701/RiRi/pull/35))
 - [x] Unit Testing (ref: [#52](https://github.com/ad4rsh2701/RiRi/pull/52), [#41](https://github.com/ad4rsh2701/RiRi/pull/41))
-- [x] Pre-Release 0.0.1
-- [ ] Benchmarking
+- [x] RiRi miden Release
 - [ ] Thread Safety and Multi-threading
+- [ ] Benchmarking
 - [ ] Data Persistence and Recovery
 
 

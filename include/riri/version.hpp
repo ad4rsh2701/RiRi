@@ -12,7 +12,7 @@
 // RIRI VERSION
 #define RIRI_VERSION_MAJOR 0
 #define RIRI_VERSION_MINOR 0
-#define RIRI_VERSION_PATCH 1
+#define RIRI_VERSION_PATCH 2
 #define RIRI_VERSION_PHASE miden
 
 #define RIRI_VERSION_CONCAT_INTERNAL(major, minor, patch, phase) v##major##_##minor##_##patch##_##phase
