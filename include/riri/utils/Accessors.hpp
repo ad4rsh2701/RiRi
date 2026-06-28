@@ -6,8 +6,9 @@
 #include <variant>
 #include <string_view>
 #include "riri/RapidTypes.hpp"
+#include "../version.hpp"
 
-namespace RiRi::Utils {
+namespace RiRi::inline RIRI_VERSION::Utils {
 
 
     // Constraining the type to be the same as the types of `RapidDataType` variant
@@ -140,4 +141,4 @@ namespace RiRi::Utils {
         #undef CASE
     }
 
-} // namespace RiRi::Utils
+} // namespace RiRi::inline RIRI_VERSION::Utils

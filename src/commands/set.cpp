@@ -1,7 +1,7 @@
 #include "riri/Commands.hpp"
 #include "DataManager.h"
 
-namespace RiRi::Commands {
+namespace RiRi::inline RIRI_VERSION::Commands {
 
     // SET
 
@@ -82,4 +82,4 @@ namespace RiRi::Commands {
         return response;
     }
 
-} // namespace RiRi::Commands
+} // namespace RiRi::inline RIRI_VERSION::Commands

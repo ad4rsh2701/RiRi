@@ -31,7 +31,7 @@ target_include_directories(RiRi
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/include>
 )
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     target_compile_options(RiRi PRIVATE -Wall -Wextra -Wpedantic)
     target_compile_options(RiRi PRIVATE $<$<CONFIG:Release>:-O3>)
 endif()

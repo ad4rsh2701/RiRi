@@ -1,3 +1,0 @@
-// PLACEHOLDER FILE
-
-#pragma once
