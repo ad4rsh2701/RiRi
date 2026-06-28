@@ -671,7 +671,7 @@ namespace RiRi::inline RIRI_VERSION::Response {
 
         // you're welcome for the iterators.
     };
-} // namespace RiRi::RIRI_VERSION::Response
+} // namespace RiRi::inline RIRI_VERSION::Response
 
 
 // And we can shrink the minimum size of the `StatusBatchedWith<F1, F2>` class to be even less by using a union

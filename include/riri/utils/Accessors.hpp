@@ -141,4 +141,4 @@ namespace RiRi::inline RIRI_VERSION::Utils {
         #undef CASE
     }
 
-} // namespace RiRi::RIRI_VERSION::Utils
+} // namespace RiRi::inline RIRI_VERSION::Utils

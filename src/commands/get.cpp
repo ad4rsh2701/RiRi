@@ -48,4 +48,4 @@ namespace RiRi::inline RIRI_VERSION::Commands {
         return response;
     }
 
-} // namespace RiRi::RIRI_VERSION::Commands
+} // namespace RiRi::inline RIRI_VERSION::Commands

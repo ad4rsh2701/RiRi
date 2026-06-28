@@ -130,7 +130,7 @@ namespace RiRi::inline RIRI_VERSION {
             // fun
     };
 
-} // namespace RiRi::RIRI_VERSION
+} // namespace RiRi::inline RIRI_VERSION
 
 
 // Maybe I would need this for command dispatch? who knows? archiving in file

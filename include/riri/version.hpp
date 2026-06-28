@@ -1,5 +1,13 @@
 #pragma once // VERSION.HPP
 
+// Phase lifecycle (phase changes always coincide with a MINOR/MAJOR version bump):
+//
+// | Phase  |       Versions       | Scope                                                |
+// |--------|----------------------|------------------------------------------------------|
+// | miden  | v0.0.1 to v0.0.x     | Core architecture and API improvement                |
+// | alpha  | v0.1.0 to v0.1.x     | Multi-threading and async                            |
+// | beta   | v0.2.0 to v0.x.x     | Persistence, API freeze                              |
+// | stable | v1.0.0               | First release                                        |
 
 // RIRI VERSION
 #define RIRI_VERSION_MAJOR 0

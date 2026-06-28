@@ -359,4 +359,4 @@ namespace RiRi::inline RIRI_VERSION {
 
         } // namespace Commands
 
-} // namespace RiRi::RIRI_VERSION
+} // namespace RiRi::inline RIRI_VERSION

@@ -82,4 +82,4 @@ namespace RiRi::inline RIRI_VERSION::Commands {
         return response;
     }
 
-} // namespace RiRi::Commands
+} // namespace RiRi::inline RIRI_VERSION::Commands

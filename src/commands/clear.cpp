@@ -10,4 +10,4 @@ namespace RiRi::inline RIRI_VERSION::Commands {
         return Response::Status(StatusCode::OK);
     }
 
-} // namespace RiRi::RIRI_VERSION::Commands
+} // namespace RiRi::inline RIRI_VERSION::Commands

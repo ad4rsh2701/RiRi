@@ -1,12 +1,11 @@
-#ifndef RIRI_HPP_INCLUDED
-#define RIRI_HPP_INCLUDED
-
 #pragma once    // RIRI.HPP
 
 // #################################################### C++23 ####################################################### //
 
-#if __cplusplus < 202302L
+#if __cplusplus < 202002L
 #   error "RiRi requires C++23 or higher"
+#elif __cplusplus < 202302L
+#   warning "C++20 is being used. RiRi currently supports C++20, but future versions will require C++23."
 #endif
 
 // ################################################### IMPORTS ###################################################### //
@@ -22,5 +21,3 @@
 #include "riri/version.hpp"
 
 // ################################################################################################################## //
-
-#endif // RIRI_HPP_INCLUDED
