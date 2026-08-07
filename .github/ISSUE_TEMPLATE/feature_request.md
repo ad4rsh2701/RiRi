@@ -11,8 +11,8 @@ If this feature solves a concrete problem, please describe that problem/issue fi
 If it's an extension of an existing feature, please mention which feature and describe it accordingly.
 
 **Describe the solution you'd like**
-Doesn't necessarily need to be technical, you can always provide an abstracted solution. With an example if possible.
-You can also relate to existing features of other tools/pieces of software to provide a better idea of what you want.
+Need not be technical, you can always provide an abstracted solution. With an example if possible.
+You can also relate to existing features of other tools/software to provide a better idea of what you want.
 
 
 **Describe alternatives you've considered**
