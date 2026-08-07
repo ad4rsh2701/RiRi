@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Describe the bug**
-A clear description of what the bug is or what went wrong. Describe and and all unexpected behaviors/outcomes.
+A clear description of what the bug is or what went wrong. Describe and all unexpected behaviors/outcomes.
 
 **To Reproduce**
 Add a sample code snipped demonstrating the bug, or please describe the specific situation in detail.
@@ -22,7 +22,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Environment**
 Describe the developer environment you are using, please tell:
-- Operating System: Windows/Ubuntu/IOS/Arch/etc.
+- Operating System: Windows/Ubuntu/macOS/Arch/etc.
 - Compiler Used (with version):
 - C++ standard used: 20/23/etc.
 - Build System used: Ninja/MSVC/etc.
