@@ -2,7 +2,7 @@
 
 RiRi is open to contributions and contributions are welcomed. Before contributing,
 please continue reading this entire document. It lists:
-- [The Acceptable Contributions](#acceptable-contributions)
+- [Accepted Contributions](#accepted-contributions)
 - [A Note on LLM-assisted/authored Contributions](#a-note-on-llm-assistedauthored-contributions)
 - [The PR/Issue Workflow](#pr-issue-workflow)
 - [The Development Environment & Tests](#development-environment-and-tests)
@@ -11,7 +11,7 @@ please continue reading this entire document. It lists:
 - [The PR/issue Style/template](#prissue-styletemplate)
 
 
-## Acceptable contributions
+## Accepted contributions
 
 Not all contributions are accepted. For instance, the following types of contributions
 are accepted:
@@ -39,7 +39,7 @@ As for LLM-assisted contributions, please disclose LLM-assisted contributions
 in the PR/issue description explicitly and in a clear manner. One must be able
 to tell where the LLMs were used at first glance. LLM-assisted contributions
 are contributions that you author, in which LLMs are used to ideate/scaffold/
-reason/improve the design/code/etc.
+reason/improve the design/code/etc or to generate/write boilerplate code.
 
 Contributions that are entirely LLM generated/authored are not accepted.
 
@@ -95,8 +95,8 @@ why, you may commit the changes to remote, but please mention so in the PR comme
 
 ## Coding Style
 
-There is no fixed coding style, but please try to follow the existing style. It's a mix of Google's C++ style and
-LLVM's. Here are some guidelines:
+There is no fixed coding style, but please try to follow the existing style. It's a mix of Google and LLVM's
+C++ coding style. Here are some guidelines:
 
 1. For Naming:
    - Private variables should be prefixed with an underscore.
@@ -146,7 +146,7 @@ Here, `task` is the type of commit:
 
 The `scope` is the file/folder/module/class/etc. that you are touching/adding/modifying/fixing/etc.
 
-The `what to do` is the description of the commit, it should be in a single short line and must be imperative.
+The `what to do` is a single line description of the commit, it should be in a single short line and must be imperative.
 I.e., Instead of "Added XYZ class", it should be "Add XYZ class". Specifically, for the `fix` type of commits,
 please describe the bug/error/etc. itself in the commit message (and the fix in the commit body).
 
